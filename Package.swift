@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "FSPlaygrounds",
+    products: [
+        .executable(name: "playgrounds", targets: ["FSPlaygrounds"])
+    ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
