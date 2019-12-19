@@ -58,7 +58,7 @@ class SPMPlaygroundCommand {
     var pkgFrom: String = "0.0.0"
 
     @Option(name: "library", shorthand: "l", documentation: "name of library to import")
-    var libName: String? = nil
+    var _libName: String? = nil
 
     let platform: Platform = .macos
 
@@ -84,22 +84,29 @@ class SPMPlaygroundCommand {
     }
 }
 
+
+func inferLibName(from url: URL) -> String {
+    // avoid using deletingPathExtension().lastPathComponent because there are cases like
+    // https://github.com/mxcl/Path.swift.git
+    let inferred = url.lastPathComponent.split(separator: ".").first.map(String.init) ?? url.lastPathComponent
+    print("inferred library name '\(inferred)' from url '\(url)'")
+    return inferred
+}
+
+
 extension SPMPlaygroundCommand: Command {
     func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
-        guard let url = pkgURL else {
+        guard let urlString = pkgURL else {
             print("<url> parameter required")
             exit(1)
         }
 
-        guard URL(string: url) != nil else {
-            print("invalid url: '\(url)'")
+        guard let url = URL(string: urlString) else {
+            print("invalid url: '\(urlString)'")
             exit(1)
         }
 
-        guard let libName = libName else {
-            print("<library> parameter required")
-            exit(1)
-        }
+        let libName = _libName ?? inferLibName(from: url)
 
         if force && projectPath().exists {
             try projectPath().delete()
