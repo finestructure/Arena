@@ -15,5 +15,8 @@ install: release
 	install .build/release/spm-playground /usr/local/bin/
 
 version:
+	# run
+	# git update-index --assume-unchanged Sources/SPMPlayground/Version.swift
+	# to avoid tracking changes for file
 	@echo VERSION: $(VERSION)
 	@echo "public let SPMPlaygroundVersion = \"$(VERSION)\"" > Sources/SPMPlayground/Version.swift
