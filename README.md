@@ -25,3 +25,17 @@ OPTIONS:
 ℹ️  inferred library name 'Plot' from url 'https://github.com/johnsundell/Plot.git'
 ✅  created project in folder 'SPM-Playground'
 ```
+
+## How to build and install
+
+You can build and install `spm-playground` via the included `Makefile` by running:
+
+```
+make install
+```
+
+This will copy the binary `spm-playground` to `/usr/local/bin`.
+
+## Compatibility
+
+`spm-playground` was built and tested on macOS 10.15 Catalina using Swift 5.1.3. It should work on other versions of macOS and Swift as well.
