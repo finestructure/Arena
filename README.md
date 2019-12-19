@@ -1,5 +1,6 @@
 # SPMPlaygrounds
 
+```
  ~  spm-playground --help
 OVERVIEW: Creates an Xcode project with a Playground and an SPM library ready for use in it.
 
@@ -13,7 +14,7 @@ OPTIONS:
   --name, -n       name of directory and Xcode project [default: SPM-Playground]
   --url, -u        package url [default: nil]
   --version, -v    Display tool version [default: false]
-
+```
 
 ## Example
 
