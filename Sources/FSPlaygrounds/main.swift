@@ -44,9 +44,12 @@ extension Optional: ArgumentType where Wrapped == String {
 
 
 class SPMPlaygroundCommand {
-    var name = ""
+    let name = "spm-playground"
+    let documentation = "Creates an Xcode project with a Playground and an SPM library ready for use in it."
+    let help = Help()
 
-    let projectName = "myproj"
+    @Option(name: "name", shorthand: "n", documentation: "name of directory and Xcode project")
+    var projectName = "SPM-Playground"
 
     @Option(name: "url", shorthand: "u", documentation: "package url")
     var pkgURL: String? = nil
@@ -54,7 +57,9 @@ class SPMPlaygroundCommand {
     @Option(name: "from", shorthand: "f", documentation: "from revision")
     var pkgFrom: String = "0.0.0"
 
-    let libName = "Plot"
+    @Option(name: "library", shorthand: "l", documentation: "name of library to import")
+    var libName: String? = nil
+
     let platform: Platform = .macos
 
     @Option(documentation: "overwrite existing file/directory")
@@ -91,11 +96,16 @@ extension SPMPlaygroundCommand: Command {
             exit(1)
         }
 
+        guard let libName = libName else {
+            print("<library> parameter required")
+            exit(1)
+        }
+
         if force && projectPath().exists {
             try projectPath().delete()
         }
         guard !projectPath().exists else {
-            print("'\(projectPath().basename())' already exists")
+            print("'\(projectPath().basename())' already exists, use '--force' to overwrite")
             exit(1)
         }
         try projectPath().mkdir()

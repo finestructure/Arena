@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "FSPlaygrounds",
     products: [
-        .executable(name: "playgrounds", targets: ["FSPlaygrounds"])
+        .executable(name: "spm-playground", targets: ["FSPlaygrounds"])
     ],
     dependencies: [
         .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
