@@ -1,7 +1,7 @@
-import Commander
 import Foundation
 import Path
 import ShellOut
+import Yaap
 
 
 enum Platform: String {
@@ -10,12 +10,55 @@ enum Platform: String {
 }
 
 
-struct Config {
+@discardableResult
+func shellOut(to command: ShellOutCommand, at path: Path) throws -> String {
+    try shellOut(to: command, at: "\(path)", outputHandle: nil, errorHandle: nil)
+}
+
+
+extension ShellOutCommand {
+    static func openFile(at path: Path) -> ShellOutCommand {
+        return ShellOutCommand(string: "open \(path)")
+    }
+}
+
+
+extension Optional: CustomStringConvertible where Wrapped == String {
+    public var description: String {
+        switch self {
+            case let .some(value): return value
+            case .none: return "nil"
+        }
+    }
+
+}
+
+extension Optional: ArgumentType where Wrapped == String {
+    public init(arguments: inout [String]) throws {
+        self = arguments.first
+        if !arguments.isEmpty {
+            arguments.removeFirst()
+        }
+    }
+}
+
+
+class SPMPlaygroundCommand {
+    var name = ""
+
     let projectName = "myproj"
-    let pkgURL: String
-    let pkgFrom: String
+
+    @Option(name: "url", shorthand: "u", documentation: "package url")
+    var pkgURL: String? = nil
+
+    @Option(name: "from", shorthand: "f", documentation: "from revision")
+    var pkgFrom: String = "0.0.0"
+
     let libName = "Plot"
     let platform: Platform = .macos
+
+    @Option(documentation: "overwrite existing file/directory")
+    var force = false
 
     var targetName: String { projectName }
 
@@ -36,93 +79,74 @@ struct Config {
     }
 }
 
+extension SPMPlaygroundCommand: Command {
+    func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
+        guard let url = pkgURL else {
+            print("<url> parameter required")
+            exit(1)
+        }
 
-@discardableResult
-func shellOut(to command: ShellOutCommand, at path: Path) throws -> String {
-    try shellOut(to: command, at: "\(path)", outputHandle: nil, errorHandle: nil)
-}
+        guard URL(string: url) != nil else {
+            print("invalid url: '\(url)'")
+            exit(1)
+        }
 
+        if force && projectPath().exists {
+            try projectPath().delete()
+        }
+        guard !projectPath().exists else {
+            print("'\(projectPath().basename())' already exists")
+            exit(1)
+        }
+        try projectPath().mkdir()
 
-extension ShellOutCommand {
-    static func openFile(at path: Path) -> ShellOutCommand {
-        return ShellOutCommand(string: "open \(path)")
-    }
-}
+        // create package
+        try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
 
+        // update Package.swift
+        do {
+            let packagePath = projectPath()/"Package.swift"
+            let packageDescription = try String(contentsOf: packagePath)
+            let updatedDeps = "package.dependencies = [.package(url: \"\(url)\", from: \"\(pkgFrom)\")]"
+            let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\"\(libName)\"])]"
 
+            try [packageDescription, updatedDeps, updatedTgts].joined(separator: "\n").write(to: packagePath)
+        }
 
-let app = command(
-    Flag("force", default: false, description: "overwrite existing file/directory"),
-    Option<String>("url", default: "", flag: "u", description: "repository url"),
-    Option<String>("from", default: "0.0.0", flag: "f", description: "from revision")
-) { force, url, from in
+        // generate xcodeproj
+        try shellOut(to: .generateSwiftPackageXcodeProject(), at: projectPath())
 
-    guard URL(string: url) != nil else {
-        print("invalid url: '\(url)'")
-        exit(1)
-    }
+        // create workspace
+        do {
+            try xcworkspacePath().mkdir()
+            try """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Workspace
+                version = "1.0">
+                <FileRef
+                location = "group:MyPlayground.playground">
+                </FileRef>
+                <FileRef
+                location = "container:\(xcodeprojPath().basename())">
+                </FileRef>
+                </Workspace>
+                """.write(to: xcworkspacePath()/"contents.xcworkspacedata")
+        }
 
-    let config = Config.init(
-        pkgURL: url,
-        pkgFrom: from
-    )
-
-    if force && config.projectPath().exists {
-        try config.projectPath().delete()
-    }
-    guard !config.projectPath().exists else {
-        print("'\(config.projectPath().basename())' already exists")
-        exit(1)
-    }
-    try config.projectPath().mkdir()
-
-    // create package
-    try shellOut(to: .createSwiftPackage(withType: .library), at: config.projectPath())
-
-    // update Package.swift
-    do {
-        let packagePath = config.projectPath()/"Package.swift"
-        let packageDescription = try String(contentsOf: packagePath)
-        let updatedDeps = "package.dependencies = [.package(url: \"\(config.pkgURL)\", from: \"\(config.pkgFrom)\")]"
-        let updatedTgts =  "package.targets = [.target(name: \"\(config.targetName)\", dependencies: [\"\(config.libName)\"])]"
-
-        try [packageDescription, updatedDeps, updatedTgts].joined(separator: "\n").write(to: packagePath)
-    }
-
-    // generate xcodeproj
-    try shellOut(to: .generateSwiftPackageXcodeProject(), at: config.projectPath())
-
-    // create workspace
-    do {
-        try config.xcworkspacePath().mkdir()
-        try """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <Workspace
-               version = "1.0">
-               <FileRef
-                  location = "group:MyPlayground.playground">
-               </FileRef>
-               <FileRef
-                  location = "container:\(config.xcodeprojPath().basename())">
-               </FileRef>
-            </Workspace>
-            """.write(to: config.xcworkspacePath()/"contents.xcworkspacedata")
-    }
-
-    // add playground
-    do {
-        try config.playgroundPath().mkdir()
-        try "import \(config.libName)\n\n".write(to: config.playgroundPath()/"Contents.swift")
-        try """
-            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-            <playground version='5.0' target-platform='\(config.platform)'>
+        // add playground
+        do {
+            try playgroundPath().mkdir()
+            try "import \(libName)\n\n".write(to: playgroundPath()/"Contents.swift")
+            try """
+                <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <playground version='5.0' target-platform='\(platform)'>
                 <timeline fileName='timeline.xctimeline'/>
-            </playground>
-            """.write(to: config.playgroundPath()/"contents.xcplayground")
-    }
+                </playground>
+                """.write(to: playgroundPath()/"contents.xcplayground")
+        }
 
-    print("open \(config.xcworkspacePath())")
-    //    try shellOut(to: .openFile(at: config.xcworkspacePath()))
+        try shellOut(to: .openFile(at: projectPath()))
+    }
 }
 
-app.run()
+SPMPlaygroundCommand().parseAndRun()

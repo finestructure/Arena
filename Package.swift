@@ -9,16 +9,16 @@ let package = Package(
         .executable(name: "playgrounds", targets: ["FSPlaygrounds"])
     ],
     dependencies: [
-        .package(url: "https://github.com/kylef/Commander.git", from: "0.8.0"),
         .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
         .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),
+        .package(url: "https://github.com/hartbit/Yaap.git", from: "1.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "FSPlaygrounds",
-            dependencies: ["Commander", "Path", "ShellOut"]),
+            dependencies: ["Path", "ShellOut", "Yaap"]),
         .testTarget(
             name: "FSPlaygroundsTests",
             dependencies: ["FSPlaygrounds"]),
