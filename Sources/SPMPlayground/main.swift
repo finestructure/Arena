@@ -7,6 +7,34 @@ import Yaap
 enum Platform: String {
     case ios
     case macos
+    case tvos
+}
+
+
+extension Platform: CustomStringConvertible {
+    var description: String {
+        switch self {
+            case .ios: return "ios"
+            case .macos: return "macos"
+            case .tvos: return "tvos"
+        }
+    }
+}
+
+
+extension Platform: ArgumentType {
+    init(arguments: inout [String]) throws {
+        guard let argument = arguments.first else {
+            throw ParseError.missingArgument
+        }
+
+        guard let value = Platform.init(rawValue: argument) else {
+            throw ParseError.invalidFormat(argument)
+        }
+
+        self = value
+        arguments.removeFirst()
+    }
 }
 
 
@@ -32,6 +60,7 @@ extension Optional: CustomStringConvertible where Wrapped == String {
     }
 
 }
+
 
 extension Optional: ArgumentType where Wrapped == String {
     public init(arguments: inout [String]) throws {
@@ -60,7 +89,8 @@ class SPMPlaygroundCommand {
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
     var _libName: String? = nil
 
-    let platform: Platform = .macos
+    @Option(shorthand: "p", documentation: "platform for Playground (one of 'macos', 'ios', 'tvos')")
+    var platform: Platform = .macos
 
     let version = Version(SPMPlaygroundVersion)
 
