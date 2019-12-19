@@ -4,9 +4,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "FSPlaygrounds",
+    name: "SPMPlayground",
     products: [
-        .executable(name: "spm-playground", targets: ["FSPlaygrounds"])
+        .executable(name: "spm-playground", targets: ["SPMPlayground"])
     ],
     dependencies: [
         .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
@@ -17,10 +17,7 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "FSPlaygrounds",
+            name: "SPMPlayground",
             dependencies: ["Path", "ShellOut", "Yaap"]),
-        .testTarget(
-            name: "FSPlaygroundsTests",
-            dependencies: ["FSPlaygrounds"]),
     ]
 )
