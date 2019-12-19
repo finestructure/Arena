@@ -62,6 +62,8 @@ class SPMPlaygroundCommand {
 
     let platform: Platform = .macos
 
+    let version = Version(SPMPlaygroundVersion)
+
     @Option(documentation: "overwrite existing file/directory")
     var force = false
 
