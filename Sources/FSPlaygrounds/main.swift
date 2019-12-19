@@ -12,8 +12,8 @@ enum Platform: String {
 
 struct Config {
     let projectName = "myproj"
-    let pkgURL = "https://github.com/johnsundell/plot.git"
-    let pkgFrom = "0.1.0"
+    let pkgURL: String
+    let pkgFrom: String
     let libName = "Plot"
     let platform: Platform = .macos
 
@@ -50,10 +50,22 @@ extension ShellOutCommand {
 }
 
 
+
 let app = command(
-    Flag("force", default: false, flag: "f", description: "overwrite existing file/directory")
-) { force in
-    let config = Config()
+    Flag("force", default: false, description: "overwrite existing file/directory"),
+    Option<String>("url", default: "", flag: "u", description: "repository url"),
+    Option<String>("from", default: "0.0.0", flag: "f", description: "from revision")
+) { force, url, from in
+
+    guard URL(string: url) != nil else {
+        print("invalid url: '\(url)'")
+        exit(1)
+    }
+
+    let config = Config.init(
+        pkgURL: url,
+        pkgFrom: from
+    )
 
     if force && config.projectPath().exists {
         try config.projectPath().delete()
@@ -110,7 +122,7 @@ let app = command(
     }
 
     print("open \(config.xcworkspacePath())")
-//    try shellOut(to: .openFile(at: config.xcworkspacePath()))
+    //    try shellOut(to: .openFile(at: config.xcworkspacePath()))
 }
 
 app.run()
