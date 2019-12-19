@@ -1,5 +1,7 @@
 # SPMPlaygrounds
 
+SPMPlaygrounds is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library.
+
 ```
  ~  spm-playground --help
 OVERVIEW: Creates an Xcode project with a Playground and an SPM library ready for use in it.
