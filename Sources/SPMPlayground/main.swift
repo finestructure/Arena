@@ -57,7 +57,7 @@ class SPMPlaygroundCommand {
     @Option(name: "from", shorthand: "f", documentation: "from revision")
     var pkgFrom: String = "0.0.0"
 
-    @Option(name: "library", shorthand: "l", documentation: "name of library to import")
+    @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
     var _libName: String? = nil
 
     let platform: Platform = .macos
@@ -91,7 +91,7 @@ func inferLibName(from url: URL) -> String {
     // avoid using deletingPathExtension().lastPathComponent because there are cases like
     // https://github.com/mxcl/Path.swift.git
     let inferred = url.lastPathComponent.split(separator: ".").first.map(String.init) ?? url.lastPathComponent
-    print("inferred library name '\(inferred)' from url '\(url)'")
+    print("ℹ️  inferred library name '\(inferred)' from url '\(url)'")
     return inferred
 }
 
@@ -99,12 +99,12 @@ func inferLibName(from url: URL) -> String {
 extension SPMPlaygroundCommand: Command {
     func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
         guard let urlString = pkgURL else {
-            print("<url> parameter required")
+            print("❌  <url> parameter required")
             exit(1)
         }
 
         guard let url = URL(string: urlString) else {
-            print("invalid url: '\(urlString)'")
+            print("❌  invalid url: '\(urlString)'")
             exit(1)
         }
 
@@ -114,7 +114,7 @@ extension SPMPlaygroundCommand: Command {
             try projectPath().delete()
         }
         guard !projectPath().exists else {
-            print("'\(projectPath().basename())' already exists, use '--force' to overwrite")
+            print("❌  '\(projectPath().basename())' already exists, use '--force' to overwrite")
             exit(1)
         }
         try projectPath().mkdir()
@@ -128,7 +128,6 @@ extension SPMPlaygroundCommand: Command {
             let packageDescription = try String(contentsOf: packagePath)
             let updatedDeps = "package.dependencies = [.package(url: \"\(url)\", from: \"\(pkgFrom)\")]"
             let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\"\(libName)\"])]"
-
             try [packageDescription, updatedDeps, updatedTgts].joined(separator: "\n").write(to: packagePath)
         }
 
@@ -164,6 +163,7 @@ extension SPMPlaygroundCommand: Command {
                 """.write(to: playgroundPath()/"contents.xcplayground")
         }
 
+        print("✅  created project in folder '\(projectPath().relative(to: Path.cwd))'")
         try shellOut(to: .openFile(at: projectPath()))
     }
 }
