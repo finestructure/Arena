@@ -3,6 +3,7 @@ import class Foundation.Bundle
 import PackageLoading
 import Workspace
 import Path
+@testable import SPMPlayground
 
 
 final class SPMPlaygroundTests: XCTestCase {

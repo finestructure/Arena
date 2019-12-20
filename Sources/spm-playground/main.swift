@@ -2,6 +2,7 @@ import Foundation
 import Path
 import ShellOut
 import Yaap
+import SPMPlayground
 
 
 enum Platform: String {
