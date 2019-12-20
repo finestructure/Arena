@@ -6,15 +6,22 @@ import Path
 
 
 final class SPMPlaygroundTests: XCTestCase {
-    func testExample() throws {
+    func test_loadManifest() throws {
         let p = checkoutsDirectory/"swift-package-manager"
         print(p)
         let package = AbsolutePath(p.string)
         let manifest = try ManifestLoader.loadManifest(packagePath: package, swiftCompiler: swiftCompiler)
+        XCTAssertEqual(manifest.name, "SwiftPM")
         XCTAssertEqual(manifest.products.map { $0.name }, ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
         XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.automatic)])
     }
+
+    func test_libraryNames() throws {
+        let package = checkoutsDirectory/"swift-package-manager"
+        XCTAssertEqual(try libraryNames(for: package), ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
+    }
 }
+
 
 extension XCTestCase {
     /// Returns path to the built products directory.
@@ -54,13 +61,3 @@ extension XCTestCase {
 }
 
 
-// see: https://github.com/apple/swift-package-manager/blob/master/Examples/package-info/Sources/package-info/main.swift
-let swiftCompiler: AbsolutePath = {
-    let string: String
-    #if os(macOS)
-    string = try! Process.checkNonZeroExit(args: "xcrun", "--sdk", "macosx", "-f", "swiftc").spm_chomp()
-    #else
-    string = try! Process.checkNonZeroExit(args: "which", "swiftc").spm_chomp()
-    #endif
-    return AbsolutePath(string)
-}()
