@@ -8,6 +8,7 @@ let package = Package(
         .executable(name: "spm-playground", targets: ["SPMPlayground"])
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-package-manager", .revision("swift-5.1.3-RELEASE")),
         .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
         .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),
         .package(url: "https://github.com/hartbit/Yaap.git", from: "1.0.0"),
@@ -15,7 +16,7 @@ let package = Package(
     targets: [
         .target(
             name: "SPMPlayground",
-            dependencies: ["Path", "ShellOut", "Yaap"]),
+            dependencies: ["Path", "ShellOut", "SwiftPM-auto", "Yaap"]),
         .testTarget(
             name: "SPMPlaygroundTests",
             dependencies: ["SPMPlayground"]),
