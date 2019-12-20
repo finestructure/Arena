@@ -22,7 +22,7 @@ let swiftCompiler: AbsolutePath = {
 }()
 
 
-func libraryNames(for package: Path) throws -> [String] {
+public func libraryNames(for package: Path) throws -> [String] {
     let path = AbsolutePath(package.string)
     let manifest = try ManifestLoader.loadManifest(packagePath: path, swiftCompiler: swiftCompiler)
     return manifest.products.filter { p in

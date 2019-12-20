@@ -139,7 +139,6 @@ extension SPMPlaygroundCommand: Command {
             exit(1)
         }
 
-        let libName = _libName ?? inferLibName(from: url)
 
         if force && projectPath().exists {
             try projectPath().delete()
@@ -153,13 +152,31 @@ extension SPMPlaygroundCommand: Command {
         // create package
         try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
 
-        // update Package.swift
+        // update Package.swift dependencies
         do {
             let packagePath = projectPath()/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
             let updatedDeps = "package.dependencies = [.package(url: \"\(url)\", from: \"\(pkgFrom)\")]"
-            let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\"\(libName)\"])]"
-            try [packageDescription, updatedDeps, updatedTgts].joined(separator: "\n").write(to: packagePath)
+            try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
+        }
+
+        try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath())
+
+        // find libraries
+        let checkoutsDir = projectPath()/".build/checkouts"
+        let libs = try checkoutsDir.ls()
+            .filter { $0.kind == .directory }
+            .flatMap { try libraryNames(for: $0.path) }
+            .sorted()
+        print("📔  libraries found: \(libs.joined(separator: ", "))")
+
+        // update Package.swift targets
+        do {
+            let packagePath = projectPath()/"Package.swift"
+            let packageDescription = try String(contentsOf: packagePath)
+            let libsClause = libs.map { "\"\($0)\"" }.joined(separator: ", ")
+            let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\(libsClause)])]"
+            try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
         }
 
         // generate xcodeproj
@@ -185,7 +202,8 @@ extension SPMPlaygroundCommand: Command {
         // add playground
         do {
             try playgroundPath().mkdir()
-            try "import \(libName)\n\n".write(to: playgroundPath()/"Contents.swift")
+            let importClauses = libs.map { "import \($0)" }.joined(separator: "\n") + "\n"
+            try importClauses.write(to: playgroundPath()/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <playground version='5.0' target-platform='\(platform)'>
