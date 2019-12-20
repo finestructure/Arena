@@ -5,6 +5,7 @@
 //  Created by Sven A. Schmidt on 20/12/2019.
 //
 
+import Foundation
 import PackageLoading
 import Path
 import Workspace
@@ -35,3 +36,11 @@ public func libraryNames(for package: Path) throws -> [String] {
 }
 
 
+extension Foundation.URL {
+    public func lastPathComponent(dropExtension ext: String) -> String {
+        if pathExtension == ext {
+            return deletingPathExtension().lastPathComponent
+        }
+        return lastPathComponent
+    }
+}

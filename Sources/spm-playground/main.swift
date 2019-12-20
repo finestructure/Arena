@@ -118,15 +118,6 @@ class SPMPlaygroundCommand {
 }
 
 
-func inferLibName(from url: URL) -> String {
-    // avoid using deletingPathExtension().lastPathComponent because there are cases like
-    // https://github.com/mxcl/Path.swift.git
-    let inferred = url.lastPathComponent.split(separator: ".").first.map(String.init) ?? url.lastPathComponent
-    print("ℹ️  inferred library name '\(inferred)' from url '\(url)'")
-    return inferred
-}
-
-
 extension SPMPlaygroundCommand: Command {
     func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
         guard let urlString = pkgURL else {
@@ -166,6 +157,7 @@ extension SPMPlaygroundCommand: Command {
         let checkoutsDir = projectPath()/".build/checkouts"
         let libs = try checkoutsDir.ls()
             .filter { $0.kind == .directory }
+            .filter { $0.path.basename() == url.lastPathComponent(dropExtension: ".git") }
             .flatMap { try libraryNames(for: $0.path) }
             .sorted()
         print("📔  libraries found: \(libs.joined(separator: ", "))")
