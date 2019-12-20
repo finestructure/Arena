@@ -157,9 +157,10 @@ extension SPMPlaygroundCommand: Command {
         let checkoutsDir = projectPath()/".build/checkouts"
         let libs = try checkoutsDir.ls()
             .filter { $0.kind == .directory }
-            .filter { $0.path.basename() == url.lastPathComponent(dropExtension: ".git") }
+            .filter { $0.path.basename() == url.lastPathComponent(dropExtension: "git") }
             .flatMap { try libraryNames(for: $0.path) }
             .sorted()
+        assert(libs.count > 0, "❌  no libraries found!")
         print("📔  libraries found: \(libs.joined(separator: ", "))")
 
         // update Package.swift targets
