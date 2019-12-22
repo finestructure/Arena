@@ -138,10 +138,12 @@ extension SPMPlaygroundCommand: Command {
             print("❌  '\(projectPath().basename())' already exists, use '--force' to overwrite")
             exit(1)
         }
-        try projectPath().mkdir()
 
         // create package
-        try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
+        do {
+            try projectPath().mkdir()
+            try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
+        }
 
         // update Package.swift dependencies
         do {
@@ -151,17 +153,23 @@ extension SPMPlaygroundCommand: Command {
             try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
         }
 
-        try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath())
+        do {
+            print("🔧  resolving packager dependencies")
+            try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath())
+        }
 
-        // find libraries
-        let checkoutsDir = projectPath()/".build/checkouts"
-        let libs = try checkoutsDir.ls()
-            .filter { $0.kind == .directory }
-            .filter { $0.path.basename() == url.lastPathComponent(dropExtension: "git") }
-            .flatMap { try libraryNames(for: $0.path) }
-            .sorted()
-        assert(libs.count > 0, "❌  no libraries found!")
-        print("📔  libraries found: \(libs.joined(separator: ", "))")
+        let libs: [String]
+        do {
+            // find libraries
+            let checkoutsDir = projectPath()/".build/checkouts"
+            libs = try checkoutsDir.ls()
+                .filter { $0.kind == .directory }
+                .filter { $0.path.basename() == url.lastPathComponent(dropExtension: "git") }
+                .flatMap { try libraryNames(for: $0.path) }
+                .sorted()
+            assert(libs.count > 0, "❌  no libraries found!")
+            print("📔  libraries found: \(libs.joined(separator: ", "))")
+        }
 
         // update Package.swift targets
         do {
