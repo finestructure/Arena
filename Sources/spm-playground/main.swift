@@ -2,6 +2,7 @@ import Foundation
 import Path
 import ShellOut
 import Yaap
+import SPMPlayground
 
 
 enum Platform: String {
@@ -87,7 +88,7 @@ class SPMPlaygroundCommand {
     var pkgFrom: String = "0.0.0"
 
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
-    var _libName: String? = nil
+    var libName: String? = nil
 
     @Option(shorthand: "p", documentation: "platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform = .macos
@@ -117,15 +118,6 @@ class SPMPlaygroundCommand {
 }
 
 
-func inferLibName(from url: URL) -> String {
-    // avoid using deletingPathExtension().lastPathComponent because there are cases like
-    // https://github.com/mxcl/Path.swift.git
-    let inferred = url.lastPathComponent.split(separator: ".").first.map(String.init) ?? url.lastPathComponent
-    print("ℹ️  inferred library name '\(inferred)' from url '\(url)'")
-    return inferred
-}
-
-
 extension SPMPlaygroundCommand: Command {
     func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
         guard let urlString = pkgURL else {
@@ -138,7 +130,6 @@ extension SPMPlaygroundCommand: Command {
             exit(1)
         }
 
-        let libName = _libName ?? inferLibName(from: url)
 
         if force && projectPath().exists {
             try projectPath().delete()
@@ -147,18 +138,46 @@ extension SPMPlaygroundCommand: Command {
             print("❌  '\(projectPath().basename())' already exists, use '--force' to overwrite")
             exit(1)
         }
-        try projectPath().mkdir()
 
         // create package
-        try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
+        do {
+            try projectPath().mkdir()
+            try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
+        }
 
-        // update Package.swift
+        // update Package.swift dependencies
         do {
             let packagePath = projectPath()/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
             let updatedDeps = "package.dependencies = [.package(url: \"\(url)\", from: \"\(pkgFrom)\")]"
-            let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\"\(libName)\"])]"
-            try [packageDescription, updatedDeps, updatedTgts].joined(separator: "\n").write(to: packagePath)
+            try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
+        }
+
+        do {
+            print("🔧  resolving packager dependencies")
+            try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath())
+        }
+
+        let libs: [String]
+        do {
+            // find libraries
+            let checkoutsDir = projectPath()/".build/checkouts"
+            libs = try checkoutsDir.ls()
+                .filter { $0.kind == .directory }
+                .filter { $0.path.basename() == url.lastPathComponent(dropExtension: "git") }
+                .flatMap { try libraryNames(for: $0.path) }
+                .sorted()
+            assert(libs.count > 0, "❌  no libraries found!")
+            print("📔  libraries found: \(libs.joined(separator: ", "))")
+        }
+
+        // update Package.swift targets
+        do {
+            let packagePath = projectPath()/"Package.swift"
+            let packageDescription = try String(contentsOf: packagePath)
+            let libsClause = libs.map { "\"\($0)\"" }.joined(separator: ", ")
+            let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\(libsClause)])]"
+            try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
         }
 
         // generate xcodeproj
@@ -184,7 +203,8 @@ extension SPMPlaygroundCommand: Command {
         // add playground
         do {
             try playgroundPath().mkdir()
-            try "import \(libName)\n\n".write(to: playgroundPath()/"Contents.swift")
+            let importClauses = (libName.map { [$0] } ?? libs).map { "import \($0)" }.joined(separator: "\n") + "\n"
+            try importClauses.write(to: playgroundPath()/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <playground version='5.0' target-platform='\(platform)'>
