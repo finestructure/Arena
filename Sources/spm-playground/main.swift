@@ -88,7 +88,7 @@ class SPMPlaygroundCommand {
     var pkgFrom: String = "0.0.0"
 
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
-    var _libName: String? = nil
+    var libName: String? = nil
 
     @Option(shorthand: "p", documentation: "platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform = .macos
@@ -203,7 +203,7 @@ extension SPMPlaygroundCommand: Command {
         // add playground
         do {
             try playgroundPath().mkdir()
-            let importClauses = libs.map { "import \($0)" }.joined(separator: "\n") + "\n"
+            let importClauses = (libName.map { [$0] } ?? libs).map { "import \($0)" }.joined(separator: "\n") + "\n"
             try importClauses.write(to: playgroundPath()/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
