@@ -154,7 +154,7 @@ extension SPMPlaygroundCommand: Command {
         }
 
         do {
-            print("🔧  resolving packager dependencies")
+            print("🔧  resolving package dependencies")
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath())
         }
 

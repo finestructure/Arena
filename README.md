@@ -22,8 +22,9 @@ OPTIONS:
 ## Example
 
 ```
- ~  spm-playground -u https://github.com/johnsundell/Plot.git
-ℹ️  inferred library name 'Plot' from url 'https://github.com/johnsundell/Plot.git'
+ ~  spm-playground -u https://github.com/johnsundell/plot
+🔧  resolving package dependencies
+📔  libraries found: Plot
 ✅  created project in folder 'SPM-Playground'
 ```
 
