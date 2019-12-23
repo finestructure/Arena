@@ -5,40 +5,6 @@ import Yaap
 import SPMPlayground
 
 
-enum Platform: String {
-    case ios
-    case macos
-    case tvos
-}
-
-
-extension Platform: CustomStringConvertible {
-    var description: String {
-        switch self {
-            case .ios: return "ios"
-            case .macos: return "macos"
-            case .tvos: return "tvos"
-        }
-    }
-}
-
-
-extension Platform: ArgumentType {
-    init(arguments: inout [String]) throws {
-        guard let argument = arguments.first else {
-            throw ParseError.missingArgument
-        }
-
-        guard let value = Platform.init(rawValue: argument) else {
-            throw ParseError.invalidFormat(argument)
-        }
-
-        self = value
-        arguments.removeFirst()
-    }
-}
-
-
 @discardableResult
 func shellOut(to command: ShellOutCommand, at path: Path) throws -> String {
     try shellOut(to: command, at: "\(path)", outputHandle: nil, errorHandle: nil)
