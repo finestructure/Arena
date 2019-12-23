@@ -5,40 +5,6 @@ import Yaap
 import SPMPlayground
 
 
-@discardableResult
-func shellOut(to command: ShellOutCommand, at path: Path) throws -> String {
-    try shellOut(to: command, at: "\(path)", outputHandle: nil, errorHandle: nil)
-}
-
-
-extension ShellOutCommand {
-    static func openFile(at path: Path) -> ShellOutCommand {
-        return ShellOutCommand(string: "open \(path)")
-    }
-}
-
-
-extension Optional: CustomStringConvertible where Wrapped == String {
-    public var description: String {
-        switch self {
-            case let .some(value): return value
-            case .none: return "nil"
-        }
-    }
-
-}
-
-
-extension Optional: ArgumentType where Wrapped == String {
-    public init(arguments: inout [String]) throws {
-        self = arguments.first
-        if !arguments.isEmpty {
-            arguments.removeFirst()
-        }
-    }
-}
-
-
 class SPMPlaygroundCommand {
     let name = "spm-playground"
     let documentation = "Creates an Xcode project with a Playground and an SPM library ready for use in it."
