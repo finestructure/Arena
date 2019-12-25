@@ -21,6 +21,15 @@ final class SPMPlaygroundTests: XCTestCase {
         let package = checkoutsDirectory/"swift-package-manager"
         XCTAssertEqual(try libraryNames(for: package), ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
     }
+
+    func test_parse_multiple_urls() throws {
+        var args = ["-u", "https://github.com/mxcl/Path.swift.git", "https://github.com/hartbit/Yaap.git"]
+        let cmd = SPMPlaygroundCommand()
+        let res = try cmd.parse(arguments: &args)
+        XCTAssert(res)
+        XCTAssertEqual(cmd.pkgURLs, ["https://github.com/mxcl/Path.swift.git", "https://github.com/hartbit/Yaap.git"])
+    }
+
 }
 
 

@@ -20,10 +20,7 @@ public class SPMPlaygroundCommand {
     var projectName = "SPM-Playground"
 
     @Option(name: "url", shorthand: "u", documentation: "package url")
-    var pkgURL: String? = nil
-
-    @Option(name: "from", shorthand: "f", documentation: "from revision")
-    var pkgFrom: String = "0.0.0"
+    var pkgURLs = [String]()
 
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
     var libName: String? = nil
@@ -60,14 +57,16 @@ public class SPMPlaygroundCommand {
 
 extension SPMPlaygroundCommand: Command {
     public func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
-        guard let urlString = pkgURL else {
-            print("❌  <url> parameter required")
-            exit(1)
+        guard !pkgURLs.isEmpty else {
+            print("❌  provide at least one <url> parameter")
+            exit(EXIT_FAILURE)
         }
 
-        guard let url = URL(string: urlString) else {
-            print("❌  invalid url: '\(urlString)'")
-            exit(1)
+        pkgURLs.forEach { urlString in
+            guard URL(string: urlString) != nil else {
+                print("❌  invalid url: '\(urlString)'")
+                exit(EXIT_FAILURE)
+            }
         }
 
 
@@ -89,7 +88,10 @@ extension SPMPlaygroundCommand: Command {
         do {
             let packagePath = projectPath()/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let updatedDeps = "package.dependencies = [.package(url: \"\(url)\", from: \"\(pkgFrom)\")]"
+            let depsClause = pkgURLs.map {
+                "  .package(url: \"\($0)\", from: \"0.0.0\")"
+            }.joined(separator: ",\n")
+            let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
             try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
         }
 
@@ -102,9 +104,10 @@ extension SPMPlaygroundCommand: Command {
         do {
             // find libraries
             let checkoutsDir = projectPath()/".build/checkouts"
+            let basenames = pkgURLs.map(URL.init(string:)).map { $0?.lastPathComponent(dropExtension: "git") }
             libs = try checkoutsDir.ls()
                 .filter { $0.kind == .directory }
-                .filter { $0.path.basename() == url.lastPathComponent(dropExtension: "git") }
+                .filter { basenames.contains($0.path.basename()) }
                 .flatMap { try libraryNames(for: $0.path) }
                 .sorted()
             assert(libs.count > 0, "❌  no libraries found!")
