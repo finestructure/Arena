@@ -22,6 +22,9 @@ public class SPMPlaygroundCommand {
     @Option(name: "url", shorthand: "u", documentation: "package url")
     var pkgURLs = [String]()
 
+    @Option(name: "from", shorthand: "f", documentation: "from revisions, matching the list of urls (padded with 0.0.0 if shorter)")
+    var pkgFrom = [String]()
+
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
     var libName: String? = nil
 
@@ -88,8 +91,9 @@ extension SPMPlaygroundCommand: Command {
         do {
             let packagePath = projectPath()/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let depsClause = pkgURLs.map {
-                "  .package(url: \"\($0)\", from: \"0.0.0\")"
+            let urlVersions = zip(pkgURLs, (0...).lazy.map { self.pkgFrom[safe: $0] ?? "0.0.0" })
+            let depsClause = urlVersions.map {
+                "  .package(url: \"\($0)\", from: \"\($1)\")"
             }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
             try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
