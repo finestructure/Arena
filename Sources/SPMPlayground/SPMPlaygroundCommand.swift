@@ -65,18 +65,10 @@ public class SPMPlaygroundCommand {
 
 extension SPMPlaygroundCommand: Command {
     public func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
-        guard !pkgURLs.isEmpty else {
-            print("❌  provide at least one <url> parameter")
+        guard !dependencies.isEmpty else {
+            print("❌  provide at least one <dependency>")
             exit(EXIT_FAILURE)
         }
-
-        pkgURLs.forEach { urlString in
-            guard URL(string: urlString) != nil else {
-                print("❌  invalid url: '\(urlString)'")
-                exit(EXIT_FAILURE)
-            }
-        }
-
 
         if force && projectPath().exists {
             try projectPath().delete()
@@ -96,9 +88,8 @@ extension SPMPlaygroundCommand: Command {
         do {
             let packagePath = projectPath()/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let urlVersions = zip(pkgURLs, (0...).lazy.map { self.pkgFrom[safe: $0] ?? "0.0.0" })
-            let depsClause = urlVersions.map {
-                "  .package(url: \"\($0)\", from: \"\($1)\")"
+            let depsClause = dependencies.map { dep in
+                "  .package(url: \"\(dep.url.absoluteString)\", \(dep.requirement.dependencyClause))"
             }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
             try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
@@ -113,7 +104,7 @@ extension SPMPlaygroundCommand: Command {
         do {
             // find libraries
             let checkoutsDir = projectPath()/".build/checkouts"
-            let basenames = pkgURLs.map(URL.init(string:)).map { $0?.lastPathComponent(dropExtension: "git") }
+            let basenames = dependencies.map { $0.url }.map { $0?.lastPathComponent(dropExtension: "git") }
             libs = try checkoutsDir.ls()
                 .filter { $0.kind == .directory }
                 .filter { basenames.contains($0.path.basename()) }

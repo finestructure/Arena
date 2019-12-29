@@ -9,8 +9,6 @@ import Foundation
 import PackageModel
 
 
-typealias Requirement = PackageDependencyDescription.Requirement
-
 let DefaultRequirement = Requirement.upToNextMajor(from: Version(0, 0, 0))
 
 

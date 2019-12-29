@@ -20,29 +20,7 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(try libraryNames(for: package), ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
     }
 
-    func test_parse_multiple_urls() throws {
-        do {
-            var args = ["-u", "https://github.com/mxcl/Path.swift.git", "https://github.com/hartbit/Yaap.git"]
-            let cmd = SPMPlaygroundCommand()
-            let res = try cmd.parse(arguments: &args)
-            XCTAssert(res)
-            XCTAssertEqual(cmd.pkgURLs, ["https://github.com/mxcl/Path.swift.git", "https://github.com/hartbit/Yaap.git"])
-            XCTAssertEqual(cmd.pkgFrom, [])
-        }
-        do {
-            var args = [
-                "-u", "https://github.com/mxcl/Path.swift.git", "https://github.com/hartbit/Yaap.git",
-                "-f", "0.0.0", "1.0.0"
-            ]
-            let cmd = SPMPlaygroundCommand()
-            let res = try cmd.parse(arguments: &args)
-            XCTAssert(res)
-            XCTAssertEqual(cmd.pkgURLs, ["https://github.com/mxcl/Path.swift.git", "https://github.com/hartbit/Yaap.git"])
-            XCTAssertEqual(cmd.pkgFrom, ["0.0.0", "1.0.0"])
-        }
-    }
-
-    func test_parse_multiple_urls_and_deps() throws {
+    func test_parse_multiple_deps() throws {
         do {
             var args = ["-d", "https://github.com/mxcl/Path.swift.git==1.2.3", "https://github.com/hartbit/Yaap.git>=1.0.0"]
             let cmd = SPMPlaygroundCommand()
