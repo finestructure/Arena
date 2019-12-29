@@ -14,20 +14,6 @@ typealias Requirement = PackageDependencyDescription.Requirement
 let DefaultRequirement = Requirement.upToNextMajor(from: Version(0, 0, 0))
 
 
-struct Dependency {
-    let url: Foundation.URL
-    let requirement: Requirement
-}
-
-
-public let int = Parser<Int> { str in
-  let prefix = str.prefix(while: { $0.isNumber })
-  let match = Int(prefix)
-  str.removeFirst(prefix.count)
-  return match
-}
-
-
 extension Parser where A == Version {
     static var version: Parser<Version> {
         zip(int, literal("."), int, literal("."), int).map { major, _, minor, _, patch in

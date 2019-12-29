@@ -42,6 +42,14 @@ public struct Parser<A> {
 }
 
 
+public let int = Parser<Int> { str in
+  let prefix = str.prefix(while: { $0.isNumber })
+  let match = Int(prefix)
+  str.removeFirst(prefix.count)
+  return match
+}
+
+
 public func literal(_ p: String) -> Parser<Void> {
   return Parser<Void> { str in
     guard str.hasPrefix(p) else { return nil }

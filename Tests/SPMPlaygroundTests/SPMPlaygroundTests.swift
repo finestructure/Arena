@@ -42,6 +42,20 @@ final class SPMPlaygroundTests: XCTestCase {
         }
     }
 
+    func test_parse_multiple_urls_and_deps() throws {
+        do {
+            var args = ["-d", "https://github.com/mxcl/Path.swift.git==1.2.3", "https://github.com/hartbit/Yaap.git>=1.0.0"]
+            let cmd = SPMPlaygroundCommand()
+            let res = try cmd.parse(arguments: &args)
+            XCTAssert(res)
+            XCTAssertEqual(cmd.dependencies, [
+                Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
+                Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .range("1.0.0"..<"2.0.0"))
+            ])
+        }
+    }
+
+
     func test_parse_version() throws {
         do {
             let res = Parser.version.run("1.2.3")
