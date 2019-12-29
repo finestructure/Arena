@@ -64,28 +64,28 @@ final class SPMPlaygroundTests: XCTestCase {
 
     func test_parse_requirement() throws {
         do {
-            let res = exact.run("==1.2.3")
+            let res = Parser.exact.run("==1.2.3")
             XCTAssertEqual(res.match, .exact("1.2.3"))
             XCTAssertEqual(res.rest, "")
         }
         do {
-            let res = upToNextMajor.run(">=1.2.3")
+            let res = Parser.upToNextMajor.run(">=1.2.3")
             XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "")
         }
         do {
-            let res = range.run(">=1.2.3<3.2.1")
+            let res = Parser.range.run(">=1.2.3<3.2.1")
             XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.1"))
             XCTAssertEqual(res.rest, "")
         }
         do {
-            let res = upToNextMajor.run(">=1.2.3<4.0.0")
+            let res = Parser.upToNextMajor.run(">=1.2.3<4.0.0")
             XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "<4.0.0")
         }
     }
 
-    func test_parse_version_details() throws {
+    func _test_parse_version_details() throws {
         // https://github.com/foo/bar==1.2.3        .exact("1.2.3")
         // https://github.com/foo/bar>=1.2.3        .upToNextMajor(from: "1.2.3")
         // https://github.com/foo/bar>=1.2.3<2.0.0  .range("1.2.3"..<"2.0.0"_
@@ -128,40 +128,44 @@ public let int = Parser<Int> { str in
   return match
 }
 
-let version = zip(int, literal("."), int, literal("."), int).map { major, _, minor, _, patch in
-    Version(major, minor, patch)
-}
-//let version = Parser<Version> { str in
-//    if let v = Version(string: String(str)) {
-//        str = ""
-//        return v
-//    }
-//    return nil
-//}
 
 extension Parser where A == Version {
-    public static var version: Parser<Version> {
+    static var version: Parser<Version> {
         zip(int, literal("."), int, literal("."), int).map { major, _, minor, _, patch in
             Version(major, minor, patch)
         }
     }
 }
 
-let exact = zip(literal("=="), Parser.version).map { _, version in
-    Requirement.exact(version)
-}
-let upToNextMajor = zip(literal(">="), Parser.version).map { _, version in
-    Requirement.upToNextMajor(from: version)
-}
-let range = zip(literal(">="), version, literal("<"), version).map { _, minVersion, _, maxVersion in
-    Requirement.range(minVersion..<maxVersion)
+extension Parser where A == Requirement {
+    static var exact: Parser<Requirement> {
+        zip(literal("=="), .version).map { _, version in
+            Requirement.exact(version)
+        }
+    }
+
+    static var upToNextMajor: Parser<Requirement> {
+        zip(literal(">="), .version).map { _, version in
+            Requirement.upToNextMajor(from: version)
+        }
+    }
+
+    static var range: Parser<Requirement> {
+        zip(literal(">="), .version, literal("<"), .version)
+            .map { _, minVersion, _, maxVersion in
+                Requirement.range(minVersion..<maxVersion)
+        }
+    }
+
+    static var noVersion: Parser<Requirement> {
+        return Parser { str in
+            return str.isEmpty ? defaultReq : nil
+        }
+    }
 }
 
 let defaultReq = Requirement.upToNextMajor(from: Version(0, 0, 0))
 
-let noVersion = Parser<Requirement> { str in
-    return str.isEmpty ? defaultReq : nil
-}
 
 func parse(req: String) throws -> (url: Foundation.URL, requirement: Requirement) {
     let parts = req.components(separatedBy: "==")
