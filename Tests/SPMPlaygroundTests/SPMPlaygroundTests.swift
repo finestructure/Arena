@@ -1,14 +1,8 @@
-import XCTest
-import class Foundation.Bundle
-import PackageLoading
-import Workspace
-import Path
 @testable import SPMPlayground
 import PackageModel
-import PackageLoading
-import SPMUtility
-
-
+import Path
+import Workspace
+import XCTest
 
 
 final class SPMPlaygroundTests: XCTestCase {
@@ -138,34 +132,6 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(res.rest, "")
         }
     }
-
-    func _test_parse_version_details() throws {
-        // https://github.com/foo/bar==1.2.3        .exact("1.2.3")
-        // https://github.com/foo/bar>=1.2.3        .upToNextMajor(from: "1.2.3")
-        // https://github.com/foo/bar>=1.2.3<2.0.0  .range("1.2.3"..<"2.0.0"_
-        do {
-            let res = try parse(req: "https://github.com/foo/bar")
-            XCTAssertEqual(res.url.absoluteString, "https://github.com/foo/bar")
-            XCTAssertEqual(res.requirement, .range("0.0.0"..<"1.0.0"))
-        }
-        do {
-            let res = try parse(req: "https://github.com/foo/bar==1.2.3")
-            XCTAssertEqual(res.url.absoluteString, "https://github.com/foo/bar")
-            XCTAssertEqual(res.requirement, .exact("1.2.3"))
-        }
-        do {
-            let res = try parse(req: "https://github.com/foo/bar>=1.2.3")
-            XCTAssertEqual(res.url.absoluteString, "https://github.com/foo/bar")
-            XCTAssertEqual(res.requirement, .range("1.2.3"..<"2.0.0"))
-        }
-    }
-}
-
-enum ParseError: Error {
-    case NoURL
-    case InvalidURL
-    case InvalidRequirement
-    case InvalidVersion
 }
 
 
@@ -249,22 +215,6 @@ extension Parser where A == Dependency {
 
 
 let defaultReq = Requirement.upToNextMajor(from: Version(0, 0, 0))
-
-
-func parse(req: String) throws -> (url: Foundation.URL, requirement: Requirement) {
-    let parts = req.components(separatedBy: "==")
-    guard let urlString = parts.first else { throw ParseError.NoURL }
-    guard let url = URL(string: urlString) else { throw ParseError.InvalidURL }
-    let remainder = parts.dropFirst()
-    guard remainder.count <= 1 else { throw ParseError.InvalidRequirement }
-
-    if let s = remainder.first {
-        guard let version = Version(string: s) else { throw ParseError.InvalidVersion }
-        return (url, .exact(version))
-    } else {
-        return (url, .upToNextMajor(from: "0.0.0"))
-    }
-}
 
 
 extension XCTestCase {
