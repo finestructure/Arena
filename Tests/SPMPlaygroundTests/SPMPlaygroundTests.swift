@@ -83,6 +83,60 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "<4.0.0")
         }
+        do {  // combined
+            do {
+                let res = Parser.requirement.run("")
+                XCTAssertEqual(res.match, .range("0.0.0"..<"1.0.0"))
+                XCTAssertEqual(res.rest, "")
+            }
+            do {
+                let res = Parser.requirement.run("==1.2.3")
+                XCTAssertEqual(res.match, .exact("1.2.3"))
+                XCTAssertEqual(res.rest, "")
+            }
+            do {
+                let res = Parser.requirement.run(">=1.2.3")
+                XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
+                XCTAssertEqual(res.rest, "")
+            }
+            do {
+                let res = Parser.requirement.run(">=1.2.3<3.0.0")
+                XCTAssertEqual(res.match, .range("1.2.3"..<"3.0.0"))
+                XCTAssertEqual(res.rest, "")
+            }
+        }
+    }
+
+    func test_parse_url() throws {
+        do {
+            let res = Parser.url.run("https://github.com/foo/bar")
+            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.rest, "")
+        }
+        do {
+            let res = Parser.url.run("https://github.com/foo/bar==1.2.3")
+            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.rest, "==1.2.3")
+        }
+        do {
+            let res = Parser.url.run("https://github.com/foo/bar>=1.2.3")
+            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.rest, ">=1.2.3")
+        }
+        do {
+            let res = Parser.url.run("https://github.com/foo/bar>=1.2.3<3.0.0")
+            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.rest, ">=1.2.3<3.0.0")
+        }
+    }
+
+    func test_parse_dependency() throws {
+        do {
+            let res = Parser.dependency.run("https://github.com/foo/bar")
+            XCTAssertEqual(res.match?.url, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.match?.requirement, .range("0.0.0"..<"1.0.0"))
+            XCTAssertEqual(res.rest, "")
+        }
     }
 
     func _test_parse_version_details() throws {
@@ -114,12 +168,15 @@ enum ParseError: Error {
     case InvalidVersion
 }
 
-struct Dep {
-    let url: Foundation.URL
-    let req: PackageDependencyDescription.Requirement
-}
 
 typealias Requirement = PackageDependencyDescription.Requirement
+
+
+struct Dependency {
+    let url: Foundation.URL
+    let requirement: Requirement
+}
+
 
 public let int = Parser<Int> { str in
   let prefix = str.prefix(while: { $0.isNumber })
@@ -162,7 +219,34 @@ extension Parser where A == Requirement {
             return str.isEmpty ? defaultReq : nil
         }
     }
+
+    static var requirement: Parser<Requirement> {
+        oneOf([.noVersion, .exact, .range, .upToNextMajor])
+    }
 }
+
+
+extension Parser where A == Foundation.URL {
+    static var url: Parser<Foundation.URL> {
+        shortestOf([prefix(upTo: "=="), prefix(upTo: ">=")])
+            .map(String.init)
+            .flatMap {
+                if let url = URL(string: $0) {
+                    return always(url)
+                } else {
+                    return Parser<Foundation.URL>.never
+                }
+        }
+    }
+}
+
+
+extension Parser where A == Dependency {
+    static var dependency: Parser<Dependency> {
+        zip(.url, .requirement).map { Dependency(url: $0.0, requirement: $0.1) }
+    }
+}
+
 
 let defaultReq = Requirement.upToNextMajor(from: Version(0, 0, 0))
 

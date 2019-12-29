@@ -21,6 +21,19 @@ public struct Parser<A> {
       }
     }
 
+    public func flatMap<B>(_ f: @escaping (A) -> Parser<B>) -> Parser<B> {
+        return Parser<B> { str -> B? in
+            let original = str
+            let matchA = self.run(&str)
+            let parserB = matchA.map(f)
+            guard let matchB = parserB?.run(&str) else {
+                str = original
+                return nil
+            }
+            return matchB
+        }
+    }
+
     public func run(_ str: String) -> (match: A?, rest: Substring) {
       var str = str[...]
       let match = self.run(&str)
@@ -37,6 +50,15 @@ public func literal(_ p: String) -> Parser<Void> {
   }
 }
 
+public func always<A>(_ a: A) -> Parser<A> {
+    return Parser<A> { _ in a }
+}
+
+extension Parser {
+    public static var never: Parser {
+        return Parser { _ in nil }
+    }
+}
 
 public func zip<A, B>(_ a: Parser<A>, _ b: Parser<B>) -> Parser<(A, B)> {
   return Parser<(A, B)> { str -> (A, B)? in
@@ -80,5 +102,51 @@ public func zip<A, B, C, D, E>(
 
   return zip(a, zip(b, c, d, e))
     .map { a, bcde in (a, bcde.0, bcde.1, bcde.2, bcde.3) }
+}
+
+
+public func oneOf<A>(
+  _ ps: [Parser<A>]
+  ) -> Parser<A> {
+  return Parser<A> { str -> A? in
+    for p in ps {
+      if let match = p.run(&str) {
+        return match
+      }
+    }
+    return nil
+  }
+}
+
+
+public func prefix(upTo p: String) -> Parser<Substring> {
+  return Parser<Substring> { str in
+    guard let range = str.range(of: p) else {
+        let match = str[...]
+        str = ""
+        return match
+    }
+    let match = str[..<range.lowerBound]
+    str = str[range.lowerBound...]
+    return match
+  }
+}
+
+
+public func shortestOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
+    return Parser<A> { str -> A? in
+        var shortest: A? = nil
+        var longestRestLength = -1
+        for p in ps {
+            var orig = str
+            let m = p.run(&orig)
+            if orig.count > longestRestLength {
+                longestRestLength = orig.count
+                shortest = m
+            }
+        }
+        str.removeFirst(str.count - longestRestLength)
+        return shortest
+    }
 }
 
