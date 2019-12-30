@@ -33,115 +33,63 @@ final class SPMPlaygroundTests: XCTestCase {
         }
     }
 
-
     func test_parse_version() throws {
-        do {
-            let res = Parser.version.run("1.2.3")
-            XCTAssertEqual(res.match, Version(1, 2, 3))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.version.run("1.2.3=")
-            XCTAssertEqual(res.match, Version(1, 2, 3))
-            XCTAssertEqual(res.rest, "=")
-        }
+        XCTAssertEqual(Parser.version.run("1.2.3"), Match(result: Version(1, 2, 3), rest: ""))
+        XCTAssertEqual(Parser.version.run("1.2.3="), Match(result: Version(1, 2, 3), rest: "="))
     }
 
     func test_parse_requirement() throws {
-        do {
-            let res = Parser.exact.run("==1.2.3")
-            XCTAssertEqual(res.match, .exact("1.2.3"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.exact.run("@1.2.3")
-            XCTAssertEqual(res.match, .exact("1.2.3"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.upToNextMajor.run(">=1.2.3")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.upToNextMajor.run("@from:1.2.3")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.range.run(">=1.2.3<3.2.1")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.1"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.range.run("@1.2.3..<3.2.1")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.1"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.range.run("@1.2.3...3.2.1")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.2"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {  // test partial matching
-            let res = Parser.upToNextMajor.run(">=1.2.3<4.0.0")
-            XCTAssertNil(res.match)
-            XCTAssertEqual(res.rest, ">=1.2.3<4.0.0")
-        }
+        XCTAssertEqual(Parser.exact.run("==1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
+        XCTAssertEqual(Parser.exact.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
+
+        XCTAssertEqual(Parser.upToNextMajor.run(">=1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
+        XCTAssertEqual(Parser.upToNextMajor.run("@from:1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
+
+        XCTAssertEqual(Parser.range.run(">=1.2.3<3.2.1"), Match(result: .range("1.2.3"..<"3.2.1"), rest: ""))
+        XCTAssertEqual(Parser.range.run("@1.2.3..<3.2.1"), Match(result: .range("1.2.3"..<"3.2.1"), rest: ""))
+        XCTAssertEqual(Parser.range.run("@1.2.3...3.2.1"), Match(result: .range("1.2.3"..<"3.2.2"), rest: ""))
+
+        // test partial matching (expected to fail)
+        XCTAssertEqual(Parser.upToNextMajor.run(">=1.2.3<4.0.0"), Match(result: nil, rest: ">=1.2.3<4.0.0"))
+        XCTAssertEqual(Parser.upToNextMajor.run("@from:1.2.3..<4.0.0"), Match(result: nil, rest: "@from:1.2.3..<4.0.0"))
+
         do {  // combined
-            do {
-                let res = Parser.requirement.run("")
-                XCTAssertEqual(res.match, .range("0.0.0"..<"1.0.0"))
-                XCTAssertEqual(res.rest, "")
-            }
-            do {
-                let res = Parser.requirement.run("==1.2.3")
-                XCTAssertEqual(res.match, .exact("1.2.3"))
-                XCTAssertEqual(res.rest, "")
-            }
-            do {
-                let res = Parser.requirement.run(">=1.2.3")
-                XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
-                XCTAssertEqual(res.rest, "")
-            }
-            do {
-                let res = Parser.requirement.run(">=1.2.3<3.0.0")
-                XCTAssertEqual(res.match, .range("1.2.3"..<"3.0.0"))
-                XCTAssertEqual(res.rest, "")
-            }
+            XCTAssertEqual(Parser.requirement.run(""), Match(result: .range("0.0.0"..<"1.0.0"), rest: ""))
+            XCTAssertEqual(Parser.requirement.run("==1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
+            XCTAssertEqual(Parser.requirement.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
+            XCTAssertEqual(Parser.requirement.run(">=1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
+            XCTAssertEqual(Parser.requirement.run("@from:1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
+            XCTAssertEqual(Parser.requirement.run(">=1.2.3<3.0.0"), Match(result: .range("1.2.3"..<"3.0.0"), rest: ""))
+            XCTAssertEqual(Parser.requirement.run("@1.2.3..<3.0.0"), Match(result: .range("1.2.3"..<"3.0.0"), rest: ""))
         }
     }
 
     func test_parse_url() throws {
-        do {
-            let res = Parser.url.run("https://github.com/foo/bar")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
-            XCTAssertEqual(res.rest, "")
-        }
-        do {
-            let res = Parser.url.run("https://github.com/foo/bar==1.2.3")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
-            XCTAssertEqual(res.rest, "==1.2.3")
-        }
-        do {
-            let res = Parser.url.run("https://github.com/foo/bar>=1.2.3")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
-            XCTAssertEqual(res.rest, ">=1.2.3")
-        }
-        do {
-            let res = Parser.url.run("https://github.com/foo/bar>=1.2.3<3.0.0")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
-            XCTAssertEqual(res.rest, ">=1.2.3<3.0.0")
-        }
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ""))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar==1.2.3"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "==1.2.3"))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar>=1.2.3"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ">=1.2.3"))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar>=1.2.3<3.0.0"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ">=1.2.3<3.0.0"))
+
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ""))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@1.2.3"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@1.2.3"))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@from:1.2.3"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@from:1.2.3"))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@1.2.3..<3.0.0"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@1.2.3..<3.0.0"))
     }
 
     func test_parse_dependency() throws {
-        do {
-            let res = Parser.dependency.run("https://github.com/foo/bar")
-            XCTAssertEqual(res.match?.url, URL(string: "https://github.com/foo/bar"))
-            XCTAssertEqual(res.match?.requirement, .range("0.0.0"..<"1.0.0"))
-            XCTAssertEqual(res.rest, "")
-        }
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .range("0.0.0"..<"1.0.0")),
+                             rest: ""))
+        // TODO: more high level matches
     }
 
     func test_dependency_package_clause() throws {
