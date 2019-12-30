@@ -16,6 +16,10 @@ typealias Requirement = PackageDependencyDescription.Requirement
 public struct Dependency: Equatable {
     let url: URL
     let requirement: Requirement
+
+    var packageClause: String {
+        ".package(url: \"\(url.absoluteString)\", \(requirement.dependencyClause))"
+    }
 }
 
 

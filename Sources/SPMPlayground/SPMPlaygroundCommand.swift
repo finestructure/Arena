@@ -88,9 +88,7 @@ extension SPMPlaygroundCommand: Command {
         do {
             let packagePath = projectPath()/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let depsClause = dependencies.map { dep in
-                "  .package(url: \"\(dep.url.absoluteString)\", \(dep.requirement.dependencyClause))"
-            }.joined(separator: ",\n")
+            let depsClause = dependencies.map { "    " + $0.packageClause }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
             try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
         }
