@@ -56,9 +56,7 @@ extension Parser where A == Requirement {
     }
 
     static var noVersion: Parser<Requirement> {
-        return Parser { str in
-            return str.isEmpty ? DefaultRequirement : nil
-        }
+        Parser<Void>.end.map { DefaultRequirement }
     }
 
     static var requirement: Parser<Requirement> {
