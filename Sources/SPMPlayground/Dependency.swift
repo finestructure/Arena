@@ -36,9 +36,9 @@ extension Dependency: ArgumentType {
             throw ParseError.missingArgument
         }
 
-        let res = Parser.dependency.run(argument)
+        let m = Parser.dependency.run(argument)
 
-        guard let dep = res.match, res.rest.isEmpty else {
+        guard let dep = m.result, m.rest.isEmpty else {
             throw ParseError.invalidFormat(argument)
         }
 

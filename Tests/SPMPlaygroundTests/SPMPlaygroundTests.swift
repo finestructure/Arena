@@ -37,12 +37,12 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_version() throws {
         do {
             let res = Parser.version.run("1.2.3")
-            XCTAssertEqual(res.match, Version(1, 2, 3))
+            XCTAssertEqual(res.result, Version(1, 2, 3))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.version.run("1.2.3=")
-            XCTAssertEqual(res.match, Version(1, 2, 3))
+            XCTAssertEqual(res.result, Version(1, 2, 3))
             XCTAssertEqual(res.rest, "=")
         }
     }
@@ -50,63 +50,63 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_requirement() throws {
         do {
             let res = Parser.exact.run("==1.2.3")
-            XCTAssertEqual(res.match, .exact("1.2.3"))
+            XCTAssertEqual(res.result, .exact("1.2.3"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.exact.run("@1.2.3")
-            XCTAssertEqual(res.match, .exact("1.2.3"))
+            XCTAssertEqual(res.result, .exact("1.2.3"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.upToNextMajor.run(">=1.2.3")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
+            XCTAssertEqual(res.result, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.upToNextMajor.run("@from:1.2.3")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
+            XCTAssertEqual(res.result, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.range.run(">=1.2.3<3.2.1")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.1"))
+            XCTAssertEqual(res.result, .range("1.2.3"..<"3.2.1"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.range.run("@1.2.3..<3.2.1")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.1"))
+            XCTAssertEqual(res.result, .range("1.2.3"..<"3.2.1"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.range.run("@1.2.3...3.2.1")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.2"))
+            XCTAssertEqual(res.result, .range("1.2.3"..<"3.2.2"))
             XCTAssertEqual(res.rest, "")
         }
         do {  // test partial matching
             let res = Parser.upToNextMajor.run(">=1.2.3<4.0.0")
-            XCTAssertNil(res.match)
+            XCTAssertNil(res.result)
             XCTAssertEqual(res.rest, ">=1.2.3<4.0.0")
         }
         do {  // combined
             do {
                 let res = Parser.requirement.run("")
-                XCTAssertEqual(res.match, .range("0.0.0"..<"1.0.0"))
+                XCTAssertEqual(res.result, .range("0.0.0"..<"1.0.0"))
                 XCTAssertEqual(res.rest, "")
             }
             do {
                 let res = Parser.requirement.run("==1.2.3")
-                XCTAssertEqual(res.match, .exact("1.2.3"))
+                XCTAssertEqual(res.result, .exact("1.2.3"))
                 XCTAssertEqual(res.rest, "")
             }
             do {
                 let res = Parser.requirement.run(">=1.2.3")
-                XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
+                XCTAssertEqual(res.result, .range("1.2.3"..<"2.0.0"))
                 XCTAssertEqual(res.rest, "")
             }
             do {
                 let res = Parser.requirement.run(">=1.2.3<3.0.0")
-                XCTAssertEqual(res.match, .range("1.2.3"..<"3.0.0"))
+                XCTAssertEqual(res.result, .range("1.2.3"..<"3.0.0"))
                 XCTAssertEqual(res.rest, "")
             }
         }
@@ -115,22 +115,22 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_url() throws {
         do {
             let res = Parser.url.run("https://github.com/foo/bar")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.result, URL(string: "https://github.com/foo/bar"))
             XCTAssertEqual(res.rest, "")
         }
         do {
             let res = Parser.url.run("https://github.com/foo/bar==1.2.3")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.result, URL(string: "https://github.com/foo/bar"))
             XCTAssertEqual(res.rest, "==1.2.3")
         }
         do {
             let res = Parser.url.run("https://github.com/foo/bar>=1.2.3")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.result, URL(string: "https://github.com/foo/bar"))
             XCTAssertEqual(res.rest, ">=1.2.3")
         }
         do {
             let res = Parser.url.run("https://github.com/foo/bar>=1.2.3<3.0.0")
-            XCTAssertEqual(res.match, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.result, URL(string: "https://github.com/foo/bar"))
             XCTAssertEqual(res.rest, ">=1.2.3<3.0.0")
         }
     }
@@ -138,8 +138,8 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_dependency() throws {
         do {
             let res = Parser.dependency.run("https://github.com/foo/bar")
-            XCTAssertEqual(res.match?.url, URL(string: "https://github.com/foo/bar"))
-            XCTAssertEqual(res.match?.requirement, .range("0.0.0"..<"1.0.0"))
+            XCTAssertEqual(res.result?.url, URL(string: "https://github.com/foo/bar"))
+            XCTAssertEqual(res.result?.requirement, .range("0.0.0"..<"1.0.0"))
             XCTAssertEqual(res.rest, "")
         }
     }

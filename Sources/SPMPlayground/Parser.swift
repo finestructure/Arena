@@ -8,6 +8,12 @@
 import Foundation
 
 
+public struct Match<A> {
+    let result: A?
+    let rest: Substring
+}
+
+
 public struct Parser<A> {
     public let run: (inout Substring) -> A?
 
@@ -34,10 +40,10 @@ public struct Parser<A> {
         }
     }
 
-    public func run(_ str: String) -> (match: A?, rest: Substring) {
+    public func run(_ str: String) -> Match<A> {
       var str = str[...]
-      let match = self.run(&str)
-      return (match, str)
+      let res = self.run(&str)
+      return Match(result: res, rest: str)
     }
 
     public static var end: Parser<Void> {
