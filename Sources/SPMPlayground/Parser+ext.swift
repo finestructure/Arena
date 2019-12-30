@@ -67,7 +67,7 @@ extension Parser where A == Requirement {
 
 extension Parser where A == Foundation.URL {
     static var url: Parser<Foundation.URL> {
-        shortestOf([prefix(upTo: "=="), prefix(upTo: ">=")])
+        shortestOf([prefix(upTo: "=="), prefix(upTo: ">="), prefix(upTo: "@")])
             .map(String.init)
             .flatMap {
                 if let url = URL(string: $0) {
