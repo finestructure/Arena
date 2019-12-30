@@ -58,6 +58,16 @@ public func literal(_ p: String) -> Parser<Void> {
   }
 }
 
+
+public func string(_ p: String) -> Parser<String> {
+  return Parser<String> { str in
+    guard str.hasPrefix(p) else { return nil }
+    str.removeFirst(p.count)
+    return p
+  }
+}
+
+
 public func always<A>(_ a: A) -> Parser<A> {
     return Parser<A> { _ in a }
 }

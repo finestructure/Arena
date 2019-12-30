@@ -54,7 +54,17 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(res.rest, "")
         }
         do {
+            let res = Parser.exact.run("@1.2.3")
+            XCTAssertEqual(res.match, .exact("1.2.3"))
+            XCTAssertEqual(res.rest, "")
+        }
+        do {
             let res = Parser.upToNextMajor.run(">=1.2.3")
+            XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
+            XCTAssertEqual(res.rest, "")
+        }
+        do {
+            let res = Parser.upToNextMajor.run("@from:1.2.3")
             XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "")
         }
@@ -64,6 +74,16 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(res.rest, "")
         }
         do {
+            let res = Parser.range.run("@1.2.3..<3.2.1")
+            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.1"))
+            XCTAssertEqual(res.rest, "")
+        }
+        do {
+            let res = Parser.range.run("@1.2.3...3.2.1")
+            XCTAssertEqual(res.match, .range("1.2.3"..<"3.2.2"))
+            XCTAssertEqual(res.rest, "")
+        }
+        do {  // test partial matching
             let res = Parser.upToNextMajor.run(">=1.2.3<4.0.0")
             XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
             XCTAssertEqual(res.rest, "<4.0.0")
