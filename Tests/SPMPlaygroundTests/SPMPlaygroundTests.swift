@@ -85,13 +85,33 @@ final class SPMPlaygroundTests: XCTestCase {
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .range("0.0.0"..<"1.0.0")),
                              rest: ""))
-        // TODO: more high level matches
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .exact("1.2.3")),
+                             rest: ""))
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .range("1.2.3"..<"2.0.0")),
+                             rest: ""))
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3..<4.0.0"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .range("1.2.3"..<"4.0.0")),
+                             rest: ""))
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3...4.0.0"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .range("1.2.3"..<"4.0.1")),
+                             rest: ""))
+    }
 
-        // edge cases
+    func test_parse_dependency_errors() throws {
         // unparsable trailing characters
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3trailingjunk"),
                        Match(result: nil,
                              rest: "https://github.com/foo/bar@from:1.2.3trailingjunk"))
+        // invalid version
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3..<2.0.0"),
+                       Match(result: nil,
+                             rest: "https://github.com/foo/bar@from:1.2.3..<2.0.0"))
     }
 
     func test_dependency_package_clause() throws {
