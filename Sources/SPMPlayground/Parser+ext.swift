@@ -61,10 +61,7 @@ extension Parser where A == Requirement {
 
     static var requirement: Parser<Requirement> {
         // append ".end" to all requirement parsers to ensure they are exhaustive
-        let reqs = [.noVersion, .exact, .range, .upToNextMajor].map {
-            zip($0, .end).flatMap { req, _ in always(req) }
-        }
-        return oneOf(reqs)
+        oneOf([.noVersion, .exact, .range, .upToNextMajor].map(appendEnd))
     }
 }
 

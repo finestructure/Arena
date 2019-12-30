@@ -52,6 +52,10 @@ public struct Parser<A> {
     public static var end: Parser<Void> {
         Parser<Void> { $0.isEmpty ? () : nil }
     }
+
+    public static func appendEnd(_ p: Parser<A>) -> Parser<A> {
+        zip(p, .end).flatMap { a, _ in always(a) }
+    }
 }
 
 
