@@ -9,20 +9,19 @@ OVERVIEW: Creates an Xcode project with a Playground and an SPM library ready fo
 USAGE: spm-playground [options]
 
 OPTIONS:
+  --deps, -d        dependency url(s) and (optionally) version specification [default: []]
   --force           overwrite existing file/directory [default: false]
-  --from, -f        from revision [default: 0.0.0]
   --help, -h        Display available options [default: false]
   --library, -l     name of library to import (inferred if not provided) [default: nil]
   --name, -n        name of directory and Xcode project [default: SPM-Playground]
   --platform, -p    platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
-  --url, -u         package url [default: nil]
   --version, -v     Display tool version [default: false]
 ```
 
 ## Example
 
 ```
- ~  spm-playground -u https://github.com/johnsundell/plot
+ ~  spm-playground -d https://github.com/johnsundell/plot
 🔧  resolving package dependencies
 📔  libraries found: Plot
 ✅  created project in folder 'SPM-Playground'

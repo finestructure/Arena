@@ -19,16 +19,8 @@ public class SPMPlaygroundCommand {
     @Option(name: "name", shorthand: "n", documentation: "name of directory and Xcode project")
     var projectName = "SPM-Playground"
 
-    @Option(name: "deps", shorthand: "d", documentation: "package url")
+    @Option(name: "deps", shorthand: "d", documentation: "dependency url(s) and (optionally) version specification")
     var dependencies = [Dependency]()
-
-    @available(*, deprecated, message: "use '--deps' instead")
-    @Option(name: "url", shorthand: "u", documentation: "package url")
-    var pkgURLs = [String]()
-
-    @available(*, deprecated, message: "use '--deps' instead")
-    @Option(name: "from", shorthand: "f", documentation: "from revisions, matching the list of urls (padded with 0.0.0 if shorter)")
-    var pkgFrom = [String]()
 
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
     var libName: String? = nil
