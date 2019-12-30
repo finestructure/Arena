@@ -24,31 +24,31 @@ extension Parser where A == Version {
 extension Parser where A == Requirement {
     static var exact: Parser<Requirement> {
         oneOf([
-            zip(literal("=="), .version, .end),
-            zip(literal("@"), .version, .end)
+            zip(literal("=="), .version),
+            zip(literal("@"), .version)
         ])
-            .map { _, version, _ in
+            .map { _, version in
                 Requirement.exact(version)
         }
     }
 
     static var upToNextMajor: Parser<Requirement> {
         oneOf([
-            zip(literal(">="), .version, .end),
-            zip(literal("@from:"), .version, .end)
+            zip(literal(">="), .version),
+            zip(literal("@from:"), .version)
         ])
-            .map { _, version, _ in
+            .map { _, version in
                 Requirement.upToNextMajor(from: version)
         }
     }
 
     static var range: Parser<Requirement> {
         oneOf([
-            zip(literal(">="), .version, string("<"), .version, .end),
-            zip(literal("@"), .version, string("..<"), .version, .end),
-            zip(literal("@"), .version, string("..."), .version, .end)
+            zip(literal(">="), .version, string("<"), .version),
+            zip(literal("@"), .version, string("..<"), .version),
+            zip(literal("@"), .version, string("..."), .version)
         ])
-            .map { _, minVersion, rangeOp, maxVersion, _ in
+            .map { _, minVersion, rangeOp, maxVersion in
                 rangeOp == "..."
                     ? Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
                     : Requirement.range(minVersion..<maxVersion)
@@ -60,7 +60,11 @@ extension Parser where A == Requirement {
     }
 
     static var requirement: Parser<Requirement> {
-        oneOf([.noVersion, .exact, .range, .upToNextMajor])
+        // append ".end" to all requirement parsers to ensure they are exhaustive
+        let reqs = [.noVersion, .exact, .range, .upToNextMajor].map {
+            zip($0, .end).flatMap { req, _ in always(req) }
+        }
+        return oneOf(reqs)
     }
 }
 

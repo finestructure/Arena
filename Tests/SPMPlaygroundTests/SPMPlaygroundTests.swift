@@ -49,10 +49,6 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(Parser.range.run("@1.2.3..<3.2.1"), Match(result: .range("1.2.3"..<"3.2.1"), rest: ""))
         XCTAssertEqual(Parser.range.run("@1.2.3...3.2.1"), Match(result: .range("1.2.3"..<"3.2.2"), rest: ""))
 
-        // test partial matching (expected to fail)
-        XCTAssertEqual(Parser.upToNextMajor.run(">=1.2.3<4.0.0"), Match(result: nil, rest: ">=1.2.3<4.0.0"))
-        XCTAssertEqual(Parser.upToNextMajor.run("@from:1.2.3..<4.0.0"), Match(result: nil, rest: "@from:1.2.3..<4.0.0"))
-
         do {  // combined
             XCTAssertEqual(Parser.requirement.run(""), Match(result: .range("0.0.0"..<"1.0.0"), rest: ""))
             XCTAssertEqual(Parser.requirement.run("==1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
@@ -90,6 +86,12 @@ final class SPMPlaygroundTests: XCTestCase {
                                                 requirement: .range("0.0.0"..<"1.0.0")),
                              rest: ""))
         // TODO: more high level matches
+
+        // edge cases
+        // unparsable trailing characters
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3trailingjunk"),
+                       Match(result: nil,
+                             rest: "https://github.com/foo/bar@from:1.2.3trailingjunk"))
     }
 
     func test_dependency_package_clause() throws {
