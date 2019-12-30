@@ -14,6 +14,9 @@ public struct Match<A> {
 }
 
 
+extension Match: Equatable where A: Equatable {}
+
+
 public struct Parser<A> {
     public let run: (inout Substring) -> A?
 
@@ -132,6 +135,30 @@ public func zip<A, B, C, D, E>(
     .map { a, bcde in (a, bcde.0, bcde.1, bcde.2, bcde.3) }
 }
 
+public func zip<A, B, C, D, E, F>(
+  _ a: Parser<A>,
+  _ b: Parser<B>,
+  _ c: Parser<C>,
+  _ d: Parser<D>,
+  _ e: Parser<E>,
+  _ f: Parser<F>
+  ) -> Parser<(A, B, C, D, E, F)> {
+  return zip(a, zip(b, c, d, e, f))
+    .map { a, bcdef in (a, bcdef.0, bcdef.1, bcdef.2, bcdef.3, bcdef.4) }
+}
+
+public func zip<A, B, C, D, E, F, G>(
+  _ a: Parser<A>,
+  _ b: Parser<B>,
+  _ c: Parser<C>,
+  _ d: Parser<D>,
+  _ e: Parser<E>,
+  _ f: Parser<F>,
+  _ g: Parser<G>
+  ) -> Parser<(A, B, C, D, E, F, G)> {
+  return zip(a, zip(b, c, d, e, f, g))
+    .map { a, bcdefg in (a, bcdefg.0, bcdefg.1, bcdefg.2, bcdefg.3, bcdefg.4, bcdefg.5) }
+}
 
 public func oneOf<A>(
   _ ps: [Parser<A>]
