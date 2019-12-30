@@ -24,31 +24,31 @@ extension Parser where A == Version {
 extension Parser where A == Requirement {
     static var exact: Parser<Requirement> {
         oneOf([
-            zip(literal("=="), .version),
-            zip(literal("@"), .version)
+            zip(literal("=="), .version, .end),
+            zip(literal("@"), .version, .end)
         ])
-            .map { _, version in
+            .map { _, version, _ in
                 Requirement.exact(version)
         }
     }
 
     static var upToNextMajor: Parser<Requirement> {
         oneOf([
-            zip(literal(">="), .version),
-            zip(literal("@from:"), .version)
+            zip(literal(">="), .version, .end),
+            zip(literal("@from:"), .version, .end)
         ])
-            .map { _, version in
+            .map { _, version, _ in
                 Requirement.upToNextMajor(from: version)
         }
     }
 
     static var range: Parser<Requirement> {
         oneOf([
-            zip(literal(">="), .version, string("<"), .version),
-            zip(literal("@"), .version, string("..<"), .version),
-            zip(literal("@"), .version, string("..."), .version)
+            zip(literal(">="), .version, string("<"), .version, .end),
+            zip(literal("@"), .version, string("..<"), .version, .end),
+            zip(literal("@"), .version, string("..."), .version, .end)
         ])
-            .map { _, minVersion, rangeOp, maxVersion in
+            .map { _, minVersion, rangeOp, maxVersion, _ in
                 rangeOp == "..."
                     ? Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
                     : Requirement.range(minVersion..<maxVersion)

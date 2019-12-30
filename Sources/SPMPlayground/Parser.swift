@@ -39,6 +39,10 @@ public struct Parser<A> {
       let match = self.run(&str)
       return (match, str)
     }
+
+    public static var end: Parser<Void> {
+        Parser<Void> { $0.isEmpty ? () : nil }
+    }
 }
 
 

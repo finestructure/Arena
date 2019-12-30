@@ -85,8 +85,8 @@ final class SPMPlaygroundTests: XCTestCase {
         }
         do {  // test partial matching
             let res = Parser.upToNextMajor.run(">=1.2.3<4.0.0")
-            XCTAssertEqual(res.match, .range("1.2.3"..<"2.0.0"))
-            XCTAssertEqual(res.rest, "<4.0.0")
+            XCTAssertNil(res.match)
+            XCTAssertEqual(res.rest, ">=1.2.3<4.0.0")
         }
         do {  // combined
             do {
