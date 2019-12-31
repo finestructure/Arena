@@ -80,6 +80,19 @@ final class SPMPlaygroundTests: XCTestCase {
                        Match(result: URL(string: "https://github.com/foo/bar"), rest: "@1.2.3..<3.0.0"))
     }
 
+    func test_parse_branchName() {
+        XCTAssertEqual(branchName.run("develop"), Match(result: "develop", rest: ""))
+        XCTAssertEqual(branchName.run("foo-bar"), Match(result: "foo-bar", rest: ""))
+        // disallowed
+        XCTAssertEqual(branchName.run("/foo"), Match(result: nil, rest: "/foo"))
+        XCTAssertEqual(branchName.run("foo."), Match(result: nil, rest: "foo."))
+        XCTAssertEqual(branchName.run("foo/"), Match(result: nil, rest: "foo/"))
+    }
+
+    func test_parse_branch() {
+        XCTAssertEqual(Parser.branch.run("@branch:develop"), Match(result: .branch("develop"), rest: ""))
+    }
+
     func test_parse_dependency() throws {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
@@ -100,6 +113,10 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3...4.0.0"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .range("1.2.3"..<"4.0.1")),
+                             rest: ""))
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:develop"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .branch("develop")),
                              rest: ""))
     }
 

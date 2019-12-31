@@ -67,6 +67,25 @@ public let int = Parser<Int> { str in
 }
 
 
+public let char = Parser<Character> { str in
+  guard !str.isEmpty else { return nil }
+  return str.removeFirst()
+}
+
+
+public func char(in characterSet: CharacterSet) -> Parser<Character> {
+    return Parser<Character> { str in
+        guard let first = str.first, characterSet.contains(character: first) else { return nil }
+        return str.removeFirst()
+    }
+}
+
+
+func prefix(charactersIn characterSet: CharacterSet) -> Parser<Substring> {
+    return prefix(while: { characterSet.contains(character: $0) })
+}
+
+
 public func literal(_ p: String) -> Parser<Void> {
   return Parser<Void> { str in
     guard str.hasPrefix(p) else { return nil }
@@ -178,6 +197,15 @@ public func oneOf<A>(
 }
 
 
+public func prefix(while p: @escaping (Character) -> Bool) -> Parser<Substring> {
+  return Parser<Substring> { str in
+    let prefix = str.prefix(while: p)
+    str.removeFirst(prefix.count)
+    return prefix
+  }
+}
+
+
 public func prefix(upTo p: String) -> Parser<Substring> {
   return Parser<Substring> { str in
     guard let range = str.range(of: p) else {
@@ -209,3 +237,14 @@ public func shortestOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
     }
 }
 
+
+extension CharacterSet {
+    func contains(character: Character) -> Bool {
+        if character.unicodeScalars.count <= 1 {
+            return character.unicodeScalars.allSatisfy(contains(_:))
+        } else {
+            let testSet = CharacterSet(charactersIn: String(character))
+            return testSet.isSubset(of: self)
+        }
+    }
+}
