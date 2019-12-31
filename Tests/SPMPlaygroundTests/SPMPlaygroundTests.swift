@@ -93,6 +93,12 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(Parser.branch.run("@branch:develop"), Match(result: .branch("develop"), rest: ""))
     }
 
+    func test_parse_revision() {
+        XCTAssertEqual(Parser.revision.run("@revision:foo"), Match(result: .revision("foo"), rest: ""))
+        XCTAssertEqual(Parser.revision.run("@revision:7ba3c50793d971b50bc748ad4c9a061ba8e6a0c5"), Match(result: .revision("7ba3c50793d971b50bc748ad4c9a061ba8e6a0c5"), rest: ""))
+        XCTAssertEqual(Parser.revision.run("@revision:1.2.3-rc4"), Match(result: .revision("1.2.3-rc4"), rest: ""))
+    }
+
     func test_parse_dependency() throws {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
@@ -118,6 +124,10 @@ final class SPMPlaygroundTests: XCTestCase {
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .branch("develop")),
                              rest: ""))
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@revision:somerevision"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .revision("somerevision")),
+                             rest: ""))
     }
 
     func test_parse_dependency_errors() throws {
@@ -129,6 +139,14 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3..<2.0.0"),
                        Match(result: nil,
                              rest: "https://github.com/foo/bar@from:1.2.3..<2.0.0"))
+        // invalid branch
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:foo bar"),
+                       Match(result: nil,
+                             rest: "https://github.com/foo/bar@branch:foo bar"))
+        // invalid revision
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@revision:1.2.3 rc4"),
+                       Match(result: nil,
+                             rest: "https://github.com/foo/bar@revision:1.2.3 rc4"))
     }
 
     func test_dependency_package_clause() throws {

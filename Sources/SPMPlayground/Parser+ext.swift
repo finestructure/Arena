@@ -10,10 +10,13 @@ import PackageModel
 
 
 let DefaultRequirement = Requirement.upToNextMajor(from: Version(0, 0, 0))
+
 // https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
 let AllowedBranchCharacters = CharacterSet.letters.union(CharacterSet(charactersIn: ".-@/"))
 let AllowedStartBranchCharacters = AllowedBranchCharacters.subtracting(CharacterSet(charactersIn: "/"))
 let AllowedEndBranchCharacters = AllowedBranchCharacters.subtracting(CharacterSet(charactersIn: "/."))
+
+let AllowedRevisionCharacters = CharacterSet.whitespacesAndNewlines.inverted
 
 
 extension Parser where A == Version {
@@ -29,7 +32,6 @@ extension Parser where A == Requirement {
     static var branch: Parser<Requirement> {
         zip(literal("@branch:"), branchName).map {Requirement.branch(String($0.1))}
     }
-
 
     static var exact: Parser<Requirement> {
         oneOf([
@@ -68,9 +70,14 @@ extension Parser where A == Requirement {
         Parser<Void>.end.map { DefaultRequirement }
     }
 
+    static var revision: Parser<Requirement> {
+        zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
+            .map {Requirement.revision(String($0.1))}
+    }
+
     static var requirement: Parser<Requirement> {
         // append ".end" to all requirement parsers to ensure they are exhaustive
-        oneOf([.branch, .noVersion, .exact, .range, .upToNextMajor].map(appendEnd))
+        oneOf([.branch, .noVersion, .exact, .range, .revision, .upToNextMajor].map(appendEnd))
     }
 }
 
