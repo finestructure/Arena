@@ -51,7 +51,7 @@ extension Parser where A == Requirement {
                 : Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
-    
+
     static var revision: Parser<Requirement> {
         zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
             .map { Requirement.revision(String($0.1)) }
@@ -70,7 +70,7 @@ extension Parser where A == Requirement {
 
 extension Parser where A == Foundation.URL {
     static var url: Parser<Foundation.URL> {
-        shortestOf([prefix(upTo: "=="), prefix(upTo: ">="), prefix(upTo: "@")])
+        prefix(upTo: "@")
             .map(String.init)
             .flatMap {
                 if let url = URL(string: $0) {

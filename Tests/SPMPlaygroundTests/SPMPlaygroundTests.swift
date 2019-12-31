@@ -57,21 +57,14 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_url() throws {
         XCTAssertEqual(Parser.url.run("https://github.com/foo/bar"),
                        Match(result: URL(string: "https://github.com/foo/bar"), rest: ""))
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar==1.2.3"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "==1.2.3"))
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar>=1.2.3"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ">=1.2.3"))
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar>=1.2.3<3.0.0"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ">=1.2.3<3.0.0"))
-
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: ""))
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@1.2.3"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@1.2.3"))
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@from:1.2.3"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@from:1.2.3"))
-        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@1.2.3..<3.0.0"),
-                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@1.2.3..<3.0.0"))
+        XCTAssertEqual(Parser.url.run("https://github.com/foo/bar@rest"),
+                       Match(result: URL(string: "https://github.com/foo/bar"), rest: "@rest"))
+        XCTAssertEqual(Parser.url.run("http://github.com/foo/bar@rest"),
+                       Match(result: URL(string: "http://github.com/foo/bar"), rest: "@rest"))
+        XCTAssertEqual(Parser.url.run("github.com/foo/bar@rest"),
+                       Match(result: URL(string: "github.com/foo/bar"), rest: "@rest"))
+        XCTAssertEqual(Parser.url.run("/foo/bar@rest"),
+                       Match(result: URL(string: "/foo/bar"), rest: "@rest"))
     }
 
     func test_parse_branchName() {
