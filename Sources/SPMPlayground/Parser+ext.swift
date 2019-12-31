@@ -30,7 +30,7 @@ extension Parser where A == Version {
 
 extension Parser where A == Requirement {
     static var branch: Parser<Requirement> {
-        zip(literal("@branch:"), branchName).map {Requirement.branch(String($0.1))}
+        zip(literal("@branch:"), branchName).map { Requirement.branch(String($0.1)) }
     }
 
     static var exact: Parser<Requirement> {
@@ -45,14 +45,13 @@ extension Parser where A == Requirement {
         oneOf([
             zip(literal("@"), .version, string("..<"), .version),
             zip(literal("@"), .version, string("..."), .version)
-        ])
-            .map { _, minVersion, rangeOp, maxVersion in
-                rangeOp == "..<"
-                    ? Requirement.range(minVersion..<maxVersion)
-                    : Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
+        ]).map { _, minVersion, rangeOp, maxVersion in
+            rangeOp == "..<"
+                ? Requirement.range(minVersion..<maxVersion)
+                : Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
-
+    
     static var revision: Parser<Requirement> {
         zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
             .map { Requirement.revision(String($0.1)) }
