@@ -34,15 +34,11 @@ extension Parser where A == Requirement {
     }
 
     static var exact: Parser<Requirement> {
-        zip(literal("@"), .version).map { _, version in
-                Requirement.exact(version)
-        }
+        zip(literal("@"), .version).map { Requirement.exact($0.1) }
     }
 
-    static var upToNextMajor: Parser<Requirement> {
-        zip(literal("@from:"), .version).map { _, version in
-            Requirement.upToNextMajor(from: version)
-        }
+    static var noVersion: Parser<Requirement> {
+        Parser<Void>.end.map { DefaultRequirement }
     }
 
     static var range: Parser<Requirement> {
@@ -57,18 +53,18 @@ extension Parser where A == Requirement {
         }
     }
 
-    static var noVersion: Parser<Requirement> {
-        Parser<Void>.end.map { DefaultRequirement }
-    }
-
     static var revision: Parser<Requirement> {
         zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
-            .map {Requirement.revision(String($0.1))}
+            .map { Requirement.revision(String($0.1)) }
+    }
+
+    static var upToNextMajor: Parser<Requirement> {
+        zip(literal("@from:"), .version).map { Requirement.upToNextMajor(from: $0.1) }
     }
 
     static var requirement: Parser<Requirement> {
         // append ".end" to all requirement parsers to ensure they are exhaustive
-        oneOf([.branch, .noVersion, .exact, .range, .revision, .upToNextMajor].map(appendEnd))
+        oneOf([.branch, .exact, .noVersion, .range, .revision, .upToNextMajor].map(appendEnd))
     }
 }
 
