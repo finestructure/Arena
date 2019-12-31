@@ -34,35 +34,26 @@ extension Parser where A == Requirement {
     }
 
     static var exact: Parser<Requirement> {
-        oneOf([
-            zip(literal("=="), .version),
-            zip(literal("@"), .version)
-        ])
-            .map { _, version in
+        zip(literal("@"), .version).map { _, version in
                 Requirement.exact(version)
         }
     }
 
     static var upToNextMajor: Parser<Requirement> {
-        oneOf([
-            zip(literal(">="), .version),
-            zip(literal("@from:"), .version)
-        ])
-            .map { _, version in
-                Requirement.upToNextMajor(from: version)
+        zip(literal("@from:"), .version).map { _, version in
+            Requirement.upToNextMajor(from: version)
         }
     }
 
     static var range: Parser<Requirement> {
         oneOf([
-            zip(literal(">="), .version, string("<"), .version),
             zip(literal("@"), .version, string("..<"), .version),
             zip(literal("@"), .version, string("..."), .version)
         ])
             .map { _, minVersion, rangeOp, maxVersion in
-                rangeOp == "..."
-                    ? Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
-                    : Requirement.range(minVersion..<maxVersion)
+                rangeOp == "..<"
+                    ? Requirement.range(minVersion..<maxVersion)
+                    : Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
 

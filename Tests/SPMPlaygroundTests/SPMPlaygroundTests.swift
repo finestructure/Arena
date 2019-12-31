@@ -22,7 +22,7 @@ final class SPMPlaygroundTests: XCTestCase {
 
     func test_parse_multiple_deps() throws {
         do {
-            var args = ["-d", "https://github.com/mxcl/Path.swift.git==1.2.3", "https://github.com/hartbit/Yaap.git>=1.0.0"]
+            var args = ["-d", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
             let cmd = SPMPlaygroundCommand()
             let res = try cmd.parse(arguments: &args)
             XCTAssert(res)
@@ -39,23 +39,17 @@ final class SPMPlaygroundTests: XCTestCase {
     }
 
     func test_parse_requirement() throws {
-        XCTAssertEqual(Parser.exact.run("==1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
         XCTAssertEqual(Parser.exact.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
 
-        XCTAssertEqual(Parser.upToNextMajor.run(">=1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
         XCTAssertEqual(Parser.upToNextMajor.run("@from:1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
 
-        XCTAssertEqual(Parser.range.run(">=1.2.3<3.2.1"), Match(result: .range("1.2.3"..<"3.2.1"), rest: ""))
         XCTAssertEqual(Parser.range.run("@1.2.3..<3.2.1"), Match(result: .range("1.2.3"..<"3.2.1"), rest: ""))
         XCTAssertEqual(Parser.range.run("@1.2.3...3.2.1"), Match(result: .range("1.2.3"..<"3.2.2"), rest: ""))
 
         do {  // combined
             XCTAssertEqual(Parser.requirement.run(""), Match(result: .range("0.0.0"..<"1.0.0"), rest: ""))
-            XCTAssertEqual(Parser.requirement.run("==1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
             XCTAssertEqual(Parser.requirement.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
-            XCTAssertEqual(Parser.requirement.run(">=1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
             XCTAssertEqual(Parser.requirement.run("@from:1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
-            XCTAssertEqual(Parser.requirement.run(">=1.2.3<3.0.0"), Match(result: .range("1.2.3"..<"3.0.0"), rest: ""))
             XCTAssertEqual(Parser.requirement.run("@1.2.3..<3.0.0"), Match(result: .range("1.2.3"..<"3.0.0"), rest: ""))
         }
     }
