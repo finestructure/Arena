@@ -76,7 +76,7 @@ extension Parser where A == Foundation.URL {
                 if let url = URL(string: $0) {
                     return always(url)
                 } else {
-                    return Parser<Foundation.URL>.never
+                    return .never
                 }
         }
     }

@@ -27,6 +27,47 @@ OPTIONS:
 ✅  created project in folder 'SPM-Playground'
 ```
 
+## Specifying versions
+
+In case you want to fetch a particular revision, range of revisions, or branch, you can use a syntax similar to the one used in a `Package.swift` file. Here's what's supported and the corresponding package dependecy that it will create in the generated project:
+
+- `-d https://github.com/johnsundell/plot@0.3.0`
+  
+  → `.package(url: "https://github.com/johnsundell/plot", .exact("0.3.0"))`
+
+- `-d https://github.com/johnsundell/plot@from:0.1.0`
+  
+  → `.package(url: "https://github.com/johnsundell/plot", "0.1.0"..<"1.0.0")`
+
+- `-d "https://github.com/johnsundell/plot@0.1.0..<4.0.0"`
+
+  → `.package(url: "https://github.com/johnsundell/plot", "0.1.0"..<"4.0.0")`
+
+- `-d https://github.com/johnsundell/plot@0.1.0...4.0.0"` 
+
+  → `.package(url: "https://github.com/johnsundell/plot", "0.1.0"..<"4.0.1")`
+
+- `-d https://github.com/johnsundell/plot@branch:master` 
+
+  → `.package(url: "https://github.com/johnsundell/plot", .branch("master"))`
+
+- `-d https://github.com/johnsundell/plot@revision:2e5574972f83bc5cdea59662986e701b86137642` 
+
+  → `.package(url: "https://github.com/johnsundell/plot", .revision("2e5574972f83bc5cdea59662986e701b86137642"))`
+
+Make sure to properly quote the URL if you are using the `..<` range operator.
+
+## Importing multiple packages
+
+You can import multiple dependencies into your Playground:
+
+```
+spm-playground -d https://github.com/johnsundell/plot https://github.com/hartbit/Yaap.git@from:1.0.0
+🔧  resolving package dependencies
+📔  libraries found: Plot, Yaap
+✅  created project in folder 'SPM-Playground'
+```
+
 ## How to build and install
 
 You can build and install `spm-playground` via the included `Makefile` by running:

@@ -5,6 +5,7 @@
 //  Created by Sven A. Schmidt on 23/12/2019.
 //
 
+import Foundation
 import Path
 import ShellOut
 import Yaap
@@ -48,5 +49,17 @@ extension Collection {
     /// Returns the element at the specified index iff it is within bounds, otherwise nil.
     subscript (safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
+    }
+}
+
+
+extension CharacterSet {
+    func contains(character: Character) -> Bool {
+        if character.unicodeScalars.count <= 1 {
+            return character.unicodeScalars.allSatisfy(contains(_:))
+        } else {
+            let testSet = CharacterSet(charactersIn: String(character))
+            return testSet.isSubset(of: self)
+        }
     }
 }

@@ -4,6 +4,10 @@
 //
 //  Created by Sven A. Schmidt on 29/12/2019.
 //
+//  Based on Pointfree series on Parsers
+//
+//  https://www.pointfree.co/episodes/ep56-what-is-a-parser-part-1 and following episodes
+//
 
 import Foundation
 
@@ -237,14 +241,3 @@ public func shortestOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
     }
 }
 
-
-extension CharacterSet {
-    func contains(character: Character) -> Bool {
-        if character.unicodeScalars.count <= 1 {
-            return character.unicodeScalars.allSatisfy(contains(_:))
-        } else {
-            let testSet = CharacterSet(charactersIn: String(character))
-            return testSet.isSubset(of: self)
-        }
-    }
-}
