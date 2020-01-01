@@ -7,6 +7,7 @@
 
 import Foundation
 import PackageModel
+import Path
 
 
 let DefaultRequirement = Requirement.upToNextMajor(from: Version(0, 0, 0))
@@ -71,7 +72,7 @@ extension Parser where A == RefSpec {
 enum Scheme: String, CaseIterable {
     case https = "https://"
     case http = "http://"
-    case file = "file:"
+    case file = "file://"
     case empty = ""
 }
 
@@ -94,7 +95,8 @@ extension Parser where A == Foundation.URL {
                 case .https, .http, .file:
                     url = URL(string: scheme.rawValue + rest)
                 case .empty:
-                    url = URL(string: "file:" + rest)
+                    let path = Path(rest) ?? Path.cwd/rest
+                    url = URL(string: "file://" + path.string)
             }
             if let url = url {
                 return always(url)
