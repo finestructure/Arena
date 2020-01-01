@@ -7,6 +7,7 @@
 
 import Foundation
 import PackageModel
+import Path
 import Yaap
 
 
@@ -40,6 +41,15 @@ public struct Dependency: Equatable {
                 self.requirement = .revision(r)
         }
     }
+
+    var path: Path? {
+        requirement == .path ? Path(url: url) : nil
+    }
+
+    func checkoutDir(projectDir: Path) -> Path? {
+        requirement == .path ? nil : projectDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
+    }
+
 
     var packageClause: String {
         switch requirement {
