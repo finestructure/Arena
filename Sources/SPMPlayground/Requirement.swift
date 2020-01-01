@@ -8,7 +8,17 @@
 import PackageModel
 
 
-typealias Requirement = PackageDependencyDescription.Requirement
+public enum Requirement: Equatable {
+    case exact(Version)
+    case range(Range<Version>)
+    case revision(String)
+    case branch(String)
+    case noVersion
+
+    public static func upToNextMajor(from version: Version) -> Requirement {
+        return .range(version..<Version(version.major + 1, 0, 0))
+    }
+}
 
 
 extension Requirement {
@@ -22,7 +32,7 @@ extension Requirement {
             case .exact(let v): return ".exact(\"\(v)\")"
             case .range(let r): return "\"\(r.lowerBound)\"..<\"\(r.upperBound)\""
             case .revision(let s): return ".revision(\"\(s)\")"
-            case .localPackage: return "localPackage (not implemented)"
+            case .noVersion: return ".noVersion"
         }
     }
 }

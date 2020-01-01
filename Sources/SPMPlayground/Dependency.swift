@@ -14,7 +14,14 @@ public struct Dependency: Equatable {
     let requirement: Requirement
 
     var packageClause: String {
-        ".package(url: \"\(url.absoluteString)\", \(requirement.dependencyClause))"
+        switch requirement {
+            case .noVersion where url.isFileURL || url.scheme == nil:
+                return ".package(path: \"\(url.absoluteString)\")"
+            case .noVersion:
+                return ".package(url: \"\(url.absoluteString)\", \(DefaultRequirement.dependencyClause))"
+            default:
+                return ".package(url: \"\(url.absoluteString)\", \(requirement.dependencyClause))"
+        }
     }
 }
 

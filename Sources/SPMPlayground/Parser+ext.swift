@@ -38,7 +38,7 @@ extension Parser where A == Requirement {
     }
 
     static var noVersion: Parser<Requirement> {
-        Parser<Void>.end.map { DefaultRequirement }
+        Parser<Void>.end.map { Requirement.noVersion }
     }
 
     static var range: Parser<Requirement> {
