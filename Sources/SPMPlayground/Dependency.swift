@@ -15,11 +15,13 @@ public struct Dependency: Equatable {
     let requirement: Requirement
 
     init(url: URL, requirement: Requirement) {
+        precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
         self.url = url
         self.requirement = requirement
     }
 
     init(url: URL, refSpec: RefSpec) {
+        precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
         self.url = url
         switch refSpec {
             case .branch(let b):
@@ -28,7 +30,7 @@ public struct Dependency: Equatable {
                 self.requirement = .exact(v)
             case .from(let v):
                 self.requirement = .from(v)
-            case .noVersion where url.isFileURL || url.scheme == nil:
+            case .noVersion where url.isFileURL:
                 self.requirement = .path
             case .noVersion:
                 self.requirement = .from(SPMUtility.Version("0.0.0"))
@@ -48,7 +50,7 @@ public struct Dependency: Equatable {
             case .from(let v):
                 return #".package(url: "\#(url.absoluteString)", from:"\#(v)")"#
             case .path:
-                return #".package(path: "\#(url.absoluteString)")"#
+                return #".package(path: "\#(url.path)")"#
             case .range(let r):
                 return #".package(url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
             case .revision(let r):

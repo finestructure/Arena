@@ -68,16 +68,38 @@ extension Parser where A == RefSpec {
 }
 
 
+enum Scheme: String, CaseIterable {
+    case https = "https://"
+    case http = "http://"
+    case file = "file:"
+    case empty = ""
+}
+
+
+extension Parser where A == Scheme {
+    static var aScheme: Parser<Scheme> {
+        oneOf(Scheme.allCases.map { string($0.rawValue).map { Scheme(rawValue: $0)! } } )
+    }
+}
+
+
 extension Parser where A == Foundation.URL {
     static var url: Parser<Foundation.URL> {
-        prefix(upTo: "@")
-            .map(String.init)
-            .flatMap {
-                if let url = URL(string: $0) {
-                    return always(url)
-                } else {
-                    return .never
-                }
+        zip(
+            Parser<Scheme>.aScheme,
+            prefix(upTo: "@").map(String.init)
+        ).flatMap { (scheme, rest) in
+            let url: URL?
+            switch scheme {
+                case .https, .http, .file:
+                    url = URL(string: scheme.rawValue + rest)
+                case .empty:
+                    url = URL(string: "file:" + rest)
+            }
+            if let url = url {
+                return always(url)
+            }
+            return .never
         }
     }
 }
