@@ -116,12 +116,22 @@ final class SPMPlaygroundTests: XCTestCase {
                                                 requirement: .revision("somerevision")),
                              rest: ""))
 
-        // path
-        // TODO: "./foo", "~/foo/bar", "foo/bar" (?)
-        XCTAssertEqual(Parser.dependency.run("/foo/bar"),
-                       Match(result: Dependency(url: URL(string: "/foo/bar")!,
-                                                requirement: .noVersion),
-                             rest: ""))
+        // local path dependency
+        XCTAssertEqual(
+            Parser.dependency.run("/foo/bar"),
+            Match(result: Dependency(url: URL(string: "/foo/bar")!, requirement: .noVersion), rest: ""))
+        XCTAssertEqual(
+            Parser.dependency.run("./foo/bar"),
+            Match(result: Dependency(url: URL(string: "./foo/bar")!, requirement: .noVersion), rest: ""))
+        XCTAssertEqual(
+            Parser.dependency.run("~/foo/bar"),
+            Match(result: Dependency(url: URL(string: "~/foo/bar")!, requirement: .noVersion), rest: ""))
+        XCTAssertEqual(
+            Parser.dependency.run("foo/bar"),
+            Match(result: Dependency(url: URL(string: "foo/bar")!, requirement: .noVersion), rest: ""))
+        XCTAssertEqual(
+            Parser.dependency.run("../foo/bar"),
+            Match(result: Dependency(url: URL(string: "../foo/bar")!, requirement: .noVersion), rest: ""))
     }
 
     func test_parse_dependency_errors() throws {
