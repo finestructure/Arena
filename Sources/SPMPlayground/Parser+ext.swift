@@ -28,42 +28,42 @@ extension Parser where A == Version {
 }
 
 
-extension Parser where A == Requirement {
-    static var branch: Parser<Requirement> {
-        zip(literal("@branch:"), branchName).map { Requirement.branch(String($0.1)) }
+extension Parser where A == RefSpec {
+    static var branch: Parser<RefSpec> {
+        zip(literal("@branch:"), branchName).map { RefSpec.branch(String($0.1)) }
     }
 
-    static var exact: Parser<Requirement> {
-        zip(literal("@"), .version).map { Requirement.exact($0.1) }
+    static var exact: Parser<RefSpec> {
+        zip(literal("@"), .version).map { RefSpec.exact($0.1) }
     }
 
-    static var noVersion: Parser<Requirement> {
-        Parser<Void>.end.map { Requirement.noVersion }
+    static var from: Parser<RefSpec> {
+        zip(literal("@from:"), .version).map { RefSpec.from($0.1) }
     }
 
-    static var range: Parser<Requirement> {
+    static var noVersion: Parser<RefSpec> {
+        Parser<Void>.end.map { RefSpec.noVersion }
+    }
+
+    static var range: Parser<RefSpec> {
         oneOf([
             zip(literal("@"), .version, string("..<"), .version),
             zip(literal("@"), .version, string("..."), .version)
         ]).map { _, minVersion, rangeOp, maxVersion in
             rangeOp == "..<"
-                ? Requirement.range(minVersion..<maxVersion)
-                : Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
+                ? RefSpec.range(minVersion..<maxVersion)
+                : RefSpec.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
 
-    static var revision: Parser<Requirement> {
+    static var revision: Parser<RefSpec> {
         zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
-            .map { Requirement.revision(String($0.1)) }
+            .map { RefSpec.revision(String($0.1)) }
     }
 
-    static var upToNextMajor: Parser<Requirement> {
-        zip(literal("@from:"), .version).map { Requirement.upToNextMajor(from: $0.1) }
-    }
-
-    static var requirement: Parser<Requirement> {
-        // append ".end" to all requirement parsers to ensure they are exhaustive
-        oneOf([.branch, .exact, .noVersion, .range, .revision, .upToNextMajor].map(appendEnd))
+    static var refSpec: Parser<RefSpec> {
+        // append ".end" to all parsers to ensure they are exhaustive
+        oneOf([.branch, .exact, .from, .noVersion, .range, .revision].map(appendEnd))
     }
 }
 
@@ -85,7 +85,7 @@ extension Parser where A == Foundation.URL {
 
 extension Parser where A == Dependency {
     static var dependency: Parser<Dependency> {
-        zip(.url, .requirement).map { Dependency(url: $0.0, requirement: $0.1) }
+        zip(.url, .refSpec).map { Dependency(url: $0.0, refSpec: $0.1) }
     }
 }
 

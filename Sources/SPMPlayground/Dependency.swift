@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import PackageModel
 import Yaap
 
 
@@ -13,14 +14,45 @@ public struct Dependency: Equatable {
     let url: URL
     let requirement: Requirement
 
+    init(url: URL, requirement: Requirement) {
+        self.url = url
+        self.requirement = requirement
+    }
+
+    init(url: URL, refSpec: RefSpec) {
+        self.url = url
+        switch refSpec {
+            case .branch(let b):
+                self.requirement = .branch(b)
+            case .exact(let v):
+                self.requirement = .exact(v)
+            case .from(let v):
+                self.requirement = .from(v)
+            case .noVersion where url.isFileURL || url.scheme == nil:
+                self.requirement = .path
+            case .noVersion:
+                self.requirement = .from(SPMUtility.Version("0.0.0"))
+            case .range(let r):
+                self.requirement = .range(r)
+            case .revision(let r):
+                self.requirement = .revision(r)
+        }
+    }
+
     var packageClause: String {
         switch requirement {
-            case .noVersion where url.isFileURL || url.scheme == nil:
-                return ".package(path: \"\(url.absoluteString)\")"
-            case .noVersion:
-                return ".package(url: \"\(url.absoluteString)\", \(DefaultRequirement.dependencyClause))"
-            default:
-                return ".package(url: \"\(url.absoluteString)\", \(requirement.dependencyClause))"
+            case .branch(let b):
+                return #".package(url: "\#(url.absoluteString)", .branch("\#(b)"))"#
+            case .exact(let v):
+                return #".package(url: "\#(url.absoluteString)", .exact("\#(v)"))"#
+            case .from(let v):
+                return #".package(url: "\#(url.absoluteString)", from:"\#(v)")"#
+            case .path:
+                return #".package(path: "\#(url.absoluteString)")"#
+            case .range(let r):
+                return #".package(url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
+            case .revision(let r):
+                return #".package(url: "\#(url.absoluteString)", .revision("\#(r)"))"#
         }
     }
 }

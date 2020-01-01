@@ -92,7 +92,7 @@ extension SPMPlaygroundCommand: Command {
 
         let libs: [String]
         do {
-            // find libraries
+            // find libraries in checkouts
             let checkoutsDir = projectPath()/".build/checkouts"
             let basenames = dependencies.map { $0.url }.map { $0?.lastPathComponent(dropExtension: "git") }
             libs = try checkoutsDir.ls()

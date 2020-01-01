@@ -28,7 +28,7 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssert(res)
             XCTAssertEqual(cmd.dependencies, [
                 Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
-                Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .range("1.0.0"..<"2.0.0"))
+                Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .from("1.0.0"))
             ])
         }
     }
@@ -41,16 +41,16 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_requirement() throws {
         XCTAssertEqual(Parser.exact.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
 
-        XCTAssertEqual(Parser.upToNextMajor.run("@from:1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
+        XCTAssertEqual(Parser.from.run("@from:1.2.3"), Match(result: .from("1.2.3"), rest: ""))
 
         XCTAssertEqual(Parser.range.run("@1.2.3..<3.2.1"), Match(result: .range("1.2.3"..<"3.2.1"), rest: ""))
         XCTAssertEqual(Parser.range.run("@1.2.3...3.2.1"), Match(result: .range("1.2.3"..<"3.2.2"), rest: ""))
 
         do {  // combined
-            XCTAssertEqual(Parser.requirement.run(""), Match(result: .noVersion, rest: ""))
-            XCTAssertEqual(Parser.requirement.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
-            XCTAssertEqual(Parser.requirement.run("@from:1.2.3"), Match(result: .range("1.2.3"..<"2.0.0"), rest: ""))
-            XCTAssertEqual(Parser.requirement.run("@1.2.3..<3.0.0"), Match(result: .range("1.2.3"..<"3.0.0"), rest: ""))
+            XCTAssertEqual(Parser.refSpec.run(""), Match(result: .noVersion, rest: ""))
+            XCTAssertEqual(Parser.refSpec.run("@1.2.3"), Match(result: .exact("1.2.3"), rest: ""))
+            XCTAssertEqual(Parser.refSpec.run("@from:1.2.3"), Match(result: .from("1.2.3"), rest: ""))
+            XCTAssertEqual(Parser.refSpec.run("@1.2.3..<3.0.0"), Match(result: .range("1.2.3"..<"3.0.0"), rest: ""))
         }
     }
 
@@ -89,7 +89,7 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_parse_dependency() throws {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
-                                                requirement: .noVersion),
+                                                requirement: .from("0.0.0")),
                              rest: ""))
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
@@ -97,7 +97,7 @@ final class SPMPlaygroundTests: XCTestCase {
                              rest: ""))
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
-                                                requirement: .range("1.2.3"..<"2.0.0")),
+                                                requirement: .from("1.2.3")),
                              rest: ""))
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3..<4.0.0"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
@@ -119,19 +119,19 @@ final class SPMPlaygroundTests: XCTestCase {
         // local path dependency
         XCTAssertEqual(
             Parser.dependency.run("/foo/bar"),
-            Match(result: Dependency(url: URL(string: "/foo/bar")!, requirement: .noVersion), rest: ""))
+            Match(result: Dependency(url: URL(string: "/foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
             Parser.dependency.run("./foo/bar"),
-            Match(result: Dependency(url: URL(string: "./foo/bar")!, requirement: .noVersion), rest: ""))
+            Match(result: Dependency(url: URL(string: "./foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
             Parser.dependency.run("~/foo/bar"),
-            Match(result: Dependency(url: URL(string: "~/foo/bar")!, requirement: .noVersion), rest: ""))
+            Match(result: Dependency(url: URL(string: "~/foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
             Parser.dependency.run("foo/bar"),
-            Match(result: Dependency(url: URL(string: "foo/bar")!, requirement: .noVersion), rest: ""))
+            Match(result: Dependency(url: URL(string: "foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
             Parser.dependency.run("../foo/bar"),
-            Match(result: Dependency(url: URL(string: "../foo/bar")!, requirement: .noVersion), rest: ""))
+            Match(result: Dependency(url: URL(string: "../foo/bar")!, requirement: .path), rest: ""))
     }
 
     func test_parse_dependency_errors() throws {
@@ -171,7 +171,7 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
         }
         do {
-            let dep = Dependency(url: URL(string: "/foo/bar")!, requirement: .noVersion)
+            let dep = Dependency(url: URL(string: "/foo/bar")!, requirement: .path)
             XCTAssertEqual(dep.packageClause, #".package(path: "/foo/bar")"#)
         }
     }
