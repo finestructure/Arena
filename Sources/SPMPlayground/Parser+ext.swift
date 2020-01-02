@@ -69,14 +69,6 @@ extension Parser where A == RefSpec {
 }
 
 
-enum Scheme: String, CaseIterable {
-    case https = "https://"
-    case http = "http://"
-    case file = "file://"
-    case empty = ""
-}
-
-
 extension Parser where A == Scheme {
     static var aScheme: Parser<Scheme> {
         oneOf(Scheme.allCases.map { string($0.rawValue).map { Scheme(rawValue: $0)! } } )

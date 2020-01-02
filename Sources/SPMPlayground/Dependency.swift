@@ -50,7 +50,6 @@ public struct Dependency: Equatable {
         requirement == .path ? nil : projectDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
     }
 
-
     var packageClause: String {
         switch requirement {
             case .branch(let b):
