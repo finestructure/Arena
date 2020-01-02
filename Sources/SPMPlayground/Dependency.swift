@@ -57,7 +57,7 @@ public struct Dependency: Equatable {
             case .exact(let v):
                 return #".package(url: "\#(url.absoluteString)", .exact("\#(v)"))"#
             case .from(let v):
-                return #".package(url: "\#(url.absoluteString)", from:"\#(v)")"#
+                return #".package(url: "\#(url.absoluteString)", from: "\#(v)")"#
             case .path:
                 return #".package(path: "\#(url.path)")"#
             case .range(let r):

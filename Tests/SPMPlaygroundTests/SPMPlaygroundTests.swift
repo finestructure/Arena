@@ -165,6 +165,10 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
         }
         do {
+            let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .from("1.2.3"))
+            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", from: "1.2.3")"#)
+        }
+        do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .range("1.2.3"..<"2.3.4"))
             XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", "1.2.3"..<"2.3.4")"#)
         }

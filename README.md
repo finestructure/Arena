@@ -57,7 +57,7 @@ In case you want to fetch a particular revision, range of revisions, or branch, 
 
 - `-d https://github.com/johnsundell/plot@from:0.1.0`
   
-  → `.package(url: "https://github.com/johnsundell/plot", "0.1.0"..<"1.0.0")`
+  → `.package(url: "https://github.com/johnsundell/plot", from: "0.1.0")`
 
 - `-d "https://github.com/johnsundell/plot@0.1.0..<4.0.0"`
 
@@ -76,17 +76,6 @@ In case you want to fetch a particular revision, range of revisions, or branch, 
   → `.package(url: "https://github.com/johnsundell/plot", .revision("2e5574972f83bc5cdea59662986e701b86137642"))`
 
 Make sure to properly quote the URL if you are using the `..<` range operator.
-
-## Importing multiple packages
-
-You can import multiple dependencies into your Playground:
-
-```
-spm-playground -d https://github.com/johnsundell/plot https://github.com/hartbit/Yaap.git@from:1.0.0
-🔧  resolving package dependencies
-📔  libraries found: Plot, Yaap
-✅  created project in folder 'SPM-Playground'
-```
 
 ## How to build and install
 
