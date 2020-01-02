@@ -31,19 +31,19 @@ extension Parser where A == Version {
 
 extension Parser where A == RefSpec {
     static var branch: Parser<RefSpec> {
-        zip(literal("@branch:"), branchName).map { RefSpec.branch(String($0.1)) }
+        zip(literal("@branch:"), branchName).map { .branch(String($0.1)) }
     }
 
     static var exact: Parser<RefSpec> {
-        zip(literal("@"), .version).map { RefSpec.exact($0.1) }
+        zip(literal("@"), .version).map { .exact($0.1) }
     }
 
     static var from: Parser<RefSpec> {
-        zip(literal("@from:"), .version).map { RefSpec.from($0.1) }
+        zip(literal("@from:"), .version).map { .from($0.1) }
     }
 
     static var noVersion: Parser<RefSpec> {
-        Parser<Void>.end.map { RefSpec.noVersion }
+        Parser<Void>.end.map { .noVersion }
     }
 
     static var range: Parser<RefSpec> {
@@ -52,14 +52,14 @@ extension Parser where A == RefSpec {
             zip(literal("@"), .version, string("..."), .version)
         ]).map { _, minVersion, rangeOp, maxVersion in
             rangeOp == "..<"
-                ? RefSpec.range(minVersion..<maxVersion)
-                : RefSpec.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
+                ? .range(minVersion..<maxVersion)
+                : .range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
 
     static var revision: Parser<RefSpec> {
         zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
-            .map { RefSpec.revision(String($0.1)) }
+            .map { .revision(String($0.1)) }
     }
 
     static var refSpec: Parser<RefSpec> {
