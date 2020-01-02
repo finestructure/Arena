@@ -63,9 +63,10 @@ final class SPMPlaygroundTests: XCTestCase {
                        Match(result: URL(string: "http://github.com/foo/bar"), rest: "@rest"))
         XCTAssertEqual(Parser.url.run("/foo/bar@rest"),
                        Match(result: URL(string: "file:///foo/bar"), rest: "@rest"))
-        // TODO:
-        // file:
-        // file://
+        XCTAssertEqual(Parser.url.run("file:///foo/bar@rest"),
+                       Match(result: URL(string: "file:///foo/bar"), rest: "@rest"))
+        XCTAssertEqual(Parser.url.run("file:/foo/bar@rest"),
+                       Match(result: URL(string: "file:///foo/bar"), rest: "@rest"))
     }
 
     func test_parse_branchName() {
