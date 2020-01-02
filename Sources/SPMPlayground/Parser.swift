@@ -112,11 +112,13 @@ public func always<A>(_ a: A) -> Parser<A> {
     return Parser<A> { _ in a }
 }
 
+
 extension Parser {
     public static var never: Parser {
         return Parser { _ in nil }
     }
 }
+
 
 public func zip<A, B>(_ a: Parser<A>, _ b: Parser<B>) -> Parser<(A, B)> {
   return Parser<(A, B)> { str -> (A, B)? in
@@ -140,6 +142,7 @@ public func zip<A, B, C>(
     .map { a, bc in (a, bc.0, bc.1) }
 }
 
+
 public func zip<A, B, C, D>(
   _ a: Parser<A>,
   _ b: Parser<B>,
@@ -149,6 +152,7 @@ public func zip<A, B, C, D>(
   return zip(a, zip(b, c, d))
     .map { a, bcd in (a, bcd.0, bcd.1, bcd.2) }
 }
+
 
 public func zip<A, B, C, D, E>(
   _ a: Parser<A>,
@@ -162,6 +166,7 @@ public func zip<A, B, C, D, E>(
     .map { a, bcde in (a, bcde.0, bcde.1, bcde.2, bcde.3) }
 }
 
+
 public func zip<A, B, C, D, E, F>(
   _ a: Parser<A>,
   _ b: Parser<B>,
@@ -173,6 +178,7 @@ public func zip<A, B, C, D, E, F>(
   return zip(a, zip(b, c, d, e, f))
     .map { a, bcdef in (a, bcdef.0, bcdef.1, bcdef.2, bcdef.3, bcdef.4) }
 }
+
 
 public func zip<A, B, C, D, E, F, G>(
   _ a: Parser<A>,
@@ -186,6 +192,7 @@ public func zip<A, B, C, D, E, F, G>(
   return zip(a, zip(b, c, d, e, f, g))
     .map { a, bcdefg in (a, bcdefg.0, bcdefg.1, bcdefg.2, bcdefg.3, bcdefg.4, bcdefg.5) }
 }
+
 
 public func oneOf<A>(
   _ ps: [Parser<A>]
