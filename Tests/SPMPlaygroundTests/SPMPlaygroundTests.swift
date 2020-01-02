@@ -173,7 +173,7 @@ final class SPMPlaygroundTests: XCTestCase {
             XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
         }
         do {
-            let dep = Dependency(url: URL(string: "file:/foo/bar")!, requirement: .path)
+            let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
             XCTAssertEqual(dep.packageClause, #".package(path: "/foo/bar")"#)
         }
     }
