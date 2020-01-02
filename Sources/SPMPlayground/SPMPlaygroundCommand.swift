@@ -22,6 +22,7 @@ public class SPMPlaygroundCommand {
     @Option(name: "deps", shorthand: "d", documentation: "dependency url(s) and (optionally) version specification")
     var dependencies = [Dependency]()
 
+    // TODO: turn into array
     @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
     var libName: String? = nil
 
@@ -93,13 +94,9 @@ extension SPMPlaygroundCommand: Command {
         let libs: [String]
         do {
             // find libraries
-            let checkoutsDir = projectPath()/".build/checkouts"
-            let basenames = dependencies.map { $0.url }.map { $0?.lastPathComponent(dropExtension: "git") }
-            libs = try checkoutsDir.ls()
-                .filter { $0.kind == .directory }
-                .filter { basenames.contains($0.path.basename()) }
-                .flatMap { try libraryNames(for: $0.path) }
-                .sorted()
+            libs = try dependencies
+                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath()) }
+                .flatMap { try libraryNames(for: $0) }
             assert(libs.count > 0, "❌  no libraries found!")
             print("📔  libraries found: \(libs.joined(separator: ", "))")
         }

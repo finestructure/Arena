@@ -1,6 +1,6 @@
 # SPMPlaygrounds
 
-SPMPlaygrounds is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library.
+SPMPlaygrounds is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
 
 ```
  ~  spm-playground --help
@@ -18,12 +18,32 @@ OPTIONS:
   --version, -v     Display tool version [default: false]
 ```
 
-## Example
+## Examples
+
+### Import Github repository
 
 ```
  ~  spm-playground -d https://github.com/johnsundell/plot
 🔧  resolving package dependencies
 📔  libraries found: Plot
+✅  created project in folder 'SPM-Playground'
+```
+
+### Import local repository
+
+```
+spm-playground -d ~/Projects/Parser
+🔧  resolving package dependencies
+📔  libraries found: Parser
+✅  created project in folder 'SPM-Playground'
+```
+
+### Import both
+
+```
+spm-playground -d ~/Projects/Parser https://github.com/johnsundell/plot
+🔧  resolving package dependencies
+📔  libraries found: Parser, Plot
 ✅  created project in folder 'SPM-Playground'
 ```
 

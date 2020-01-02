@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import PackageModel
+import Path
 import Yaap
 
 
@@ -13,8 +15,56 @@ public struct Dependency: Equatable {
     let url: URL
     let requirement: Requirement
 
+    init(url: URL, requirement: Requirement) {
+        precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
+        self.url = url
+        self.requirement = requirement
+    }
+
+    init(url: URL, refSpec: RefSpec) {
+        precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
+        self.url = url
+        switch refSpec {
+            case .branch(let b):
+                self.requirement = .branch(b)
+            case .exact(let v):
+                self.requirement = .exact(v)
+            case .from(let v):
+                self.requirement = .from(v)
+            case .noVersion where url.isFileURL:
+                self.requirement = .path
+            case .noVersion:
+                self.requirement = .from(SPMUtility.Version("0.0.0"))
+            case .range(let r):
+                self.requirement = .range(r)
+            case .revision(let r):
+                self.requirement = .revision(r)
+        }
+    }
+
+    var path: Path? {
+        requirement == .path ? Path(url: url) : nil
+    }
+
+    func checkoutDir(projectDir: Path) -> Path? {
+        requirement == .path ? nil : projectDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
+    }
+
     var packageClause: String {
-        ".package(url: \"\(url.absoluteString)\", \(requirement.dependencyClause))"
+        switch requirement {
+            case .branch(let b):
+                return #".package(url: "\#(url.absoluteString)", .branch("\#(b)"))"#
+            case .exact(let v):
+                return #".package(url: "\#(url.absoluteString)", .exact("\#(v)"))"#
+            case .from(let v):
+                return #".package(url: "\#(url.absoluteString)", from:"\#(v)")"#
+            case .path:
+                return #".package(path: "\#(url.path)")"#
+            case .range(let r):
+                return #".package(url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
+            case .revision(let r):
+                return #".package(url: "\#(url.absoluteString)", .revision("\#(r)"))"#
+        }
     }
 }
 

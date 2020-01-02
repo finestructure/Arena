@@ -7,6 +7,7 @@
 
 import Foundation
 import PackageModel
+import Path
 
 
 let DefaultRequirement = Requirement.upToNextMajor(from: Version(0, 0, 0))
@@ -28,56 +29,63 @@ extension Parser where A == Version {
 }
 
 
-extension Parser where A == Requirement {
-    static var branch: Parser<Requirement> {
-        zip(literal("@branch:"), branchName).map { Requirement.branch(String($0.1)) }
+extension Parser where A == RefSpec {
+    static var branch: Parser<RefSpec> {
+        zip(literal("@branch:"), branchName).map { .branch(String($0.1)) }
     }
 
-    static var exact: Parser<Requirement> {
-        zip(literal("@"), .version).map { Requirement.exact($0.1) }
+    static var exact: Parser<RefSpec> {
+        zip(literal("@"), .version).map { .exact($0.1) }
     }
 
-    static var noVersion: Parser<Requirement> {
-        Parser<Void>.end.map { DefaultRequirement }
+    static var from: Parser<RefSpec> {
+        zip(literal("@from:"), .version).map { .from($0.1) }
     }
 
-    static var range: Parser<Requirement> {
+    static var noVersion: Parser<RefSpec> {
+        Parser<Void>.end.map { .noVersion }
+    }
+
+    static var range: Parser<RefSpec> {
         oneOf([
             zip(literal("@"), .version, string("..<"), .version),
             zip(literal("@"), .version, string("..."), .version)
         ]).map { _, minVersion, rangeOp, maxVersion in
             rangeOp == "..<"
-                ? Requirement.range(minVersion..<maxVersion)
-                : Requirement.range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
+                ? .range(minVersion..<maxVersion)
+                : .range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
 
-    static var revision: Parser<Requirement> {
+    static var revision: Parser<RefSpec> {
         zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
-            .map { Requirement.revision(String($0.1)) }
+            .map { .revision(String($0.1)) }
     }
 
-    static var upToNextMajor: Parser<Requirement> {
-        zip(literal("@from:"), .version).map { Requirement.upToNextMajor(from: $0.1) }
+    static var refSpec: Parser<RefSpec> {
+        // append ".end" to all parsers to ensure they are exhaustive
+        oneOf([.branch, .exact, .from, .noVersion, .range, .revision].map(appendEnd))
     }
+}
 
-    static var requirement: Parser<Requirement> {
-        // append ".end" to all requirement parsers to ensure they are exhaustive
-        oneOf([.branch, .exact, .noVersion, .range, .revision, .upToNextMajor].map(appendEnd))
+
+extension Parser where A == Scheme {
+    static var aScheme: Parser<Scheme> {
+        oneOf(Scheme.allCases.map { string($0.rawValue).map { Scheme(rawValue: $0)! } } )
     }
 }
 
 
 extension Parser where A == Foundation.URL {
     static var url: Parser<Foundation.URL> {
-        prefix(upTo: "@")
-            .map(String.init)
-            .flatMap {
-                if let url = URL(string: $0) {
-                    return always(url)
-                } else {
-                    return .never
-                }
+        zip(
+            Parser<Scheme>.aScheme,
+            prefix(upTo: "@").map(String.init)
+        ).flatMap { (scheme, rest) in
+            if let url = scheme.url(path: rest) {
+                return always(url)
+            }
+            return .never
         }
     }
 }
@@ -85,7 +93,7 @@ extension Parser where A == Foundation.URL {
 
 extension Parser where A == Dependency {
     static var dependency: Parser<Dependency> {
-        zip(.url, .requirement).map { Dependency(url: $0.0, requirement: $0.1) }
+        zip(.url, .refSpec).map { Dependency(url: $0.0, refSpec: $0.1) }
     }
 }
 
