@@ -82,15 +82,7 @@ extension Parser where A == Foundation.URL {
             Parser<Scheme>.aScheme,
             prefix(upTo: "@").map(String.init)
         ).flatMap { (scheme, rest) in
-            let url: URL?
-            switch scheme {
-                case .https, .http, .file:
-                    url = URL(string: scheme.rawValue + rest)
-                case .empty:
-                    let path = Path(rest) ?? Path.cwd/rest
-                    url = URL(string: "file://" + path.string)
-            }
-            if let url = url {
+            if let url = scheme.url(path: rest) {
                 return always(url)
             }
             return .never
