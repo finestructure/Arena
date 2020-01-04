@@ -1,5 +1,6 @@
 @testable import SPMPlayground
 import Path
+import Parser
 import Workspace
 import XCTest
 

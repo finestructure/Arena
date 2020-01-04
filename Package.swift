@@ -10,9 +10,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-package-manager", .revision("swift-5.1.3-RELEASE")),
-        .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
-        .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),
+        .package(url: "https://github.com/finestructure/Parser", from: "0.0.0"),
         .package(url: "https://github.com/hartbit/Yaap.git", from: "1.0.0"),
+        .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),
+        .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
     ],
     targets: [
         .target(
@@ -20,7 +21,7 @@ let package = Package(
             dependencies: ["SPMPlayground"]),
         .target(
             name: "SPMPlayground",
-            dependencies: ["Path", "ShellOut", "SwiftPM-auto", "Yaap"]),
+            dependencies: ["Parser", "Path", "ShellOut", "SwiftPM-auto", "Yaap"]),
         .testTarget(
             name: "SPMPlaygroundTests",
             dependencies: ["SPMPlayground"]),

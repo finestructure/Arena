@@ -7,6 +7,7 @@
 
 import Foundation
 import PackageModel
+import Parser
 import Path
 
 
@@ -63,8 +64,10 @@ extension Parser where A == RefSpec {
     }
 
     static var refSpec: Parser<RefSpec> {
-        // append ".end" to all parsers to ensure they are exhaustive
-        oneOf([.branch, .exact, .from, .noVersion, .range, .revision].map(appendEnd))
+        let parsers: [Parser<RefSpec>] = [.branch, .exact, .from, .noVersion, .range, .revision]
+        // ensure parsers are all exhaustive to reject matches from subset parsers, i.e.
+        // @1.2.3..<2.0.0 -> .exact("1.2.3") + "..<2.0.0" rest instead of .range(@"1.2.3"..<"2.0.0")
+        return oneOf(parsers.map { $0.exhaustive })
     }
 }
 
@@ -99,12 +102,12 @@ extension Parser where A == Dependency {
 
 
 let branchName = zip(
-    char(in: AllowedStartBranchCharacters),
-    prefix(charactersIn: AllowedBranchCharacters)
+    .char(in: AllowedStartBranchCharacters),
+    .prefix(charactersIn: AllowedBranchCharacters)
 ).flatMap { res -> Parser<Substring> in
     let (head, tail) = res
     guard let last = tail.last, AllowedEndBranchCharacters.contains(character: last) else {
         return .never
     }
-    return always(String(head) + tail)
+    return .always(String(head) + tail)
 }
