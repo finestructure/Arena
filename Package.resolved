@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Parser",
+        "repositoryURL": "https://github.com/finestructure/Parser",
+        "state": {
+          "branch": null,
+          "revision": "af68c68c388e6f243feb82a7eb514fbd6b0671d9",
+          "version": "0.1.0"
+        }
+      },
+      {
         "package": "Path.swift",
         "repositoryURL": "https://github.com/mxcl/Path.swift.git",
         "state": {
