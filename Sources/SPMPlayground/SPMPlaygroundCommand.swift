@@ -31,7 +31,7 @@ public class SPMPlaygroundCommand {
 
     let version = Version(SPMPlaygroundVersion)
 
-    @Option(documentation: "overwrite existing file/directory")
+    @Option(shorthand: "f", documentation: "overwrite existing file/directory")
     var force = false
 
     var targetName: String { projectName }
