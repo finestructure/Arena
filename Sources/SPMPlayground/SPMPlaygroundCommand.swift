@@ -34,22 +34,23 @@ public class SPMPlaygroundCommand {
     @Option(shorthand: "f", documentation: "overwrite existing file/directory")
     var force = false
 
+    @Option(name: "outputdir", shorthand: "o", documentation: "directory where project folder should be saved")
+    var outputPath = Path.cwd
+
     var targetName: String { projectName }
 
-    func projectPath(at parentDir: Path = Path.cwd) -> Path {
-        parentDir.join(projectName)
-    }
+    var projectPath: Path { outputPath/projectName }
 
     func xcodeprojPath(parentDir: Path = Path.cwd) -> Path {
-        projectPath(at: parentDir)/"\(projectName).xcodeproj"
+        projectPath/"\(projectName).xcodeproj"
     }
 
     func xcworkspacePath(parentDir: Path = Path.cwd) -> Path {
-        projectPath(at: parentDir)/"\(projectName).xcworkspace"
+        projectPath/"\(projectName).xcworkspace"
     }
 
     func playgroundPath(parentDir: Path = Path.cwd) -> Path {
-        projectPath(at: parentDir)/"MyPlayground.playground"
+        projectPath/"MyPlayground.playground"
     }
 
     public init() {}
@@ -63,23 +64,23 @@ extension SPMPlaygroundCommand: Command {
             exit(EXIT_FAILURE)
         }
 
-        if force && projectPath().exists {
-            try projectPath().delete()
+        if force && projectPath.exists {
+            try projectPath.delete()
         }
-        guard !projectPath().exists else {
-            print("❌  '\(projectPath().basename())' already exists, use '--force' to overwrite")
+        guard !projectPath.exists else {
+            print("❌  '\(projectPath.basename())' already exists, use '--force' to overwrite")
             exit(1)
         }
 
         // create package
         do {
-            try projectPath().mkdir()
-            try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath())
+            try projectPath.mkdir()
+            try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath)
         }
 
         // update Package.swift dependencies
         do {
-            let packagePath = projectPath()/"Package.swift"
+            let packagePath = projectPath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
             let depsClause = dependencies.map { "    " + $0.packageClause }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
@@ -88,14 +89,14 @@ extension SPMPlaygroundCommand: Command {
 
         do {
             print("🔧  resolving package dependencies")
-            try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath())
+            try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
         }
 
         let libs: [String]
         do {
             // find libraries
             libs = try dependencies
-                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath()) }
+                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
                 .flatMap { try libraryNames(for: $0) }
             assert(libs.count > 0, "❌  no libraries found!")
             print("📔  libraries found: \(libs.joined(separator: ", "))")
@@ -103,7 +104,7 @@ extension SPMPlaygroundCommand: Command {
 
         // update Package.swift targets
         do {
-            let packagePath = projectPath()/"Package.swift"
+            let packagePath = projectPath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
             let libsClause = libs.map { "\"\($0)\"" }.joined(separator: ", ")
             let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\(libsClause)])]"
@@ -111,7 +112,7 @@ extension SPMPlaygroundCommand: Command {
         }
 
         // generate xcodeproj
-        try shellOut(to: .generateSwiftPackageXcodeProject(), at: projectPath())
+        try shellOut(to: .generateSwiftPackageXcodeProject(), at: projectPath)
 
         // create workspace
         do {
@@ -143,8 +144,8 @@ extension SPMPlaygroundCommand: Command {
                 """.write(to: playgroundPath()/"contents.xcplayground")
         }
 
-        print("✅  created project in folder '\(projectPath().relative(to: Path.cwd))'")
-        try shellOut(to: .openFile(at: projectPath()))
+        print("✅  created project in folder '\(projectPath.relative(to: Path.cwd))'")
+        try shellOut(to: .openFile(at: projectPath))
     }
 }
 

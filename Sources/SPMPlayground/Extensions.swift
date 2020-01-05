@@ -43,3 +43,17 @@ extension Optional: ArgumentType where Wrapped == String {
         }
     }
 }
+
+
+extension Path: ArgumentType {
+    public init(arguments: inout [String]) throws {
+        guard let arg = arguments.first else {
+            throw ParseError.missingArgument
+        }
+        guard let path = Path(arg) else {
+            throw ParseError.invalidFormat(arg)
+        }
+        arguments.removeFirst()
+        self = path
+    }
+}
