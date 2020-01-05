@@ -140,7 +140,8 @@ extension SPMPlaygroundCommand: Command {
         }
 
         // generate xcodeproj
-        try shellOut(to: .generateSwiftPackageXcodeProject(), at: projectPath)
+        let swift = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift"
+        try shellOut(to: ShellOutCommand(string: "\(swift) package generate-xcodeproj"), at: projectPath)
 
         // create workspace
         do {
