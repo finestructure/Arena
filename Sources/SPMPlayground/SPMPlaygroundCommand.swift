@@ -11,6 +11,34 @@ import ShellOut
 import Yaap
 
 
+public enum SPMPlaygroundError: LocalizedError {
+    case missingDependency
+    case pathExists(String)
+
+    public var errorDescription: String? {
+        switch self {
+            case .missingDependency:
+                return "no dependency provided via -d parameter"
+            case .pathExists(let path):
+                return "'\(path)' already exists"
+        }
+    }
+
+    public var recoverySuggestion: String? {
+        switch self {
+            case .missingDependency:
+                return "provide at least one <dependency>"
+            case .pathExists:
+                return "use '--force' to overwrite"
+        }
+    }
+
+    public var localizedDescription: String {
+        "❌  \(errorDescription!), \(recoverySuggestion!)"
+    }
+}
+
+
 public class SPMPlaygroundCommand {
     public let name = "spm-playground"
     public let documentation = "Creates an Xcode project with a Playground and an SPM library ready for use in it."
@@ -60,16 +88,14 @@ public class SPMPlaygroundCommand {
 extension SPMPlaygroundCommand: Command {
     public func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
         guard !dependencies.isEmpty else {
-            print("❌  provide at least one <dependency>")
-            exit(EXIT_FAILURE)
+            throw SPMPlaygroundError.missingDependency
         }
 
         if force && projectPath.exists {
             try projectPath.delete()
         }
         guard !projectPath.exists else {
-            print("❌  '\(projectPath.basename())' already exists, use '--force' to overwrite")
-            exit(1)
+            throw SPMPlaygroundError.pathExists(projectPath.basename())
         }
 
         // create package
