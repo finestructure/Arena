@@ -102,7 +102,7 @@ extension SPMPlaygroundCommand: Command {
         do {
             try projectPath.mkdir()
             let swift = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift"
-            try shellOut(to: ShellOutCommand(string: "\(swift) package init --type library"), at: projectPath)
+            try shellOut(to: ShellOutCommand(string: "\(swift)-package init --type library"), at: projectPath)
         }
 
         // update Package.swift dependencies
@@ -117,7 +117,7 @@ extension SPMPlaygroundCommand: Command {
         do {
             print("🔧  resolving package dependencies")
             let swift = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift"
-            try shellOut(to: ShellOutCommand(string: "\(swift) package resolve"), at: projectPath)
+            try shellOut(to: ShellOutCommand(string: "\(swift)-package resolve"), at: projectPath)
         }
 
         let libs: [String]
@@ -141,7 +141,7 @@ extension SPMPlaygroundCommand: Command {
 
         // generate xcodeproj
         let swift = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift"
-        try shellOut(to: ShellOutCommand(string: "\(swift) package generate-xcodeproj"), at: projectPath)
+        try shellOut(to: ShellOutCommand(string: "\(swift)-package generate-xcodeproj"), at: projectPath)
 
         // create workspace
         do {
