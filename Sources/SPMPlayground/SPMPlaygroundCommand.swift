@@ -102,7 +102,7 @@ extension SPMPlaygroundCommand: Command {
         do {
             try projectPath.mkdir()
             let swift = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift"
-            try shellOut(to: ShellOutCommand(string: "\(swift) package init --library"), at: projectPath)
+            try shellOut(to: ShellOutCommand(string: "\(swift) package init --type library"), at: projectPath)
         }
 
         // update Package.swift dependencies
