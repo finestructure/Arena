@@ -4,18 +4,19 @@ SPMPlaygrounds is a macOS command line tool to create an Xcode project with a Sw
 
 ```
  ~  spm-playground --help
-OVERVIEW: Creates an Xcode project with a Playground and an SPM library ready for use in it.
+OVERVIEW: Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use.
 
 USAGE: spm-playground [options]
 
 OPTIONS:
-  --deps, -d        dependency url(s) and (optionally) version specification [default: []]
-  --force           overwrite existing file/directory [default: false]
-  --help, -h        Display available options [default: false]
-  --library, -l     name of library to import (inferred if not provided) [default: nil]
-  --name, -n        name of directory and Xcode project [default: SPM-Playground]
-  --platform, -p    platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
-  --version, -v     Display tool version [default: false]
+  --deps, -d         Dependency url(s) and (optionally) version specification [default: []]
+  --force, -f        Overwrite existing file/directory [default: false]
+  --help, -h         Display available options [default: false]
+  --libs, -l         Names of libraries to import (inferred if not provided) [default: []]
+  --name, -n         Name of directory and Xcode project [default: SPM-Playground]
+  --outputdir, -o    Directory where project folder should be saved [default: /Users/sas/Projects/SPMPlayground]
+  --platform, -p     Platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
+  --version, -v      Display tool version [default: false]
 ```
 
 ## Examples

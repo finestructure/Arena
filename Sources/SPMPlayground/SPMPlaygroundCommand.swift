@@ -31,27 +31,27 @@ public enum SPMPlaygroundError: LocalizedError {
 
 public class SPMPlaygroundCommand {
     public let name = "spm-playground"
-    public let documentation = "Creates an Xcode project with a Playground and an SPM library ready for use in it."
+    public let documentation = "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
     let help = Help()
 
-    @Option(name: "name", shorthand: "n", documentation: "name of directory and Xcode project")
+    @Option(name: "name", shorthand: "n", documentation: "Name of directory and Xcode project")
     var projectName = "SPM-Playground"
 
-    @Option(name: "deps", shorthand: "d", documentation: "dependency url(s) and (optionally) version specification")
+    @Option(name: "deps", shorthand: "d", documentation: "Dependency url(s) and (optionally) version specification")
     var dependencies = [Dependency]()
 
-    @Option(name: "libs", shorthand: "l", documentation: "names of libraries to import (inferred if not provided)")
+    @Option(name: "libs", shorthand: "l", documentation: "Names of libraries to import (inferred if not provided)")
     var libNames: [String] = []
 
-    @Option(shorthand: "p", documentation: "platform for Playground (one of 'macos', 'ios', 'tvos')")
+    @Option(shorthand: "p", documentation: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform = .macos
 
     let version = Version(SPMPlaygroundVersion)
 
-    @Option(shorthand: "f", documentation: "overwrite existing file/directory")
+    @Option(shorthand: "f", documentation: "Overwrite existing file/directory")
     var force = false
 
-    @Option(name: "outputdir", shorthand: "o", documentation: "directory where project folder should be saved")
+    @Option(name: "outputdir", shorthand: "o", documentation: "Directory where project folder should be saved")
     var outputPath = Path.cwd
 
     var targetName: String { projectName }
