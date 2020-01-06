@@ -21,7 +21,7 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(try libraryNames(for: package), ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
     }
 
-    func test_parse_multiple_deps() throws {
+    func test_args_multiple_deps() throws {
         do {
             var args = ["-d", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
             let cmd = SPMPlaygroundCommand()

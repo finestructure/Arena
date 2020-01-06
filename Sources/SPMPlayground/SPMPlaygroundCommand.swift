@@ -14,27 +14,32 @@ import Yaap
 public enum SPMPlaygroundError: LocalizedError {
     case missingDependency
     case pathExists(String)
+    case noLibrariesFound
 
     public var errorDescription: String? {
         switch self {
             case .missingDependency:
-                return "no dependency provided via -d parameter"
+                return "no dependencies"
             case .pathExists(let path):
                 return "'\(path)' already exists"
+            case .noLibrariesFound:
+                return "no libraries found"
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
             case .missingDependency:
-                return "provide at least one <dependency>"
+                return "provide at least one dependency via the -d parameter"
             case .pathExists:
-                return "use '--force' to overwrite"
+                return "use '-f' to overwrite"
+            case .noLibrariesFound:
+                return "make sure the referenced dependencies define library products"
         }
     }
 
     public var localizedDescription: String {
-        "❌  \(errorDescription!), \(recoverySuggestion!)"
+        "❌  " + [errorDescription, failureReason, recoverySuggestion].compactMap { $0 }.joined(separator: ", ")
     }
 }
 
@@ -50,9 +55,8 @@ public class SPMPlaygroundCommand {
     @Option(name: "deps", shorthand: "d", documentation: "dependency url(s) and (optionally) version specification")
     var dependencies = [Dependency]()
 
-    // TODO: turn into array
-    @Option(name: "library", shorthand: "l", documentation: "name of library to import (inferred if not provided)")
-    var libName: String? = nil
+    @Option(name: "libs", shorthand: "l", documentation: "names of libraries to import (inferred if not provided)")
+    var libNames: [String] = []
 
     @Option(shorthand: "p", documentation: "platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform = .macos
@@ -124,7 +128,7 @@ extension SPMPlaygroundCommand: Command {
             libs = try dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
                 .flatMap { try libraryNames(for: $0) }
-            assert(libs.count > 0, "❌  no libraries found!")
+            if libs.isEmpty { throw SPMPlaygroundError.noLibrariesFound }
             print("📔  libraries found: \(libs.joined(separator: ", "))")
         }
 
@@ -160,7 +164,8 @@ extension SPMPlaygroundCommand: Command {
         // add playground
         do {
             try playgroundPath().mkdir()
-            let importClauses = (libName.map { [$0] } ?? libs).map { "import \($0)" }.joined(separator: "\n") + "\n"
+            let libsToImport = !libNames.isEmpty ? libNames : libs
+            let importClauses = libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
             try importClauses.write(to: playgroundPath()/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
