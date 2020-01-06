@@ -19,27 +19,12 @@ public enum SPMPlaygroundError: LocalizedError {
     public var errorDescription: String? {
         switch self {
             case .missingDependency:
-                return "no dependencies"
-            case .pathExists(let path):
-                return "'\(path)' already exists"
-            case .noLibrariesFound:
-                return "no libraries found"
-        }
-    }
-
-    public var recoverySuggestion: String? {
-        switch self {
-            case .missingDependency:
                 return "provide at least one dependency via the -d parameter"
-            case .pathExists:
-                return "use '-f' to overwrite"
+            case .pathExists(let path):
+                return "'\(path)' already exists, use '-f' to overwrite"
             case .noLibrariesFound:
-                return "make sure the referenced dependencies define library products"
+                return "no libraries found, make sure the referenced dependencies define library products"
         }
-    }
-
-    public var localizedDescription: String {
-        "❌  " + [errorDescription, failureReason, recoverySuggestion].compactMap { $0 }.joined(separator: ", ")
     }
 }
 
