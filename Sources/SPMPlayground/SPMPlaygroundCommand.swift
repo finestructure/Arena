@@ -58,15 +58,15 @@ public class SPMPlaygroundCommand {
 
     var projectPath: Path { outputPath/projectName }
 
-    func xcodeprojPath(parentDir: Path = Path.cwd) -> Path {
+    var xcodeprojPath: Path {
         projectPath/"\(projectName).xcodeproj"
     }
 
-    func xcworkspacePath(parentDir: Path = Path.cwd) -> Path {
+    var xcworkspacePath: Path {
         projectPath/"\(projectName).xcworkspace"
     }
 
-    func playgroundPath(parentDir: Path = Path.cwd) -> Path {
+    var playgroundPath: Path {
         projectPath/"MyPlayground.playground"
     }
 
@@ -131,7 +131,7 @@ extension SPMPlaygroundCommand: Command {
 
         // create workspace
         do {
-            try xcworkspacePath().mkdir()
+            try xcworkspacePath.mkdir()
             try """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <Workspace
@@ -140,28 +140,28 @@ extension SPMPlaygroundCommand: Command {
                 location = "group:MyPlayground.playground">
                 </FileRef>
                 <FileRef
-                location = "container:\(xcodeprojPath().basename())">
+                location = "container:\(xcodeprojPath.basename())">
                 </FileRef>
                 </Workspace>
-                """.write(to: xcworkspacePath()/"contents.xcworkspacedata")
+                """.write(to: xcworkspacePath/"contents.xcworkspacedata")
         }
 
         // add playground
         do {
-            try playgroundPath().mkdir()
+            try playgroundPath.mkdir()
             let libsToImport = !libNames.isEmpty ? libNames : libs
             let importClauses = libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
-            try importClauses.write(to: playgroundPath()/"Contents.swift")
+            try importClauses.write(to: playgroundPath/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <playground version='5.0' target-platform='\(platform)'>
                 <timeline fileName='timeline.xctimeline'/>
                 </playground>
-                """.write(to: playgroundPath()/"contents.xcplayground")
+                """.write(to: playgroundPath/"contents.xcplayground")
         }
 
         print("✅  created project in folder '\(projectPath.relative(to: Path.cwd))'")
-        try shellOut(to: .openFile(at: projectPath))
+        try shellOut(to: .openFile(at: xcworkspacePath))
     }
 }
 
