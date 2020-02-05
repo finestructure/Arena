@@ -24,9 +24,9 @@ OPTIONS:
 ### Import Github repository
 
 ```
- ~  spm-playground -d https://github.com/johnsundell/plot
+ ~  spm-playground -d https://github.com/finestructure/Gala
 🔧  resolving package dependencies
-📔  libraries found: Plot
+📔  libraries found: Gala
 ✅  created project in folder 'SPM-Playground'
 ```
 
@@ -42,9 +42,9 @@ spm-playground -d ~/Projects/Parser
 ### Import both
 
 ```
-spm-playground -d ~/Projects/Parser https://github.com/johnsundell/plot
+spm-playground -d ~/Projects/Parser https://github.com/finestructure/Gala
 🔧  resolving package dependencies
-📔  libraries found: Parser, Plot
+📔  libraries found: Parser, Gala
 ✅  created project in folder 'SPM-Playground'
 ```
 
@@ -52,31 +52,31 @@ spm-playground -d ~/Projects/Parser https://github.com/johnsundell/plot
 
 In case you want to fetch a particular revision, range of revisions, or branch, you can use a syntax similar to the one used in a `Package.swift` file. Here's what's supported and the corresponding package dependecy that it will create in the generated project:
 
-- `-d https://github.com/johnsundell/plot@0.3.0`
+- `-d https://github.com/finestructure/Gala@0.1.0`
   
-  → `.package(url: "https://github.com/johnsundell/plot", .exact("0.3.0"))`
+  → `.package(url: "https://github.com/finestructure/Gala", .exact("0.1.0"))`
 
-- `-d https://github.com/johnsundell/plot@from:0.1.0`
+- `-d https://github.com/finestructure/Gala@from:0.1.0`
   
-  → `.package(url: "https://github.com/johnsundell/plot", from: "0.1.0")`
+  → `.package(url: "https://github.com/finestructure/Gala", from: "0.1.0")`
 
-- `-d "https://github.com/johnsundell/plot@0.1.0..<4.0.0"`
+- `-d "https://github.com/finestructure/Gala@0.1.0..<4.0.0"`
 
-  → `.package(url: "https://github.com/johnsundell/plot", "0.1.0"..<"4.0.0")`
+  → `.package(url: "https://github.com/finestructure/Gala", "0.1.0"..<"4.0.0")`
 
-- `-d https://github.com/johnsundell/plot@0.1.0...4.0.0"` 
+- `-d https://github.com/finestructure/Gala@0.1.0...4.0.0` 
 
-  → `.package(url: "https://github.com/johnsundell/plot", "0.1.0"..<"4.0.1")`
+  → `.package(url: "https://github.com/finestructure/Gala", "0.1.0"..<"4.0.1")`
 
-- `-d https://github.com/johnsundell/plot@branch:master` 
+- `-d https://github.com/finestructure/Gala@branch:master` 
 
-  → `.package(url: "https://github.com/johnsundell/plot", .branch("master"))`
+  → `.package(url: "https://github.com/finestructure/Gala", .branch("master"))`
 
-- `-d https://github.com/johnsundell/plot@revision:2e5574972f83bc5cdea59662986e701b86137642` 
+- `-d https://github.com/finestructure/Gala@revision:7235531e92e71176dc31e77d6ff2b128a2602110` 
 
-  → `.package(url: "https://github.com/johnsundell/plot", .revision("2e5574972f83bc5cdea59662986e701b86137642"))`
+  → `.package(url: "https://github.com/finestructure/Gala", .revision("7235531e92e71176dc31e77d6ff2b128a2602110"))`
 
-Make sure to properly quote the URL if you are using the `..<` range operator.
+Make sure to properly quote the URL if you are using the `..<` range operator. Otherwise your shell will interpret the `<` character as input redirection.
 
 ## How to build and install
 
