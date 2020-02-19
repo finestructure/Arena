@@ -35,7 +35,7 @@ public struct Dependency: Equatable {
             case .noVersion where url.isFileURL:
                 self.requirement = .path
             case .noVersion:
-                self.requirement = .from(SPMUtility.Version("0.0.0"))
+                self.requirement = .from(Version("0.0.0"))
             case .range(let r):
                 self.requirement = .range(r)
             case .revision(let r):

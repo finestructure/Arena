@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "ArenaCore", targets: ["ArenaCore"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-package-manager", from: "0.5.0"),
+        .package(url: "https://github.com/apple/swift-package-manager", .revision("swift-5.2-DEVELOPMENT-SNAPSHOT-2020-02-18-a")),
         .package(url: "https://github.com/finestructure/Parser", from: "0.0.0"),
         .package(url: "https://github.com/hartbit/Yaap.git", from: "1.0.0"),
         .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),

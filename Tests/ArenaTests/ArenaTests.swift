@@ -10,10 +10,10 @@ final class ArenaTests: XCTestCase {
         let p = checkoutsDirectory/"swift-package-manager"
         print(p)
         let package = AbsolutePath(p.string)
-        let manifest = try ManifestLoader.loadManifest(packagePath: package, swiftCompiler: swiftCompiler)
+        let manifest = try ManifestLoader.loadManifest(packagePath: package, swiftCompiler: swiftCompiler, packageKind: .remote)
         XCTAssertEqual(manifest.name, "SwiftPM")
-        XCTAssertEqual(manifest.products.map { $0.name }, ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
-        XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.automatic)])
+        XCTAssertEqual(manifest.products.map { $0.name }, ["SwiftPM", "SwiftPM-auto", "PackageDescription"])
+        XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.dynamic)])
     }
 
     func test_getLibraryInfo() throws {
