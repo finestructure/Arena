@@ -23,7 +23,14 @@ let swiftCompiler: AbsolutePath = {
 }()
 
 
-public func libraryNames(for package: Path) throws -> [String] {
+public struct LibraryInfo {
+    var libraryName: String
+    var packageName: String
+    var path: AbsolutePath
+}
+
+
+public func getLibraryInfo(for package: Path) throws -> [LibraryInfo] {
     let path = AbsolutePath(package.string)
     let manifest = try ManifestLoader.loadManifest(packagePath: path, swiftCompiler: swiftCompiler)
     return manifest.products.filter { p in
@@ -32,7 +39,9 @@ public func libraryNames(for package: Path) throws -> [String] {
         } else {
             return false
         }
-    }.map { $0.name }
+    }.map {
+        LibraryInfo(libraryName: $0.name, packageName: manifest.name, path: path)
+    }
 }
 
 

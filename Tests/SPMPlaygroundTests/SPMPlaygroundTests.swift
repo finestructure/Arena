@@ -16,9 +16,10 @@ final class SPMPlaygroundTests: XCTestCase {
         XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.automatic)])
     }
 
-    func test_libraryNames() throws {
+    func test_getLibraryInfo() throws {
         let package = checkoutsDirectory/"swift-package-manager"
-        XCTAssertEqual(try libraryNames(for: package), ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
+        XCTAssertEqual(try getLibraryInfo(for: package).map({ $0.libraryName }),
+                       ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
     }
 
     func test_args_multiple_deps() throws {

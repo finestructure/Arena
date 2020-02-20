@@ -107,22 +107,34 @@ extension SPMPlaygroundCommand: Command {
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
         }
 
-        let libs: [String]
+        let libs: [LibraryInfo]
         do {
             // find libraries
             libs = try dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
-                .flatMap { try libraryNames(for: $0) }
+                .flatMap { try getLibraryInfo(for: $0) }
             if libs.isEmpty { throw SPMPlaygroundError.noLibrariesFound }
-            print("📔  libraries found: \(libs.joined(separator: ", "))")
+            print("📔  libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
         }
 
         // update Package.swift targets
         do {
             let packagePath = projectPath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let libsClause = libs.map { "\"\($0)\"" }.joined(separator: ", ")
-            let updatedTgts =  "package.targets = [.target(name: \"\(targetName)\", dependencies: [\(libsClause)])]"
+            let productsClause = libs.map {
+                """
+                .product(name: "\($0.libraryName)", package: "\($0.packageName)")
+                """
+            }.joined(separator: ",\n")
+            let updatedTgts =  """
+                package.targets = [
+                    .target(name: "\(targetName)",
+                        dependencies: [
+                            \(productsClause)
+                        ]
+                    )
+                ]
+                """
             try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
         }
 
@@ -149,7 +161,7 @@ extension SPMPlaygroundCommand: Command {
         // add playground
         do {
             try playgroundPath.mkdir()
-            let libsToImport = !libNames.isEmpty ? libNames : libs
+            let libsToImport = !libNames.isEmpty ? libNames : libs.map({ $0.libraryName })
             let importClauses = libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
             try importClauses.write(to: playgroundPath/"Contents.swift")
             try """
