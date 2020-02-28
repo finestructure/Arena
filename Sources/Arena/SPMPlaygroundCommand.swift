@@ -11,7 +11,7 @@ import ShellOut
 import Yaap
 
 
-public enum SPMPlaygroundError: LocalizedError {
+public enum ArenaError: LocalizedError {
     case missingDependency
     case pathExists(String)
     case noLibrariesFound
@@ -29,8 +29,8 @@ public enum SPMPlaygroundError: LocalizedError {
 }
 
 
-public class SPMPlaygroundCommand {
-    public let name = "spm-playground"
+public class ArenaCommand {
+    public let name = "arena"
     public let documentation = "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
     let help = Help()
 
@@ -46,7 +46,7 @@ public class SPMPlaygroundCommand {
     @Option(shorthand: "p", documentation: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform = .macos
 
-    let version = Version(SPMPlaygroundVersion)
+    let version = Version(ArenaVersion)
 
     @Option(shorthand: "f", documentation: "Overwrite existing file/directory")
     var force = false
@@ -74,17 +74,17 @@ public class SPMPlaygroundCommand {
 }
 
 
-extension SPMPlaygroundCommand: Command {
+extension ArenaCommand: Command {
     public func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
         guard !dependencies.isEmpty else {
-            throw SPMPlaygroundError.missingDependency
+            throw ArenaError.missingDependency
         }
 
         if force && projectPath.exists {
             try projectPath.delete()
         }
         guard !projectPath.exists else {
-            throw SPMPlaygroundError.pathExists(projectPath.basename())
+            throw ArenaError.pathExists(projectPath.basename())
         }
 
         // create package
@@ -113,7 +113,7 @@ extension SPMPlaygroundCommand: Command {
             libs = try dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
                 .flatMap { try getLibraryInfo(for: $0) }
-            if libs.isEmpty { throw SPMPlaygroundError.noLibrariesFound }
+            if libs.isEmpty { throw ArenaError.noLibrariesFound }
             print("📔  libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
         }
 

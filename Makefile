@@ -1,7 +1,7 @@
-.DEFAULT_GOAL := release
+.DEFAULT_GOAL := build
 
 export VERSION=$(shell git describe --always --tags --dirty)
-VERSION_FILE := Sources/SPMPlayground/Version.swift
+VERSION_FILE := Sources/Arena/Version.swift
 
 clean:
 	swift package clean
@@ -9,17 +9,23 @@ clean:
 force-clean:
 	rm -rf .build
 
+build:
+	swift build
+
+test:
+	swift test
+
 release: version
 	swift build -c release
 
 install: release
-	install .build/release/spm-playground /usr/local/bin/
+	install .build/release/arena /usr/local/bin/
 	@# reset version file
 	@git checkout $(VERSION_FILE)
 
 version:
 	@# run
-	@# git update-index --assume-unchanged Sources/SPMPlayground/Version.swift
+	@# git update-index --assume-unchanged $(VERSION_FILE)
 	@# to avoid tracking changes for file
 	@echo VERSION: $(VERSION)
-	@echo "public let SPMPlaygroundVersion = \"$(VERSION)\"" > $(VERSION_FILE)
+	@echo "public let ArenaVersion = \"$(VERSION)\"" > $(VERSION_FILE)
