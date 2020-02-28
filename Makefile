@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 
-export VERSION=$(shell git describe --always --tags --dirty)
+VERSION := $(shell git describe --always --tags --dirty)
 VERSION_FILE := Sources/ArenaCore/Version.swift
 
 clean:
@@ -16,7 +16,7 @@ test:
 	swift test
 
 release: version
-	swift build -c release
+	swift build -c release --disable-sandbox
 
 install: release
 	install .build/release/arena /usr/local/bin/
