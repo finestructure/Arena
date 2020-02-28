@@ -4,8 +4,6 @@
 
 Arena is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
 
-Arena – Spanish for "sand" – is where you battle-test your SPM packages and sand is, well, abundant in playgrounds, isn't it? 🙂
-
 ```
  ~  arena --help
 OVERVIEW: Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use.
@@ -22,6 +20,10 @@ OPTIONS:
   --platform, -p     Platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
   --version, -v      Display tool version [default: false]
 ```
+
+## Why Arena?
+
+Arena – Spanish for "sand" – is where you battle-test your SPM packages and sand is, well, abundant in playgrounds, isn't it? 🙂
 
 ## Examples
 
