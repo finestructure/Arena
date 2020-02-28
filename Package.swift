@@ -3,10 +3,10 @@
 import PackageDescription
 
 let package = Package(
-    name: "SPMPlayground",
+    name: "Arena",
     products: [
-        .executable(name: "spm-playground", targets: ["spm-playground"]),
-        .library(name: "SPMPlayground", targets: ["SPMPlayground"])
+        .executable(name: "arena", targets: ["Arena-CLI"]),
+        .library(name: "Arena", targets: ["Arena"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-package-manager", from: "0.5.0"),
@@ -17,13 +17,13 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "spm-playground",
-            dependencies: ["SPMPlayground"]),
+            name: "Arena-CLI",
+            dependencies: ["Arena"]),
         .target(
-            name: "SPMPlayground",
+            name: "Arena",
             dependencies: ["Parser", "Path", "ShellOut", "SwiftPM-auto", "Yaap"]),
         .testTarget(
-            name: "SPMPlaygroundTests",
-            dependencies: ["SPMPlayground"]),
+            name: "ArenaTests",
+            dependencies: ["Arena"]),
     ]
 )

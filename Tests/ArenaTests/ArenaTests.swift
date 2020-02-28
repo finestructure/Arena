@@ -1,11 +1,11 @@
-@testable import SPMPlayground
+@testable import Arena
 import Path
 import Parser
 import Workspace
 import XCTest
 
 
-final class SPMPlaygroundTests: XCTestCase {
+final class ArenaTests: XCTestCase {
     func test_loadManifest() throws {
         let p = checkoutsDirectory/"swift-package-manager"
         print(p)
@@ -25,7 +25,7 @@ final class SPMPlaygroundTests: XCTestCase {
     func test_args_multiple_deps() throws {
         do {
             var args = ["-d", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
-            let cmd = SPMPlaygroundCommand()
+            let cmd = ArenaCommand()
             let res = try cmd.parse(arguments: &args)
             XCTAssert(res)
             XCTAssertEqual(cmd.dependencies, [

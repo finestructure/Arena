@@ -1,0 +1,3 @@
+import Arena
+
+ArenaCommand().parseAndRun()

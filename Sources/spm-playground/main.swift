@@ -1,3 +1,0 @@
-import SPMPlayground
-
-SPMPlaygroundCommand().parseAndRun()
