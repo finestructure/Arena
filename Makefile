@@ -9,7 +9,7 @@ clean:
 force-clean:
 	rm -rf .build
 
-build:
+build: version
 	swift build
 
 test:
@@ -24,8 +24,7 @@ install: release
 	@git checkout $(VERSION_FILE)
 
 version:
-	@# run
-	@# git update-index --assume-unchanged $(VERSION_FILE)
-	@# to avoid tracking changes for file
+	@# avoid tracking changes for file:
+	@git update-index --assume-unchanged $(VERSION_FILE)
 	@echo VERSION: $(VERSION)
 	@echo "public let ArenaVersion = \"$(VERSION)\"" > $(VERSION_FILE)

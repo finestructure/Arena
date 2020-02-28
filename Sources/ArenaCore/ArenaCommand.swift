@@ -30,13 +30,13 @@ public enum ArenaError: LocalizedError {
 
 
 public struct Arena: ParsableCommand {
-    public init() {}
-
     public static var configuration = CommandConfiguration(
         abstract: "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
     )
 
-    @Option(name: [.customLong("name"), .customShort("n")], default: "SPM-Playground", help: "Name of directory and Xcode project")
+    @Option(name: [.customLong("name"), .customShort("n")],
+            default: "SPM-Playground",
+            help: "Name of directory and Xcode project")
     var projectName: String
 
     @Option(name: [.customLong("deps"), .customShort("d")],
@@ -49,18 +49,29 @@ public struct Arena: ParsableCommand {
             help: "Names of libraries to import (inferred if not provided)")
     var libNames: [String]
 
-    @Option(name: .shortAndLong, default: .macos, help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
+    @Option(name: .shortAndLong,
+            default: .macos,
+            help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform
 
-    @Flag(name: .shortAndLong, help: "Overwrite existing file/directory")
+    @Flag(name: .shortAndLong,
+          help: "Overwrite existing file/directory")
     var force: Bool
 
-    @Option(name: [.customLong("outputdir"), .customShort("o")], default: Path.cwd, help: "Directory where project folder should be saved")
+    @Option(name: [.customLong("outputdir"), .customShort("o")],
+            default: Path.cwd,
+            help: "Directory where project folder should be saved")
     var outputPath: Path
 
-    @Flag(name: .shortAndLong, help: "Show version")
-    var version: Bool
+    @Flag(name: [.customLong("version"), .customShort("v")],
+          help: "Show version")
+    var showVersion: Bool
 
+    public init() {}
+}
+
+
+extension Arena {
     var targetName: String { projectName }
 
     var projectPath: Path { outputPath/projectName }
@@ -76,9 +87,12 @@ public struct Arena: ParsableCommand {
     var playgroundPath: Path {
         projectPath/"MyPlayground.playground"
     }
+}
 
+
+extension Arena {
     public func run() throws {
-        guard !version else {
+        if showVersion {
             print(ArenaVersion)
             return
         }
