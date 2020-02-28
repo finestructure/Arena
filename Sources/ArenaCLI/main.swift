@@ -1,3 +1,3 @@
-import Arena
+import ArenaCore
 
 ArenaCommand().parseAndRun()

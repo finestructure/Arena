@@ -5,8 +5,8 @@ import PackageDescription
 let package = Package(
     name: "Arena",
     products: [
-        .executable(name: "arena", targets: ["Arena-CLI"]),
-        .library(name: "Arena", targets: ["Arena"])
+        .executable(name: "arena", targets: ["ArenaCLI"]),
+        .library(name: "ArenaCore", targets: ["ArenaCore"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-package-manager", from: "0.5.0"),
@@ -17,13 +17,13 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Arena-CLI",
-            dependencies: ["Arena"]),
+            name: "ArenaCLI",
+            dependencies: ["ArenaCore"]),
         .target(
-            name: "Arena",
+            name: "ArenaCore",
             dependencies: ["Parser", "Path", "ShellOut", "SwiftPM-auto", "Yaap"]),
         .testTarget(
             name: "ArenaTests",
-            dependencies: ["Arena"]),
+            dependencies: ["ArenaCore"]),
     ]
 )

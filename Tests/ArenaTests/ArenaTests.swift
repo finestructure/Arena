@@ -1,4 +1,4 @@
-@testable import Arena
+@testable import ArenaCore
 import Path
 import Parser
 import Workspace
