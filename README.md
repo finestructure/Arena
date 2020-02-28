@@ -8,17 +8,21 @@ Arena is a macOS command line tool to create an Xcode project with a Swift Playg
  ~  arena --help
 OVERVIEW: Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use.
 
-USAGE: arena [options]
+USAGE: arena [--name <name>] [--libs <libs> ...] [--platform <platform>] [--force] [--outputdir <outputdir>] [--version] [<dependencies> ...]
+
+ARGUMENTS:
+  <dependencies>          Dependency url(s) and (optionally) version specification 
 
 OPTIONS:
-  --deps, -d         Dependency url(s) and (optionally) version specification [default: []]
-  --force, -f        Overwrite existing file/directory [default: false]
-  --help, -h         Display available options [default: false]
-  --libs, -l         Names of libraries to import (inferred if not provided) [default: []]
-  --name, -n         Name of directory and Xcode project [default: SPM-Playground]
-  --outputdir, -o    Directory where project folder should be saved [default: /Users/sas/Projects/Arena]
-  --platform, -p     Platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
-  --version, -v      Display tool version [default: false]
+  -n, --name <name>       Name of directory and Xcode project (default: SPM-Playground)
+  -l, --libs <libs>       Names of libraries to import (inferred if not provided) 
+  -p, --platform <platform>
+                          Platform for Playground (one of 'macos', 'ios', 'tvos') (default: macos)
+  -f, --force             Overwrite existing file/directory 
+  -o, --outputdir <outputdir>
+                          Directory where project folder should be saved (default: /Users/sas/Projects/Arena)
+  -v, --version           Show version 
+  -h, --help              Show help information.
 ```
 
 ## Why Arena?
@@ -30,7 +34,7 @@ Arena – Spanish for "sand" – is where you battle-test your SPM packages and 
 ### Import Github repository
 
 ```
- ~  arena -d https://github.com/finestructure/Gala
+arena https://github.com/finestructure/Gala
 🔧  resolving package dependencies
 📔  libraries found: Gala
 ✅  created project in folder 'SPM-Playground'
@@ -39,7 +43,7 @@ Arena – Spanish for "sand" – is where you battle-test your SPM packages and 
 ### Import local repository
 
 ```
-arena -d ~/Projects/Parser
+arena ~/Projects/Parser
 🔧  resolving package dependencies
 📔  libraries found: Parser
 ✅  created project in folder 'SPM-Playground'
@@ -48,7 +52,7 @@ arena -d ~/Projects/Parser
 ### Import both
 
 ```
-arena -d ~/Projects/Parser https://github.com/finestructure/Gala
+arena ~/Projects/Parser https://github.com/finestructure/Gala
 🔧  resolving package dependencies
 📔  libraries found: Parser, Gala
 ✅  created project in folder 'SPM-Playground'
@@ -58,27 +62,27 @@ arena -d ~/Projects/Parser https://github.com/finestructure/Gala
 
 In case you want to fetch a particular revision, range of revisions, or branch, you can use a syntax similar to the one used in a `Package.swift` file. Here's what's supported and the corresponding package dependecy that it will create in the generated project:
 
-- `-d https://github.com/finestructure/Gala@0.1.0`
+- `https://github.com/finestructure/Gala@0.1.0`
   
   → `.package(url: "https://github.com/finestructure/Gala", .exact("0.1.0"))`
 
-- `-d https://github.com/finestructure/Gala@from:0.1.0`
+- `https://github.com/finestructure/Gala@from:0.1.0`
   
   → `.package(url: "https://github.com/finestructure/Gala", from: "0.1.0")`
 
-- `-d "https://github.com/finestructure/Gala@0.1.0..<4.0.0"`
+- `"https://github.com/finestructure/Gala@0.1.0..<4.0.0"`
 
   → `.package(url: "https://github.com/finestructure/Gala", "0.1.0"..<"4.0.0")`
 
-- `-d https://github.com/finestructure/Gala@0.1.0...4.0.0` 
+- `https://github.com/finestructure/Gala@0.1.0...4.0.0` 
 
   → `.package(url: "https://github.com/finestructure/Gala", "0.1.0"..<"4.0.1")`
 
-- `-d https://github.com/finestructure/Gala@branch:master` 
+- `https://github.com/finestructure/Gala@branch:master` 
 
   → `.package(url: "https://github.com/finestructure/Gala", .branch("master"))`
 
-- `-d https://github.com/finestructure/Gala@revision:7235531e92e71176dc31e77d6ff2b128a2602110` 
+- `https://github.com/finestructure/Gala@revision:7235531e92e71176dc31e77d6ff2b128a2602110` 
 
   → `.package(url: "https://github.com/finestructure/Gala", .revision("7235531e92e71176dc31e77d6ff2b128a2602110"))`
 
