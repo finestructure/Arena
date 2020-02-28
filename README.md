@@ -31,7 +31,7 @@ OPTIONS:
  ~  arena -d https://github.com/finestructure/Gala
 🔧  resolving package dependencies
 📔  libraries found: Gala
-✅  created project in folder 'arena'
+✅  created project in folder 'SPM-Playground'
 ```
 
 ### Import local repository
@@ -40,7 +40,7 @@ OPTIONS:
 arena -d ~/Projects/Parser
 🔧  resolving package dependencies
 📔  libraries found: Parser
-✅  created project in folder 'arena'
+✅  created project in folder 'SPM-Playground'
 ```
 
 ### Import both
@@ -49,7 +49,7 @@ arena -d ~/Projects/Parser
 arena -d ~/Projects/Parser https://github.com/finestructure/Gala
 🔧  resolving package dependencies
 📔  libraries found: Parser, Gala
-✅  created project in folder 'arena'
+✅  created project in folder 'SPM-Playground'
 ```
 
 ## Specifying versions
