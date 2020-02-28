@@ -15,7 +15,7 @@ OPTIONS:
   --force, -f        Overwrite existing file/directory [default: false]
   --help, -h         Display available options [default: false]
   --libs, -l         Names of libraries to import (inferred if not provided) [default: []]
-  --name, -n         Name of directory and Xcode project [default: arena]
+  --name, -n         Name of directory and Xcode project [default: SPM-Playground]
   --outputdir, -o    Directory where project folder should be saved [default: /Users/sas/Projects/SPMPlayground]
   --platform, -p     Platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
   --version, -v      Display tool version [default: false]
