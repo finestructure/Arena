@@ -5,10 +5,10 @@
 //  Created by Sven A. Schmidt on 23/12/2019.
 //
 
+import ArgumentParser
 import Foundation
 import Path
 import ShellOut
-import Yaap
 
 
 @discardableResult
@@ -35,25 +35,8 @@ extension Optional: CustomStringConvertible where Wrapped == String {
 }
 
 
-extension Optional: ArgumentType where Wrapped == String {
-    public init(arguments: inout [String]) throws {
-        self = arguments.first
-        if !arguments.isEmpty {
-            arguments.removeFirst()
-        }
-    }
-}
-
-
-extension Path: ArgumentType {
-    public init(arguments: inout [String]) throws {
-        guard let arg = arguments.first else {
-            throw ParseError.missingArgument
-        }
-        guard let path = Path(arg) else {
-            throw ParseError.invalidFormat(arg)
-        }
-        arguments.removeFirst()
-        self = path
+extension Path: ExpressibleByArgument {
+    public init?(argument: String) {
+        self.init(argument)
     }
 }

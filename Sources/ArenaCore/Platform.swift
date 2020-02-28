@@ -5,8 +5,8 @@
 //  Created by Sven A. Schmidt on 23/12/2019.
 //
 
+import ArgumentParser
 import Foundation
-import Yaap
 
 
 public enum Platform: String {
@@ -27,19 +27,4 @@ extension Platform: CustomStringConvertible {
 }
 
 
-extension Platform: ArgumentType {
-    public init(arguments: inout [String]) throws {
-        guard let argument = arguments.first else {
-            throw ParseError.missingArgument
-        }
-
-        guard let value = Platform.init(rawValue: argument) else {
-            throw ParseError.invalidFormat(argument)
-        }
-
-        self = value
-        arguments.removeFirst()
-    }
-}
-
-
+extension Platform: ExpressibleByArgument { }

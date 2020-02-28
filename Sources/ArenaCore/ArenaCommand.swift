@@ -5,10 +5,10 @@
 //  Created by Sven A. Schmidt on 23/12/2019.
 //
 
+import ArgumentParser
 import Foundation
 import Path
 import ShellOut
-import Yaap
 
 
 public enum ArenaError: LocalizedError {
@@ -29,30 +29,33 @@ public enum ArenaError: LocalizedError {
 }
 
 
-public class ArenaCommand {
-    public let name = "arena"
-    public let documentation = "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
-    let help = Help()
+public struct Arena: ParsableCommand {
+    public init() {}
 
-    @Option(name: "name", shorthand: "n", documentation: "Name of directory and Xcode project")
-    var projectName = "SPM-Playground"
+    public static var configuration = CommandConfiguration(
+        abstract: "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
+    )
 
-    @Option(name: "deps", shorthand: "d", documentation: "Dependency url(s) and (optionally) version specification")
-    var dependencies = [Dependency]()
+    @Option(name: [.customLong("name"), .customShort("n")], default: "SPM-Playground", help: "Name of directory and Xcode project")
+    var projectName: String
 
-    @Option(name: "libs", shorthand: "l", documentation: "Names of libraries to import (inferred if not provided)")
-    var libNames: [String] = []
+    @Option(name: [.customLong("deps"), .customShort("d")], default: [], help: "Dependency url(s) and (optionally) version specification")
+    var dependencies: [Dependency]
 
-    @Option(shorthand: "p", documentation: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
-    var platform: Platform = .macos
+    @Option(name: [.customLong("libs"), .customShort("l")], default: [], help: "Names of libraries to import (inferred if not provided)")
+    var libNames: [String]
 
-    let version = Version(ArenaVersion)
+    @Option(name: .shortAndLong, default: .macos, help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
+    var platform: Platform
 
-    @Option(shorthand: "f", documentation: "Overwrite existing file/directory")
-    var force = false
+    @Option(name: .shortAndLong, default: false, help: "Overwrite existing file/directory")
+    var force: Bool
 
-    @Option(name: "outputdir", shorthand: "o", documentation: "Directory where project folder should be saved")
-    var outputPath = Path.cwd
+    @Option(name: [.customLong("outputdir"), .customShort("o")], default: Path.cwd, help: "Directory where project folder should be saved")
+    var outputPath: Path
+
+    @Option(name: .shortAndLong, default: false, help: "Show version")
+    var version: Bool
 
     var targetName: String { projectName }
 
@@ -70,12 +73,7 @@ public class ArenaCommand {
         projectPath/"MyPlayground.playground"
     }
 
-    public init() {}
-}
-
-
-extension ArenaCommand: Command {
-    public func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
+    public func run() throws {
         guard !dependencies.isEmpty else {
             throw ArenaError.missingDependency
         }

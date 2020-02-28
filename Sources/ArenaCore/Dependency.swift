@@ -5,11 +5,11 @@
 //  Created by Sven A. Schmidt on 29/12/2019.
 //
 
+import ArgumentParser
 import Foundation
 import PackageModel
 import Path
 import Parser
-import Yaap
 
 
 public struct Dependency: Equatable {
@@ -77,19 +77,26 @@ extension Dependency: CustomStringConvertible {
 }
 
 
-extension Dependency: ArgumentType {
-    public init(arguments: inout [String]) throws {
-        guard let argument = arguments.first else {
-            throw ParseError.missingArgument
-        }
-
+extension Dependency: ExpressibleByArgument {
+    public init?(argument: String) {
         let m = Parser.dependency.run(argument)
 
         guard let dep = m.result, m.rest.isEmpty else {
-            throw ParseError.invalidFormat(argument)
+            return nil
         }
 
         self = dep
-        arguments.removeFirst()
     }
 }
+
+
+extension Array: ExpressibleByArgument where Element == Dependency {
+    public init?(argument: String) {
+        let deps = argument
+            .components(separatedBy: CharacterSet.whitespaces)
+            .map(Dependency.init)
+        guard deps.allSatisfy({ $0 != nil }) else { return nil }
+        self = deps.compactMap({$0})
+    }
+}
+

@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "f6ac7b8118ff5d1bc0faee7f37bf6f8fd8f95602",
+          "version": "0.0.1"
+        }
+      },
+      {
         "package": "llbuild",
         "repositoryURL": "https://github.com/apple/swift-llbuild.git",
         "state": {
@@ -44,15 +53,6 @@
           "branch": null,
           "revision": "9abcc2260438177cecd7cf5185b144d13e74122b",
           "version": "0.5.0"
-        }
-      },
-      {
-        "package": "Yaap",
-        "repositoryURL": "https://github.com/hartbit/Yaap.git",
-        "state": {
-          "branch": null,
-          "revision": "90011c31147671d9ebabfcfc3241df6a7fdbcb99",
-          "version": "1.0.0"
         }
       }
     ]
