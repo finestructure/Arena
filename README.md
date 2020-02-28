@@ -88,9 +88,27 @@ In case you want to fetch a particular revision, range of revisions, or branch, 
 
 Make sure to properly quote the URL if you are using the `..<` range operator. Otherwise your shell will interpret the `<` character as input redirection.
 
-## How to build and install
+## How to install Arena
 
-You can build and install `arena` via the included `Makefile` by running:
+### Homebrew
+
+You can install Arena with [Homebrew](https://brew.sh):
+
+```
+brew install finestructure/tap/arena
+```
+
+### Mint
+
+You can install Arena with [Mint](https://github.com/yonaskolb/Mint):
+
+```
+mint install finestructure/arena
+```
+
+### Make
+
+Last not least, you can build and install `arena` via the included `Makefile` by running:
 
 ```
 make install
