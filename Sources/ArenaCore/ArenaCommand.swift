@@ -52,13 +52,13 @@ public struct Arena: ParsableCommand {
     @Option(name: .shortAndLong, default: .macos, help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform
 
-    @Option(name: .shortAndLong, default: false, help: "Overwrite existing file/directory")
+    @Flag(name: .shortAndLong, help: "Overwrite existing file/directory")
     var force: Bool
 
     @Option(name: [.customLong("outputdir"), .customShort("o")], default: Path.cwd, help: "Directory where project folder should be saved")
     var outputPath: Path
 
-    @Option(name: .shortAndLong, default: false, help: "Show version")
+    @Flag(name: .shortAndLong, help: "Show version")
     var version: Bool
 
     var targetName: String { projectName }
