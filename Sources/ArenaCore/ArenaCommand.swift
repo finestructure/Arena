@@ -39,11 +39,6 @@ public struct Arena: ParsableCommand {
             help: "Name of directory and Xcode project")
     var projectName: String
 
-    @Option(name: [.customLong("deps"), .customShort("d")],
-            parsing: .upToNextOption,
-            help: "Dependency url(s) and (optionally) version specification")
-    var dependencies: [Dependency]
-
     @Option(name: [.customLong("libs"), .customShort("l")],
             parsing: .upToNextOption,
             help: "Names of libraries to import (inferred if not provided)")
@@ -66,6 +61,9 @@ public struct Arena: ParsableCommand {
     @Flag(name: [.customLong("version"), .customShort("v")],
           help: "Show version")
     var showVersion: Bool
+
+    @Argument(help: "Dependency url(s) and (optionally) version specification")
+    var dependencies: [Dependency]
 
     public init() {}
 }

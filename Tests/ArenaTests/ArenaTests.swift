@@ -23,13 +23,40 @@ final class ArenaTests: XCTestCase {
     }
 
     func test_args_multiple_deps() throws {
-        let args = ["-d", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
+        let args = ["https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
         let res = try Arena.parse(args)
         XCTAssertEqual(res.dependencies, [
             Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
             Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .from("1.0.0"))
         ])
     }
+
+    func test_args_order() throws {
+        // ensure the --force flag (for instance) can be a trailing argument
+        do {
+            let args = ["-f", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
+                Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .from("1.0.0"))
+            ])
+            XCTAssertTrue(res.force)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        do {
+            let args = ["https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0", "-f"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
+                Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .from("1.0.0"))
+            ])
+            XCTAssertTrue(res.force)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
 
     func test_args_multiple_libs() throws {
         let args = ["-l", "foo", "bar"]
