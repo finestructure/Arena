@@ -23,16 +23,18 @@ final class ArenaTests: XCTestCase {
     }
 
     func test_args_multiple_deps() throws {
-        do {
-            var args = ["-d", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
-            let cmd = ArenaCommand()
-            let res = try cmd.parse(arguments: &args)
-            XCTAssert(res)
-            XCTAssertEqual(cmd.dependencies, [
-                Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
-                Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .from("1.0.0"))
-            ])
-        }
+        let args = ["-d", "https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
+        let res = try Arena.parse(args)
+        XCTAssertEqual(res.dependencies, [
+            Dependency(url: URL(string: "https://github.com/mxcl/Path.swift.git")!, requirement: .exact("1.2.3")),
+            Dependency(url: URL(string: "https://github.com/hartbit/Yaap.git")!, requirement: .from("1.0.0"))
+        ])
+    }
+
+    func test_args_multiple_libs() throws {
+        let args = ["-l", "foo", "bar"]
+        let res = try Arena.parse(args)
+        XCTAssertEqual(res.libNames, ["foo", "bar"])
     }
 
     func test_parse_version() throws {

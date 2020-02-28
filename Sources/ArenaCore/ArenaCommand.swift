@@ -5,10 +5,10 @@
 //  Created by Sven A. Schmidt on 23/12/2019.
 //
 
+import ArgumentParser
 import Foundation
 import Path
 import ShellOut
-import Yaap
 
 
 public enum ArenaError: LocalizedError {
@@ -19,7 +19,7 @@ public enum ArenaError: LocalizedError {
     public var errorDescription: String? {
         switch self {
             case .missingDependency:
-                return "provide at least one dependency via the -d parameter"
+                return "provide at least one dependency"
             case .pathExists(let path):
                 return "'\(path)' already exists, use '-f' to overwrite"
             case .noLibrariesFound:
@@ -29,31 +29,49 @@ public enum ArenaError: LocalizedError {
 }
 
 
-public class ArenaCommand {
-    public let name = "arena"
-    public let documentation = "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
-    let help = Help()
+public struct Arena: ParsableCommand {
+    public static var configuration = CommandConfiguration(
+        abstract: "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
+    )
 
-    @Option(name: "name", shorthand: "n", documentation: "Name of directory and Xcode project")
-    var projectName = "SPM-Playground"
+    @Option(name: [.customLong("name"), .customShort("n")],
+            default: "SPM-Playground",
+            help: "Name of directory and Xcode project")
+    var projectName: String
 
-    @Option(name: "deps", shorthand: "d", documentation: "Dependency url(s) and (optionally) version specification")
-    var dependencies = [Dependency]()
+    @Option(name: [.customLong("deps"), .customShort("d")],
+            parsing: .upToNextOption,
+            help: "Dependency url(s) and (optionally) version specification")
+    var dependencies: [Dependency]
 
-    @Option(name: "libs", shorthand: "l", documentation: "Names of libraries to import (inferred if not provided)")
-    var libNames: [String] = []
+    @Option(name: [.customLong("libs"), .customShort("l")],
+            parsing: .upToNextOption,
+            help: "Names of libraries to import (inferred if not provided)")
+    var libNames: [String]
 
-    @Option(shorthand: "p", documentation: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
-    var platform: Platform = .macos
+    @Option(name: .shortAndLong,
+            default: .macos,
+            help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
+    var platform: Platform
 
-    let version = Version(ArenaVersion)
+    @Flag(name: .shortAndLong,
+          help: "Overwrite existing file/directory")
+    var force: Bool
 
-    @Option(shorthand: "f", documentation: "Overwrite existing file/directory")
-    var force = false
+    @Option(name: [.customLong("outputdir"), .customShort("o")],
+            default: Path.cwd,
+            help: "Directory where project folder should be saved")
+    var outputPath: Path
 
-    @Option(name: "outputdir", shorthand: "o", documentation: "Directory where project folder should be saved")
-    var outputPath = Path.cwd
+    @Flag(name: [.customLong("version"), .customShort("v")],
+          help: "Show version")
+    var showVersion: Bool
 
+    public init() {}
+}
+
+
+extension Arena {
     var targetName: String { projectName }
 
     var projectPath: Path { outputPath/projectName }
@@ -69,13 +87,16 @@ public class ArenaCommand {
     var playgroundPath: Path {
         projectPath/"MyPlayground.playground"
     }
-
-    public init() {}
 }
 
 
-extension ArenaCommand: Command {
-    public func run(outputStream: inout TextOutputStream, errorStream: inout TextOutputStream) throws {
+extension Arena {
+    public func run() throws {
+        if showVersion {
+            print(ArenaVersion)
+            return
+        }
+
         guard !dependencies.isEmpty else {
             throw ArenaError.missingDependency
         }
