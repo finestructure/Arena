@@ -19,7 +19,7 @@ final class ArenaTests: XCTestCase {
     func test_getLibraryInfo() throws {
         let package = checkoutsDirectory/"swift-package-manager"
         XCTAssertEqual(try getLibraryInfo(for: package).map({ $0.libraryName }),
-                       ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
+                       ["SwiftPM", "SwiftPM-auto", "PackageDescription"])
     }
 
     func test_args_multiple_deps() throws {
