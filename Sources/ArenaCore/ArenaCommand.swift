@@ -1,5 +1,5 @@
 //
-//  SPMPlaygroundCommand.swift
+//  ArenaCommand.swift
 //  
 //
 //  Created by Sven A. Schmidt on 23/12/2019.

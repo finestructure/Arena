@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/finestructure/Parser",
         "state": {
           "branch": null,
-          "revision": "af68c68c388e6f243feb82a7eb514fbd6b0671d9",
-          "version": "0.1.0"
+          "revision": "fa5d7caa39da4eb839136e02344c2697344b112d",
+          "version": "0.1.2"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/JohnSundell/ShellOut.git",
         "state": {
           "branch": null,
-          "revision": "4ebf25863deb9c3c02696704fc3d39736183f258",
-          "version": "2.2.1"
+          "revision": "e1577acf2b6e90086d01a6d5e2b8efdaae033568",
+          "version": "2.3.0"
         }
       },
       {

@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 export VERSION=$(shell git describe --always --tags --dirty)
-VERSION_FILE := Sources/Arena/Version.swift
+VERSION_FILE := Sources/ArenaCore/Version.swift
 
 clean:
 	swift package clean
