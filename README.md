@@ -1,8 +1,10 @@
 ![Swift-5.1](https://github.com/finestructure/SPMPlayground/workflows/Swift/badge.svg)
 
-# Arena (was: SPMPlayground)
+# Arena (formerly know as SPMPlayground)
 
 Arena is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
+
+Arena – Spanish for "sand" – is where you battle-test your SPM packages and sand is, well, abundant in playgrounds, isn't it? 🙂
 
 ```
  ~  arena --help
@@ -16,7 +18,7 @@ OPTIONS:
   --help, -h         Display available options [default: false]
   --libs, -l         Names of libraries to import (inferred if not provided) [default: []]
   --name, -n         Name of directory and Xcode project [default: SPM-Playground]
-  --outputdir, -o    Directory where project folder should be saved [default: /Users/sas/Projects/SPMPlayground]
+  --outputdir, -o    Directory where project folder should be saved [default: /Users/sas/Projects/Arena]
   --platform, -p     Platform for Playground (one of 'macos', 'ios', 'tvos') [default: macos]
   --version, -v      Display tool version [default: false]
 ```
