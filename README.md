@@ -1,4 +1,4 @@
-![Swift-5.1](https://github.com/finestructure/SPMPlayground/workflows/Swift/badge.svg)
+![Swift-5.1](https://github.com/finestructure/Arena/workflows/Swift/badge.svg)
 
 # 🏟 Arena (formerly know as SPMPlayground)
 
