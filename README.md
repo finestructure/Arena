@@ -1,6 +1,6 @@
 ![Swift-5.1](https://github.com/finestructure/SPMPlayground/workflows/Swift/badge.svg)
 
-# Arena (formerly know as SPMPlayground)
+# 🏟 Arena (formerly know as SPMPlayground)
 
 Arena is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
 
