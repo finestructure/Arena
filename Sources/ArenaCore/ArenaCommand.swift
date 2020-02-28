@@ -19,7 +19,7 @@ public enum ArenaError: LocalizedError {
     public var errorDescription: String? {
         switch self {
             case .missingDependency:
-                return "provide at least one dependency via the -d parameter"
+                return "provide at least one dependency"
             case .pathExists(let path):
                 return "'\(path)' already exists, use '-f' to overwrite"
             case .noLibrariesFound:
@@ -78,6 +78,11 @@ public struct Arena: ParsableCommand {
     }
 
     public func run() throws {
+        guard !version else {
+            print(ArenaVersion)
+            return
+        }
+
         guard !dependencies.isEmpty else {
             throw ArenaError.missingDependency
         }
