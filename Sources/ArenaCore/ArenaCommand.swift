@@ -39,10 +39,10 @@ public struct Arena: ParsableCommand {
     @Option(name: [.customLong("name"), .customShort("n")], default: "SPM-Playground", help: "Name of directory and Xcode project")
     var projectName: String
 
-    @Option(name: [.customLong("deps"), .customShort("d")], default: [], help: "Dependency url(s) and (optionally) version specification")
+    @Option(name: [.customLong("deps"), .customShort("d")], help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
 
-    @Option(name: [.customLong("libs"), .customShort("l")], default: [], help: "Names of libraries to import (inferred if not provided)")
+    @Option(name: [.customLong("libs"), .customShort("l")], help: "Names of libraries to import (inferred if not provided)")
     var libNames: [String]
 
     @Option(name: .shortAndLong, default: .macos, help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")

@@ -88,15 +88,3 @@ extension Dependency: ExpressibleByArgument {
         self = dep
     }
 }
-
-
-extension Array: ExpressibleByArgument where Element == Dependency {
-    public init?(argument: String) {
-        let deps = argument
-            .components(separatedBy: CharacterSet.whitespaces)
-            .map(Dependency.init)
-        guard deps.allSatisfy({ $0 != nil }) else { return nil }
-        self = deps.compactMap({$0})
-    }
-}
-
