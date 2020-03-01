@@ -13,7 +13,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-package-manager", from: "0.5.0"),
         .package(url: "https://github.com/finestructure/Parser", from: "0.0.0"),
         .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),
-        .package(url: "https://github.com/mxcl/Path.swift.git", from: "0.13.0"),
+        .package(url: "https://github.com/mxcl/Path.swift.git", from: "1.0.0"),
     ],
     targets: [
         .target(

@@ -54,7 +54,7 @@ public struct Arena: ParsableCommand {
     var force: Bool
 
     @Option(name: [.customLong("outputdir"), .customShort("o")],
-            default: Path.cwd,
+            default: try? Path.cwd.realpath(),
             help: "Directory where project folder should be saved")
     var outputPath: Path
 
