@@ -190,7 +190,12 @@ extension Arena {
         do {
             try playgroundPath.mkdir()
             let libsToImport = !libNames.isEmpty ? libNames : libs.map({ $0.libraryName })
-            let importClauses = libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
+            let importClauses =
+                """
+                // ℹ️ Make sure to build to make the module available!
+                //    If autocomple is not working, please restart Xcode.
+                """ + "\n\n" +
+                libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
             try importClauses.write(to: playgroundPath/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
