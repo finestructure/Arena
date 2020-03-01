@@ -4,30 +4,32 @@
 
 Arena is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
 
+Arena can also create a Playground in "Playground Book" format, which is the file format supported by ["Swift Playgrounds"](https://apps.apple.com/gb/app/swift-playgrounds/id1496833156?mt=12). These playgrounds can then be synced and opened on the iOS version of "Swift Playgrounds" as well.
+
+Here is an overview of the `arena` command line interface:
+
 ```
 arena --help
 OVERVIEW: Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use.
 
-USAGE: arena [--name <name>] [--libs <libs> ...] [--platform <platform>] [--force] [--outputdir <outputdir>] [--version] [<dependencies> ...]
+USAGE: arena [--name <name>] [--libs <libs> ...] [--platform <platform>] [--force] [--outputdir <outputdir>] [--version] [--skip-open] [--book] [<dependencies> ...]
 
 ARGUMENTS:
-  <dependencies>          Dependency url(s) and (optionally) version specification 
+  <dependencies>          Dependency url(s) and (optionally) version specification
 
 OPTIONS:
   -n, --name <name>       Name of directory and Xcode project (default: SPM-Playground)
-  -l, --libs <libs>       Names of libraries to import (inferred if not provided) 
+  -l, --libs <libs>       Names of libraries to import (inferred if not provided)
   -p, --platform <platform>
                           Platform for Playground (one of 'macos', 'ios', 'tvos') (default: macos)
-  -f, --force             Overwrite existing file/directory 
+  -f, --force             Overwrite existing file/directory
   -o, --outputdir <outputdir>
                           Directory where project folder should be saved (default: /Users/sas/Projects/Arena)
-  -v, --version           Show version 
+  -v, --version           Show version
+  --skip-open             Do not open project in Xcode on completion
+  --book                  Create a Swift Playgrounds compatible Playground Book bundle (experimental).
   -h, --help              Show help information.
 ```
-
-## Why Arena?
-
-Arena – Spanish for "sand" – is where you battle-test your SPM packages and sand is, well, abundant in playgrounds, isn't it? 🙂
 
 ## Examples
 
@@ -116,6 +118,12 @@ make install
 
 This will copy the binary `arena` to `/usr/local/bin`.
 
+## Why Arena?
+
+Arena – Spanish for "sand" – is where you battle-test your SPM packages and sand is, well, abundant in playgrounds, isn't it? 🙂
+
 ## Compatibility
 
 `arena` was built and tested on macOS 10.15 Catalina using Swift 5.1.3. It should work on other versions of macOS and Swift as well.
+
+Playground books created by `arena` should equally run on macOS 10.15 Catalina as well as iOS 13. Please bear in mind that the Swift packages you import when creating playground books will need to be iOS compatible.
