@@ -62,6 +62,9 @@ public struct Arena: ParsableCommand {
           help: "Show version")
     var showVersion: Bool
 
+    @Flag(name: .long, help: "Do not open project in Xcode on completion")
+    var skipOpen: Bool
+
     @Argument(help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
 
@@ -192,7 +195,13 @@ extension Arena {
         }
 
         print("✅  created project in folder '\(projectPath.relative(to: Path.cwd))'")
-        try shellOut(to: .openFile(at: xcworkspacePath))
+        if skipOpen {
+            print("Run")
+            print("  open \(xcworkspacePath.relative(to: Path.cwd))")
+            print("to open the project in Xcode")
+        } else {
+            try shellOut(to: .openFile(at: xcworkspacePath))
+        }
     }
 }
 
