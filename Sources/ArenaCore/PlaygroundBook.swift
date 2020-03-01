@@ -94,6 +94,12 @@ private extension PlaygroundBook {
         """
     }
 
+    static let mainSwift = """
+        // The source files of your dependencies have been copied into the
+        // UserModule/Sources folder and their public interfaces are
+        // available without requiring a module import.
+        """
+
     static func mkContents(parent: Path, modules: [Module]) throws {
         let contents = try parent.join("Contents").mkdir()
         try contentsManifest.write(to: contents/"Manifest.plist")
@@ -113,7 +119,7 @@ private extension PlaygroundBook {
     static func mkPlaygroundPage(in parent: Path, named name: String) throws {
         let page = try parent.join("\(name).playgroundpage").mkdir()
         try myPlaygroundPageManifest(named: name).write(to: page/"Manifest.plist")
-        try page.join("main.swift").touch()
+        try mainSwift.write(to: page/"main.swift")
     }
 
     static func mkUserModules(in parent: Path, modules: [Module]) throws {
