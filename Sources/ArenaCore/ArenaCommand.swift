@@ -201,15 +201,11 @@ extension Arena {
         }
 
         if book {
-            let sourceDirs = dependencies
+            let modules = dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
-                .map { $0.join("Sources") }
-            let sources = sourceDirs.flatMap {
-                $0.find().extension("swift").type(.file).map({ $0 })
-            }
-            if sources.isEmpty { throw ArenaError.noSourcesFound }
-            print("📄  \(sources.count) source files found")
-            try PlaygroundBook.make(named: projectName, in: projectPath, with: sources)
+                .compactMap(Module.init)
+            if modules.isEmpty { throw ArenaError.noSourcesFound }
+            try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)
             print("📙  created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 

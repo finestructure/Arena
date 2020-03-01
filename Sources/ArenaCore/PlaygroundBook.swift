@@ -8,10 +8,23 @@
 import Path
 
 
+public struct Module {
+    var name: String
+    var sources: [Path]
+
+    init?(path: Path) {
+        let sourceDir = path.join("Sources")
+        guard sourceDir.exists else { return nil }
+        self.name = path.basename()
+        self.sources = sourceDir.find().extension("swift").type(.file).map { $0 }
+    }
+}
+
+
 public enum PlaygroundBook {
-    public static func make(named name: String, in parent: Path, with sources: [Path]) throws {
+    public static func make(named name: String, in parent: Path, with modules: [Module]) throws {
         let book = try parent.join("\(name).playgroundbook").mkdir()
-        try mkContents(parent: book, sources: sources)
+        try mkContents(parent: book, modules: modules)
     }
 }
 
@@ -81,11 +94,11 @@ private extension PlaygroundBook {
         """
     }
 
-    static func mkContents(parent: Path, sources: [Path]) throws {
+    static func mkContents(parent: Path, modules: [Module]) throws {
         let contents = try parent.join("Contents").mkdir()
         try contentsManifest.write(to: contents/"Manifest.plist")
         try mkChapters(in: contents)
-        try mkUserModules(in: contents, sources: sources)
+        try mkUserModules(in: contents, modules: modules)
     }
 
     static func mkChapters(in parent: Path) throws {
@@ -103,10 +116,13 @@ private extension PlaygroundBook {
         try page.join("main.swift").touch()
     }
 
-    static func mkUserModules(in parent: Path, sources: [Path]) throws {
-        let sourcesDir = try parent.join("UserModules/UserModule.playgroundmodule/Sources").mkdir(.p)
-        for src in sources {
-            try src.copy(into: sourcesDir)
+    static func mkUserModules(in parent: Path, modules: [Module]) throws {
+        let sources = try parent.join("UserModules/UserModule.playgroundmodule/Sources").mkdir(.p)
+        for module in modules {
+            for src in module.sources {
+                let target = sources.join(module.name + "-" + src.basename())
+                try src.copy(to: target, overwrite: false)
+            }
         }
     }
 
