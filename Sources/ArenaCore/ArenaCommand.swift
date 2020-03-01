@@ -15,6 +15,7 @@ public enum ArenaError: LocalizedError {
     case missingDependency
     case pathExists(String)
     case noLibrariesFound
+    case noSourcesFound
 
     public var errorDescription: String? {
         switch self {
@@ -24,6 +25,8 @@ public enum ArenaError: LocalizedError {
                 return "'\(path)' already exists, use '-f' to overwrite"
             case .noLibrariesFound:
                 return "no libraries found, make sure the referenced dependencies define library products"
+            case .noSourcesFound:
+                return "no source files found, make sure the referenced dependencies contain swift files in their 'Sources' folders"
         }
     }
 }
@@ -64,6 +67,9 @@ public struct Arena: ParsableCommand {
 
     @Flag(name: .long, help: "Do not open project in Xcode on completion")
     var skipOpen: Bool
+
+    @Flag(name: .long, help: "Create a Swift Playgrounds compatible Playground Book bundle (experimental).")
+    var book: Bool
 
     @Argument(help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
@@ -184,7 +190,12 @@ extension Arena {
         do {
             try playgroundPath.mkdir()
             let libsToImport = !libNames.isEmpty ? libNames : libs.map({ $0.libraryName })
-            let importClauses = libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
+            let importClauses =
+                """
+                // ℹ️ Make sure to build to make the module available!
+                //    If autocomple is not working, please restart Xcode.
+                """ + "\n\n" +
+                libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
             try importClauses.write(to: playgroundPath/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -192,6 +203,15 @@ extension Arena {
                 <timeline fileName='timeline.xctimeline'/>
                 </playground>
                 """.write(to: playgroundPath/"contents.xcplayground")
+        }
+
+        if book {
+            let modules = dependencies
+                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
+                .compactMap(Module.init)
+            if modules.isEmpty { throw ArenaError.noSourcesFound }
+            try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)
+            print("📙  created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 
         print("✅  created project in folder '\(projectPath.relative(to: Path.cwd))'")
