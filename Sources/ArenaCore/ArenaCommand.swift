@@ -212,7 +212,7 @@ extension Arena {
             if sources.isEmpty { throw ArenaError.noSourcesFound }
             print("📄  \(sources.count) source files found")
 
-            try PlaygroundBook.make(named: projectName, in: projectPath)
+            try PlaygroundBook.make(named: projectName, in: projectPath, with: sources)
             print("📙  created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 

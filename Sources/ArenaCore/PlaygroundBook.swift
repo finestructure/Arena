@@ -9,9 +9,9 @@ import Path
 
 
 public enum PlaygroundBook {
-    public static func make(named name: String, in parent: Path) throws {
+    public static func make(named name: String, in parent: Path, with sources: [Path]) throws {
         let book = try parent.join("\(name).playgroundbook").mkdir()
-        try mkContents(parent: book)
+        try mkContents(parent: book, sources: sources)
     }
 }
 
@@ -81,11 +81,11 @@ private extension PlaygroundBook {
         """
     }
 
-    static func mkContents(parent: Path) throws {
+    static func mkContents(parent: Path, sources: [Path]) throws {
         let contents = try parent.join("Contents").mkdir()
         try contentsManifest.write(to: contents/"Manifest.plist")
         try mkChapters(in: contents)
-        try mkUserModules(in: contents)
+        try mkUserModules(in: contents, sources: sources)
     }
 
     static func mkChapters(in parent: Path) throws {
@@ -103,9 +103,11 @@ private extension PlaygroundBook {
         try page.join("main.swift").touch()
     }
 
-    static func mkUserModules(in parent: Path) throws {
-        try parent.join("UserModules").join("UserModule.playgroundmodule").join("Sources").mkdir(.p)
-        // TODO: add files to "Sources"
+    static func mkUserModules(in parent: Path, sources: [Path]) throws {
+        let sourcesDir = try parent.join("UserModules/UserModule.playgroundmodule/Sources").mkdir(.p)
+        for src in sources {
+            try src.copy(into: sourcesDir)
+        }
     }
 
 }
