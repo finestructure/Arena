@@ -15,6 +15,7 @@ public enum ArenaError: LocalizedError {
     case missingDependency
     case pathExists(String)
     case noLibrariesFound
+    case noSourcesFound
 
     public var errorDescription: String? {
         switch self {
@@ -24,6 +25,8 @@ public enum ArenaError: LocalizedError {
                 return "'\(path)' already exists, use '-f' to overwrite"
             case .noLibrariesFound:
                 return "no libraries found, make sure the referenced dependencies define library products"
+            case .noSourcesFound:
+                return "no source files found, make sure the referenced dependencies contain swift files in their 'Sources' folders"
         }
     }
 }
@@ -64,6 +67,9 @@ public struct Arena: ParsableCommand {
 
     @Flag(name: .long, help: "Do not open project in Xcode on completion")
     var skipOpen: Bool
+
+    @Flag(name: .long, help: "Create a Swift Playgrounds compatible Playground Book bundle (experimental).")
+    var book: Bool
 
     @Argument(help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
@@ -192,6 +198,22 @@ extension Arena {
                 <timeline fileName='timeline.xctimeline'/>
                 </playground>
                 """.write(to: playgroundPath/"contents.xcplayground")
+        }
+
+        if book {
+            let sourceDirs = dependencies
+                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
+                .map { $0.join("Sources") }
+
+            let sources = sourceDirs.flatMap { path -> [Path] in
+                print("ℹ Sources in \(path)")
+                return path.find().extension("swift").type(.file).map({ $0 })
+            }
+            if sources.isEmpty { throw ArenaError.noSourcesFound }
+            print("📄  \(sources.count) source files found")
+
+            try PlaygroundBook.make(named: projectName, in: projectPath)
+            print("📙  created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 
         print("✅  created project in folder '\(projectPath.relative(to: Path.cwd))'")

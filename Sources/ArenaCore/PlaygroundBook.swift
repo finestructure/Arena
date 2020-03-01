@@ -9,7 +9,7 @@ import Path
 
 
 public enum PlaygroundBook {
-    public static func mkPlaygroundBook(named name: String, in parent: Path) throws {
+    public static func make(named name: String, in parent: Path) throws {
         let book = try parent.join("\(name).playgroundbook").mkdir()
         try mkContents(parent: book)
     }
