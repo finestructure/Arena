@@ -186,14 +186,19 @@ extension Arena {
                 """.write(to: xcworkspacePath/"contents.xcworkspacedata")
         }
 
+        // run xcodebuild
+        do {
+            print("🔨  building package dependencies")
+            try shellOut(to: ShellOutCommand(string: "xcodebuild"), at: projectPath)
+        }
+
         // add playground
         do {
             try playgroundPath.mkdir()
             let libsToImport = !libNames.isEmpty ? libNames : libs.map({ $0.libraryName })
             let importClauses =
                 """
-                // ℹ️ Make sure to build to make the module available!
-                //    If autocomple is not working, please restart Xcode.
+                // ℹ️ Please restart Xcode if autocomple is not working.
                 """ + "\n\n" +
                 libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
             try importClauses.write(to: playgroundPath/"Contents.swift")
