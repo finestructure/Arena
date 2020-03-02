@@ -38,7 +38,7 @@ public struct Arena: ParsableCommand {
     )
 
     @Option(name: [.customLong("name"), .customShort("n")],
-            default: "SPM-Playground",
+            default: "Arena-Playground",
             help: "Name of directory and Xcode project")
     var projectName: String
 
