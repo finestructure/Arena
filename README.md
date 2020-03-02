@@ -39,6 +39,7 @@ OPTIONS:
 arena https://github.com/finestructure/Gala
 🔧  resolving package dependencies
 📔  libraries found: Gala
+🔨  building package dependencies
 ✅  created project in folder 'SPM-Playground'
 ```
 
@@ -48,6 +49,7 @@ arena https://github.com/finestructure/Gala
 arena ~/Projects/Parser
 🔧  resolving package dependencies
 📔  libraries found: Parser
+🔨  building package dependencies
 ✅  created project in folder 'SPM-Playground'
 ```
 
@@ -57,6 +59,7 @@ arena ~/Projects/Parser
 arena ~/Projects/Parser https://github.com/finestructure/Gala
 🔧  resolving package dependencies
 📔  libraries found: Parser, Gala
+🔨  building package dependencies
 ✅  created project in folder 'SPM-Playground'
 ```
 
