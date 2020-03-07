@@ -88,3 +88,16 @@ extension Dependency: ExpressibleByArgument {
         self = dep
     }
 }
+
+extension Dependency {
+    func usingGithubShorthand() -> Dependency? {
+        let shortName = url.pathComponents.suffix(2).joined(separator: "/")
+        let url = "https://github.com/\(shortName)"
+
+        if requirement == .path {
+            return Dependency(argument: url)
+        } else {
+            return Dependency(url: URL(string: url)!, requirement: requirement)
+        }
+    }
+}

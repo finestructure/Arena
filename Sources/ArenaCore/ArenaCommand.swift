@@ -61,6 +61,10 @@ public struct Arena: ParsableCommand {
             help: "Directory where project folder should be saved")
     var outputPath: Path
 
+    @Flag(name: [.customLong("github"), .customShort("g")],
+          help: "Use GitHub shorthand")
+    var useGitHubShortname: Bool
+
     @Flag(name: [.customLong("version"), .customShort("v")],
           help: "Show version")
     var showVersion: Bool
@@ -96,6 +100,13 @@ extension Arena {
     }
 }
 
+extension Arena {
+    public mutating func validate() throws {
+        if useGitHubShortname {
+            dependencies = dependencies.compactMap { $0.usingGithubShorthand() }
+        }
+    }
+}
 
 extension Arena {
     public func run() throws {

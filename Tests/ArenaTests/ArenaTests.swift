@@ -212,6 +212,18 @@ final class ArenaTests: XCTestCase {
             XCTAssertEqual(dep.packageClause, #".package(path: "/foo/bar")"#)
         }
     }
+
+    func testConvertingFileDependencyIntoGitHubDependency() {
+        let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
+        let githubDep = dep.usingGithubShorthand()!
+        XCTAssertEqual(githubDep.packageClause, #".package(url: "https://github.com/foo/bar", from: "0.0.0")"#)
+    }
+
+    func testConvertingFileDependencyIntoGitHubDependencyWithRef() {
+        let dep = Dependency(argument: "file:///foo/bar@1.2.3")!
+        let githubDep = dep.usingGithubShorthand()!
+        XCTAssertEqual(githubDep.packageClause, #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
+    }
 }
 
 
