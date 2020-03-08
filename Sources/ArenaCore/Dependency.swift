@@ -90,14 +90,16 @@ extension Dependency: ExpressibleByArgument {
 }
 
 extension Dependency {
-    func usingGithubShorthand() -> Dependency? {
-        let shortName = url.pathComponents.suffix(2).joined(separator: "/")
-        let url = "https://github.com/\(shortName)"
+    func inferringGitHubShorthand() -> Dependency? {
+        let pathExists = path?.exists ?? false
+        guard url.isFileURL, !pathExists else { return self }
 
+        let shortName = url.pathComponents.suffix(2).joined(separator: "/")
+        let githubURL = "https://github.com/\(shortName)"
         if requirement == .path {
-            return Dependency(argument: url)
+            return Dependency(argument: githubURL)
         } else {
-            return Dependency(url: URL(string: url)!, requirement: requirement)
+            return Dependency(url: URL(string: githubURL)!, requirement: requirement)
         }
     }
 }
