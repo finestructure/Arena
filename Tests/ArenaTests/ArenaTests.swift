@@ -31,6 +31,47 @@ final class ArenaTests: XCTestCase {
         ])
     }
 
+    func test_args_github_shorthand() throws {
+        do { // path doesn't exist
+            Current.fileManager.fileExists = { _ in false }
+            let args = ["finestructure/gala"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("0.0.0")),
+            ])
+        }
+        do { // path exists
+            // This test is a little weird, because we override the fileExists check
+            // to suggest a path exists while the path it actually resolves to is a
+            // different one. But the premise of the test is to ensure it doesn't
+            // get the shorthand treatement.
+            // In general, it would probably be safe (safer?) to require that paths
+            // are either absolute or relative with a leading ./ or ../
+            Current.fileManager.fileExists = { _ in true }
+            let args = ["finestructure/gala"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "file:///private/tmp/finestructure/gala")!, requirement: .path),
+            ])
+        }
+        do { // with refspec
+            Current.fileManager.fileExists = { _ in false }
+            let args = ["finestructure/gala@from:0.1.0"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("0.1.0")),
+            ])
+        }
+        do { // with branch
+            Current.fileManager.fileExists = { _ in false }
+            let args = ["finestructure/gala@branch:feature/foo"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .branch("feature/foo")),
+            ])
+        }
+    }
+
     func test_args_order() throws {
         // ensure the --force flag (for instance) can be a trailing argument
         do {
@@ -143,6 +184,10 @@ final class ArenaTests: XCTestCase {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:develop"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .branch("develop")),
+                             rest: ""))
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:feature/a"),
+                       Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
+                                                requirement: .branch("feature/a")),
                              rest: ""))
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@revision:somerevision"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
