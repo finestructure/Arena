@@ -11,8 +11,6 @@ import Parser
 import Path
 
 
-let DefaultRequirement = Requirement.upToNextMajor(from: Version(0, 0, 0))
-
 // https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
 let AllowedBranchCharacters = CharacterSet.letters.union(CharacterSet(charactersIn: ".-@/"))
 let AllowedStartBranchCharacters = AllowedBranchCharacters.subtracting(CharacterSet(charactersIn: "/"))
