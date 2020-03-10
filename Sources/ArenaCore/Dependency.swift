@@ -6,14 +6,16 @@
 //
 
 import ArgumentParser
+import Combine
 import Foundation
 import PackageModel
 import Path
 import Parser
 
 
-typealias RequirementProvider = () -> Requirement
-let defaultRequirement: RequirementProvider = { .from(Version("0.0.0")) }
+typealias RequirementProvider = (URL) -> Requirement
+let _defaultRequirement = Requirement.from(Version("0.0.0"))
+let defaultRequirement: RequirementProvider = { _ in _defaultRequirement }
 
 
 public struct Dependency: Equatable {
@@ -39,7 +41,8 @@ public struct Dependency: Equatable {
             case .noVersion where url.isFileURL:
                 self.requirement = .path
             case .noVersion:
-                self.requirement = defaultRequirement()
+                #warning("FIXME: this should be .noVersion - i.e. turn RefSpec into Arena.Requirement")
+                self.requirement = defaultRequirement(url)
             case .range(let r):
                 self.requirement = .range(r)
             case .revision(let r):
@@ -81,9 +84,79 @@ extension Dependency: CustomStringConvertible {
 }
 
 
+struct Release: Decodable {
+    let tagName: String
+
+    // can't use automatic camel case conversion - it raises an error:
+    // decodingError("The data couldn’t be read because it is missing.")
+    enum CodingKeys: String, CodingKey {
+        case tagName = "tag_name"
+    }
+}
+
+
+struct Repository: CustomStringConvertible {
+    let owner: String
+    let repository: String
+    var description: String { owner + "/" + repository}
+}
+
+
+func latestReleaseURL(repository: String) -> URL? {
+    guard !repository.isEmpty else { return nil }
+    return URL(string: "https://api.github.com/repos/\(repository)/releases/latest")
+}
+
+
+func latestReleaseRequest(for repository: Repository) -> Release? {
+    guard let url = latestReleaseURL(repository: repository.description) else {
+        return nil
+    }
+
+    let sema = DispatchSemaphore(value: 0)
+    var result: Release? = nil
+    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        guard let data = data else { return }
+        result = try? JSONDecoder().decode(Release.self, from: data)
+        sema.signal()
+    }
+    task.resume()
+    let _ = sema.wait(timeout: DispatchTime.now() + .seconds(2))
+    return result
+}
+
+
+extension String {
+    var version: Version? {
+        Parser.version.run(self).result
+    }
+}
+
+
+func repository(for url: URL) -> Repository? {
+    let path = url.path
+    guard path.hasPrefix("/") else { return nil }
+    let parts = path.dropFirst().split(separator: "/")
+    guard parts.count == 2 else { return nil }
+    let repo = parts[1].lowercased().hasSuffix(".git") ? parts[1].dropLast(".git".count) : parts[1]
+    return Repository(owner: String(parts[0]), repository: String(repo))
+}
+
+
+
 extension Dependency: ExpressibleByArgument {
     public init?(argument: String) {
-        let m = Parser.dependency(defaultRequirement: { .from(SPMUtility.Version("0.0.0")) } ).run(argument)
+        let m = Parser.dependency(defaultRequirement: { url in
+            guard let repo = repository(for: url) else { return _defaultRequirement }
+            print("🌍  Looking up latest version for \(repo.repository) ...", terminator: "")
+            guard let version = latestReleaseRequest(for: repo)?.tagName.version
+                else {
+                    print(" -> none found, defaulting to .from(0.0.0)")
+                    return .from("0.0.0")
+            }
+            print(" -> found \(version)")
+            return .from(version)
+        } ).run(argument)
 
         guard let dep = m.result, m.rest.isEmpty else {
             return nil
