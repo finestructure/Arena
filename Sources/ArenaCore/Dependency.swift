@@ -13,11 +13,6 @@ import Path
 import Parser
 
 
-typealias RequirementProvider = (URL) -> Requirement
-let _defaultRequirement = Requirement.from(Version("0.0.0"))
-let defaultRequirement: RequirementProvider = { _ in _defaultRequirement }
-
-
 public struct Dependency: Equatable {
     let url: URL
     let requirement: Requirement
@@ -28,7 +23,7 @@ public struct Dependency: Equatable {
         self.requirement = requirement
     }
 
-    init(url: URL, refSpec: RefSpec, defaultRequirement: RequirementProvider = defaultRequirement) {
+    init(url: URL, refSpec: RefSpec) {
         precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
         self.url = url
         switch refSpec {
@@ -41,8 +36,7 @@ public struct Dependency: Equatable {
             case .noVersion where url.isFileURL:
                 self.requirement = .path
             case .noVersion:
-                #warning("FIXME: this should be .noVersion - i.e. turn RefSpec into Arena.Requirement")
-                self.requirement = defaultRequirement(url)
+                self.requirement = .noVersion
             case .range(let r):
                 self.requirement = .range(r)
             case .revision(let r):
@@ -72,6 +66,8 @@ public struct Dependency: Equatable {
                 return #".package(url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
             case .revision(let r):
                 return #".package(url: "\#(url.absoluteString)", .revision("\#(r)"))"#
+            case .noVersion:
+                return #".package(url: "\#(url.absoluteString)", from: "0.0.0")"#
         }
     }
 }
@@ -143,38 +139,47 @@ func repository(for url: URL) -> Repository? {
 }
 
 
+let defaultRequirement: Requirement = .from("0.0.0")
+
+
+func latestRequirement(for dependency: Dependency) -> Requirement {
+    guard let repo = repository(for: dependency.url) else { return defaultRequirement }
+    guard let version = latestReleaseRequest(for: repo)?.tagName.version
+        else {
+            print(" -> none found, defaulting to .from(0.0.0)")
+            return .from("0.0.0")
+    }
+    print(" -> found \(version)")
+    return .from(version)
+}
+
+
 
 extension Dependency: ExpressibleByArgument {
     public init?(argument: String) {
-        let m = Parser.dependency(defaultRequirement: { url in
-            guard let repo = repository(for: url) else { return _defaultRequirement }
-            print("🌍  Looking up latest version for \(repo.repository) ...", terminator: "")
-            guard let version = latestReleaseRequest(for: repo)?.tagName.version
-                else {
-                    print(" -> none found, defaulting to .from(0.0.0)")
-                    return .from("0.0.0")
-            }
-            print(" -> found \(version)")
-            return .from(version)
-        } ).run(argument)
+        let match = Parser.dependency.run(argument)
 
-        guard let dep = m.result, m.rest.isEmpty else {
+        guard let dep = match.result, match.rest.isEmpty else {
             return nil
         }
 
         let pathExists = dep.path.map(Current.fileManager.fileExists) ?? false
-        guard dep.url.isFileURL, !pathExists else {
-            self = dep
-            return
-        }
+        let hasVersion = dep.requirement != .noVersion
 
-        // we have a dependency that has a file url but the
-        // path doesn't exist - try a Github shorthand instead
-        guard
-            let name = argument.split(separator: "@").first,
-            name.split(separator: "/").count == 2 else { return nil }
-        let url = "https://github.com/\(argument)"
-        guard let shorthand = Dependency(argument: url) else { return nil }
-        self = shorthand
+        switch (dep.url.isFileURL, pathExists, hasVersion) {
+            case (true, false, _):   // non-existant path   - try shorthand
+                guard
+                    let name = argument.split(separator: "@").first,
+                    name.split(separator: "/").count == 2 else { return nil }
+                let url = "https://github.com/\(argument)"
+                guard let shorthand = Dependency(argument: url) else { return nil }
+                self = shorthand
+            case (false, _, true),   // url with version
+                 (true, true, _):    // existing path       - keep as is
+                self = dep
+            case (false, _, false):  // url without version - look up version
+                let req = latestRequirement(for: dep)
+                self = Dependency(url: dep.url, requirement: req)
+        }
     }
 }

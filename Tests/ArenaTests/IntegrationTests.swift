@@ -29,9 +29,9 @@ class IntegrationTests: XCTestCase {
                 🔧  resolving package dependencies
                 📔  libraries found: ArenaTest
                 🔨  building package dependencies
-                ✅  created project in folder '../../tmp/ArenaIntegrationTest'
+                ✅  created project in folder 'ArenaIntegrationTest'
                 Run
-                  open ../../tmp/ArenaIntegrationTest/ArenaIntegrationTest.xcworkspace
+                  open ArenaIntegrationTest/ArenaIntegrationTest.xcworkspace
                 to open the project in Xcode
 
                 """

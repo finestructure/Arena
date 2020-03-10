@@ -36,8 +36,9 @@ final class ArenaTests: XCTestCase {
             Current.fileManager.fileExists = { _ in false }
             let args = ["finestructure/gala"]
             let res = try Arena.parse(args)
+            #warning("FIXME: use Environment to stub out network")
             XCTAssertEqual(res.dependencies, [
-                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("0.0.0")),
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("0.2.1")),
             ])
         }
         do { // path exists
@@ -167,72 +168,72 @@ final class ArenaTests: XCTestCase {
     }
 
     func test_parse_dependency() throws {
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
-                                                requirement: .from("0.0.0")),
+                                                requirement: .noVersion),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@1.2.3"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .exact("1.2.3")),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@from:1.2.3"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .from("1.2.3")),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@1.2.3..<4.0.0"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3..<4.0.0"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .range("1.2.3"..<"4.0.0")),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@1.2.3...4.0.0"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3...4.0.0"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .range("1.2.3"..<"4.0.1")),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@branch:develop"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:develop"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .branch("develop")),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@branch:feature/a"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:feature/a"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .branch("feature/a")),
                              rest: ""))
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@revision:somerevision"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@revision:somerevision"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
                                                 requirement: .revision("somerevision")),
                              rest: ""))
 
         // local path dependency
         XCTAssertEqual(
-            Parser.dependency().run("/foo/bar"),
+            Parser.dependency.run("/foo/bar"),
             Match(result: Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
-            Parser.dependency().run("./foo/bar"),
+            Parser.dependency.run("./foo/bar"),
             Match(result: Dependency(url: URL(string: "file://\(Path.cwd)/foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
-            Parser.dependency().run("~/foo/bar"),
+            Parser.dependency.run("~/foo/bar"),
             Match(result: Dependency(url: URL(string: "file://\(Path.home)/foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
-            Parser.dependency().run("foo/bar"),
+            Parser.dependency.run("foo/bar"),
             Match(result: Dependency(url: URL(string: "file://\(Path.cwd)/foo/bar")!, requirement: .path), rest: ""))
         XCTAssertEqual(
-            Parser.dependency().run("../foo/bar"),
+            Parser.dependency.run("../foo/bar"),
             Match(result: Dependency(url: URL(string: "file://\(Path.cwd/"../foo/bar")")!, requirement: .path), rest: ""))
     }
 
     func test_parse_dependency_errors() throws {
         // unparsable trailing characters
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@from:1.2.3trailingjunk"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3trailingjunk"),
                        Match(result: nil,
                              rest: "https://github.com/foo/bar@from:1.2.3trailingjunk"))
         // invalid version
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@from:1.2.3..<2.0.0"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3..<2.0.0"),
                        Match(result: nil,
                              rest: "https://github.com/foo/bar@from:1.2.3..<2.0.0"))
         // invalid branch
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@branch:foo bar"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@branch:foo bar"),
                        Match(result: nil,
                              rest: "https://github.com/foo/bar@branch:foo bar"))
         // invalid revision
-        XCTAssertEqual(Parser.dependency().run("https://github.com/foo/bar@revision:1.2.3 rc4"),
+        XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@revision:1.2.3 rc4"),
                        Match(result: nil,
                              rest: "https://github.com/foo/bar@revision:1.2.3 rc4"))
     }
