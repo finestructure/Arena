@@ -199,7 +199,7 @@ extension Arena {
             let importClauses =
                 """
                 // ℹ️ If running the playground fails with an error "no such module ..."
-                // go to Product -> Build to re-trigger building the SPM package.
+                //    go to Product -> Build to re-trigger building the SPM package.
                 // ℹ️ Please restart Xcode if autocomplete is not working.
                 """ + "\n\n" +
                 libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
