@@ -45,6 +45,19 @@ arena https://github.com/finestructure/Gala
 ✅  created project in folder 'Arena-Playground'
 ```
 
+### Using Github shorthand syntax
+
+You can skip the protocol and domain when refereing Github projects:
+
+```
+arena finestructure/Gala
+🔧  resolving package dependencies
+📔  libraries found: Gala
+🔨  building package dependencies
+✅  created project in folder 'Arena-Playground'
+```
+
+
 ### Import local repository
 
 ```

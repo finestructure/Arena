@@ -50,9 +50,11 @@ final class ArenaTests: XCTestCase {
             Current.fileManager.fileExists = { _ in true }
             let args = ["finestructure/gala"]
             let res = try Arena.parse(args)
-            XCTAssertEqual(res.dependencies, [
-                Dependency(url: URL(string: "file:///private/tmp/finestructure/gala")!, requirement: .path),
-            ])
+            XCTAssertEqual(res.dependencies.count, 1)
+            let dep = try XCTUnwrap(res.dependencies.first)
+            XCTAssertEqual(dep.requirement, .path)
+            XCTAssert(dep.url.isFileURL)
+            XCTAssert(dep.url.path.hasSuffix("/finestructure/gala"))
         }
         do { // with refspec
             Current.fileManager.fileExists = { _ in false }
