@@ -12,6 +12,10 @@ import Path
 import Parser
 
 
+typealias RequirementProvider = () -> Requirement
+let defaultRequirement: RequirementProvider = { .from(Version("0.0.0")) }
+
+
 public struct Dependency: Equatable {
     let url: URL
     let requirement: Requirement
@@ -22,7 +26,7 @@ public struct Dependency: Equatable {
         self.requirement = requirement
     }
 
-    init(url: URL, refSpec: RefSpec) {
+    init(url: URL, refSpec: RefSpec, defaultRequirement: RequirementProvider = defaultRequirement) {
         precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
         self.url = url
         switch refSpec {
@@ -35,7 +39,7 @@ public struct Dependency: Equatable {
             case .noVersion where url.isFileURL:
                 self.requirement = .path
             case .noVersion:
-                self.requirement = .from(SPMUtility.Version("0.0.0"))
+                self.requirement = defaultRequirement()
             case .range(let r):
                 self.requirement = .range(r)
             case .revision(let r):
@@ -79,7 +83,7 @@ extension Dependency: CustomStringConvertible {
 
 extension Dependency: ExpressibleByArgument {
     public init?(argument: String) {
-        let m = Parser.dependency.run(argument)
+        let m = Parser.dependency(defaultRequirement: { .from(SPMUtility.Version("0.0.0")) } ).run(argument)
 
         guard let dep = m.result, m.rest.isEmpty else {
             return nil

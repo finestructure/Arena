@@ -93,8 +93,8 @@ extension Parser where A == Foundation.URL {
 
 
 extension Parser where A == Dependency {
-    static var dependency: Parser<Dependency> {
-        zip(.url, .refSpec).map { Dependency(url: $0.0, refSpec: $0.1) }
+    static func dependency(defaultRequirement: @escaping RequirementProvider = defaultRequirement) -> Parser<Dependency> {
+        zip(.url, .refSpec).map { Dependency(url: $0.0, refSpec: $0.1, defaultRequirement: defaultRequirement) }
     }
 }
 
