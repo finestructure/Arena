@@ -85,6 +85,19 @@ extension Dependency: ExpressibleByArgument {
             return nil
         }
 
-        self = dep
+        let pathExists = dep.path.map(Current.fileManager.fileExists) ?? false
+        guard dep.url.isFileURL, !pathExists else {
+            self = dep
+            return
+        }
+
+        // we have a dependency that has a file url but the
+        // path doesn't exist - try a Github shorthand instead
+        guard
+            let name = argument.split(separator: "@").first,
+            name.split(separator: "/").count == 2 else { return nil }
+        let url = "https://github.com/\(argument)"
+        guard let shorthand = Dependency(argument: url) else { return nil }
+        self = shorthand
     }
 }
