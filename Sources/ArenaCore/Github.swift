@@ -24,6 +24,16 @@ struct Repository: CustomStringConvertible {
     let owner: String
     let repository: String
     var description: String { owner + "/" + repository}
+
+    init?(url: URL) {
+        let path = url.path
+        guard path.hasPrefix("/") else { return nil }
+        let parts = path.dropFirst().split(separator: "/")
+        guard parts.count == 2 else { return nil }
+        let repo = parts[1].lowercased().hasSuffix(".git") ? parts[1].dropLast(".git".count) : parts[1]
+        owner = String(parts[0])
+        repository = String(repo)
+    }
 }
 
 

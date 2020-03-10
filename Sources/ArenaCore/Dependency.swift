@@ -16,6 +16,8 @@ public struct Dependency: Equatable {
     let url: URL
     let requirement: Requirement
 
+    static let defaultRequirement: Requirement = .from("0.0.0")
+
     init(url: URL, requirement: Requirement) {
         precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")
         self.url = url
@@ -79,37 +81,14 @@ extension Dependency: CustomStringConvertible {
 }
 
 
-extension String {
-    var version: Version? {
-        Parser.version.run(self).result
+extension Dependency {
+    func latestRequirement() -> Requirement {
+        guard let repo = Repository(url: url) else { return Self.defaultRequirement }
+        guard let version = latestReleaseRequest(for: repo)?.tagName.version
+            else { return Self.defaultRequirement }
+        return .from(version)
     }
 }
-
-
-func repository(for url: URL) -> Repository? {
-    let path = url.path
-    guard path.hasPrefix("/") else { return nil }
-    let parts = path.dropFirst().split(separator: "/")
-    guard parts.count == 2 else { return nil }
-    let repo = parts[1].lowercased().hasSuffix(".git") ? parts[1].dropLast(".git".count) : parts[1]
-    return Repository(owner: String(parts[0]), repository: String(repo))
-}
-
-
-let defaultRequirement: Requirement = .from("0.0.0")
-
-
-func latestRequirement(for dependency: Dependency) -> Requirement {
-    guard let repo = repository(for: dependency.url) else { return defaultRequirement }
-    guard let version = latestReleaseRequest(for: repo)?.tagName.version
-        else {
-            print(" -> none found, defaulting to .from(0.0.0)")
-            return .from("0.0.0")
-    }
-    print(" -> found \(version)")
-    return .from(version)
-}
-
 
 
 extension Dependency: ExpressibleByArgument {
@@ -135,7 +114,7 @@ extension Dependency: ExpressibleByArgument {
                  (true, true, _):    // existing path       - keep as is
                 self = dep
             case (false, _, false):  // url without version - look up version
-                let req = latestRequirement(for: dep)
+                let req = dep.latestRequirement()
                 self = Dependency(url: dep.url, requirement: req)
         }
     }
