@@ -51,7 +51,11 @@ final class ArenaTests: XCTestCase {
             let args = ["finestructure/gala"]
             let res = try Arena.parse(args)
             XCTAssertEqual(res.dependencies.count, 1)
+            #if swift(>=5.2)
             let dep = try XCTUnwrap(res.dependencies.first)
+            #else
+            let dep = res.dependencies.first!
+            #endif
             XCTAssertEqual(dep.requirement, .path)
             XCTAssert(dep.url.isFileURL)
             XCTAssert(dep.url.path.hasSuffix("/finestructure/gala"))
