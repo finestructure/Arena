@@ -82,10 +82,10 @@ extension Dependency: CustomStringConvertible {
 
 
 extension Dependency {
-    func latestRequirement() -> Requirement {
-        guard let repo = Repository(url: url) else { return Self.defaultRequirement }
+    func latestRequirement() -> Requirement? {
+        guard let repo = Repository(url: url) else { return nil }
         guard let version = Current.githubClient.latestRelease(repo)?.tagName.version
-            else { return Self.defaultRequirement }
+            else { return nil }
         return .from(version)
     }
 }
@@ -114,8 +114,23 @@ extension Dependency: ExpressibleByArgument {
                  (true, true, _):    // existing path       - keep as is
                 self = dep
             case (false, _, false):  // url without version - look up version
-                let req = dep.latestRequirement()
+                let req = Repository(url: dep.url)
+                    .flatMap { zip($0, Current.githubClient.latestRelease($0)) }
+                    .flatMap { zip($0, $1?.tagName.version) }
+                    .map { rep, version in
+                        print("➡️   \(rep): \(version)")
+                        return .from(version)
+                    } ?? Dependency.defaultRequirement
                 self = Dependency(url: dep.url, requirement: req)
         }
+    }
+}
+
+
+func zip<A, B>(_ a: A?, _ b: B?) -> (A, B)? {
+    if let a = a, let b = b {
+        return (a, b)
+    } else {
+        return nil
     }
 }
