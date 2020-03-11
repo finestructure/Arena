@@ -26,10 +26,11 @@ class IntegrationTests: XCTestCase {
         try arena.run()
         
         let expectation = """
-                🔧  resolving package dependencies
-                📔  libraries found: ArenaTest
-                🔨  building package dependencies
-                ✅  created project in folder 'ArenaIntegrationTest'
+                ➡️   Package: https://github.com/finestructure/ArenaTest @ exact(0.0.3)
+                🔧  Resolving package dependencies ...
+                📔  Libraries found: ArenaTest
+                🔨  Building package dependencies ...
+                ✅  Created project in folder 'ArenaIntegrationTest'
                 Run
                   open ArenaIntegrationTest/ArenaIntegrationTest.xcworkspace
                 to open the project in Xcode
