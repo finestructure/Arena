@@ -52,7 +52,7 @@ You can skip the protocol and domain when refereing Github projects:
 
 ```
 arena finestructure/Gala
-➡️   Package: https://github.com/finestructure/Gala @ from(0.2.1)
+➡️  Package: https://github.com/finestructure/Gala @ from(0.2.1)
 🔧  Resolving package dependencies ...
 📔  Libraries found: Gala
 🔨  Building package dependencies ...
@@ -64,7 +64,7 @@ arena finestructure/Gala
 
 ```
 arena ~/Projects/Parser
-➡️   Package: file:///Users/sas/Projects/Parser @ path
+➡️  Package: file:///Users/sas/Projects/Parser @ path
 🔧  Resolving package dependencies ...
 📔  Libraries found: Parser
 🔨  Building package dependencies ...
@@ -75,8 +75,8 @@ arena ~/Projects/Parser
 
 ```
 arena ~/Projects/Parser finestructure/Gala
-➡️   Package: file:///Users/sas/Projects/Parser @ path
-➡️   Package: https://github.com/finestructure/Gala @ from(0.2.1)
+➡️  Package: file:///Users/sas/Projects/Parser @ path
+➡️  Package: https://github.com/finestructure/Gala @ from(0.2.1)
 🔧  Resolving package dependencies ...
 📔  Libraries found: Parser, Gala
 🔨  Building package dependencies ...
