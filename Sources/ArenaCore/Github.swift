@@ -7,6 +7,8 @@
 
 
 import Foundation
+import PackageModel
+import Parser
 
 
 struct GithubClient {
@@ -28,6 +30,10 @@ struct Release: Decodable {
     // decodingError("The data couldn’t be read because it is missing.")
     enum CodingKeys: String, CodingKey {
         case tagName = "tag_name"
+    }
+
+    var version: Version? {
+        Parser.version.run(tagName).result
     }
 }
 

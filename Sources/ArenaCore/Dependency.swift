@@ -76,17 +76,7 @@ public struct Dependency: Equatable {
 
 extension Dependency: CustomStringConvertible {
     public var description: String {
-        return "\(url.absoluteString) \(requirement)"
-    }
-}
-
-
-extension Dependency {
-    func latestRequirement() -> Requirement? {
-        guard let repo = Repository(url: url) else { return nil }
-        guard let version = Current.githubClient.latestRelease(repo)?.tagName.version
-            else { return nil }
-        return .from(version)
+        return "\(url.absoluteString) @ \(requirement)"
     }
 }
 
@@ -115,22 +105,11 @@ extension Dependency: ExpressibleByArgument {
                 self = dep
             case (false, _, false):  // url without version - look up version
                 let req = Repository(url: dep.url)
-                    .flatMap { zip($0, Current.githubClient.latestRelease($0)) }
-                    .flatMap { zip($0, $1?.tagName.version) }
-                    .map { rep, version in
-                        print("➡️   \(rep): \(version)")
-                        return .from(version)
-                    } ?? Dependency.defaultRequirement
+                    .flatMap { Current.githubClient.latestRelease($0)?.version }
+                    .map { .from($0) }
+                    ?? Dependency.defaultRequirement
                 self = Dependency(url: dep.url, requirement: req)
         }
     }
 }
 
-
-func zip<A, B>(_ a: A?, _ b: B?) -> (A, B)? {
-    if let a = a, let b = b {
-        return (a, b)
-    } else {
-        return nil
-    }
-}
