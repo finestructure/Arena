@@ -5,7 +5,32 @@ import Workspace
 import XCTest
 
 
+extension ArenaCore.FileManager {
+    static let mock = Self(
+        fileExists: { _ in true }
+    )
+}
+
+
+extension GithubClient {
+    static let mock = Self(
+        latestRelease: { _ in Release(tagName: "1.2.3") }
+    )
+}
+
+
+extension Environment {
+    static let mock = Self(
+        fileManager: .mock, githubClient: .mock
+    )
+}
+
+
 final class ArenaTests: XCTestCase {
+    override func setUp() {
+        Current = .mock
+    }
+
     func test_loadManifest() throws {
         let p = checkoutsDirectory/"swift-package-manager"
         print(p)
