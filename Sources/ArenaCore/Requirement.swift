@@ -15,6 +15,7 @@ public enum Requirement: Equatable {
     case branch(String)
     case path
     case from(Version)
+    case noVersion
 
     public static func upToNextMajor(from version: Version) -> Requirement {
         return .range(version..<Version(version.major + 1, 0, 0))

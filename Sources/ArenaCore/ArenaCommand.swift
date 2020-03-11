@@ -115,6 +115,10 @@ extension Arena {
             throw ArenaError.pathExists(projectPath.basename())
         }
 
+        dependencies.forEach {
+            print("➡️   Package: \($0)")
+        }
+
         // create package
         do {
             try projectPath.mkdir()
@@ -131,7 +135,7 @@ extension Arena {
         }
 
         do {
-            print("🔧  resolving package dependencies")
+            print("🔧  Resolving package dependencies ...")
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
         }
 
@@ -142,7 +146,7 @@ extension Arena {
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
                 .flatMap { try getLibraryInfo(for: $0) }
             if libs.isEmpty { throw ArenaError.noLibrariesFound }
-            print("📔  libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
+            print("📔  Libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
         }
 
         // update Package.swift targets
@@ -188,7 +192,7 @@ extension Arena {
 
         // run xcodebuild
         do {
-            print("🔨  building package dependencies")
+            print("🔨  Building package dependencies ...")
             try shellOut(to: ShellOutCommand(string: "xcodebuild"), at: projectPath)
         }
 
@@ -218,10 +222,10 @@ extension Arena {
                 .compactMap(Module.init)
             if modules.isEmpty { throw ArenaError.noSourcesFound }
             try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)
-            print("📙  created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
+            print("📙  Created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 
-        print("✅  created project in folder '\(projectPath.relative(to: Path.cwd))'")
+        print("✅  Created project in folder '\(projectPath.relative(to: Path.cwd))'")
         if skipOpen {
             print("Run")
             print("  open \(xcworkspacePath.relative(to: Path.cwd))")

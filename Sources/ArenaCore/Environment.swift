@@ -7,12 +7,14 @@
 
 struct Environment {
     var fileManager: FileManager
+    var githubClient: GithubClient
 }
 
 
 extension Environment {
     static let live = Self(
-        fileManager: .live
+        fileManager: .live,
+        githubClient: .live
     )
 }
 

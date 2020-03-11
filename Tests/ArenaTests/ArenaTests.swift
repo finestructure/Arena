@@ -5,7 +5,32 @@ import Workspace
 import XCTest
 
 
+extension ArenaCore.FileManager {
+    static let mock = Self(
+        fileExists: { _ in true }
+    )
+}
+
+
+extension GithubClient {
+    static let mock = Self(
+        latestRelease: { _ in Release(tagName: "1.2.3") }
+    )
+}
+
+
+extension Environment {
+    static let mock = Self(
+        fileManager: .mock, githubClient: .mock
+    )
+}
+
+
 final class ArenaTests: XCTestCase {
+    override func setUp() {
+        Current = .mock
+    }
+
     func test_loadManifest() throws {
         let p = checkoutsDirectory/"swift-package-manager"
         print(p)
@@ -34,10 +59,11 @@ final class ArenaTests: XCTestCase {
     func test_args_github_shorthand() throws {
         do { // path doesn't exist
             Current.fileManager.fileExists = { _ in false }
+            Current.githubClient.latestRelease = { _ in Release(tagName: "1.2.3") }
             let args = ["finestructure/gala"]
             let res = try Arena.parse(args)
             XCTAssertEqual(res.dependencies, [
-                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("0.0.0")),
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("1.2.3")),
             ])
         }
         do { // path exists
@@ -169,7 +195,7 @@ final class ArenaTests: XCTestCase {
     func test_parse_dependency() throws {
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
-                                                requirement: .from("0.0.0")),
+                                                requirement: .noVersion),
                              rest: ""))
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@1.2.3"),
                        Match(result: Dependency(url: URL(string: "https://github.com/foo/bar")!,
