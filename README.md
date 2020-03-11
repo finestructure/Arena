@@ -39,6 +39,7 @@ OPTIONS:
 
 ```
 arena https://github.com/finestructure/Gala
+➡️   finestructure/Gala: 0.2.1
 🔧  resolving package dependencies
 📔  libraries found: Gala
 🔨  building package dependencies
@@ -51,6 +52,7 @@ You can skip the protocol and domain when refereing Github projects:
 
 ```
 arena finestructure/Gala
+➡️   finestructure/Gala: 0.2.1
 🔧  resolving package dependencies
 📔  libraries found: Gala
 🔨  building package dependencies
@@ -71,7 +73,8 @@ arena ~/Projects/Parser
 ### Import both
 
 ```
-arena ~/Projects/Parser https://github.com/finestructure/Gala
+arena ~/Projects/Parser finestructure/Gala
+➡️   finestructure/Gala: 0.2.1
 🔧  resolving package dependencies
 📔  libraries found: Parser, Gala
 🔨  building package dependencies
