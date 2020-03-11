@@ -289,6 +289,34 @@ final class ArenaTests: XCTestCase {
             XCTAssertEqual(dep.packageClause, #".package(path: "/foo/bar")"#)
         }
     }
+
+    func test_latestRelease() throws {
+        Current.githubClient.latestRelease = { _ in Release(tagName: "1.2.3") }
+        do { // github url
+            Current.fileManager.fileExists = { _ in false }
+            let args = ["https://github.com/finestructure/gala"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("1.2.3")),
+            ])
+        }
+        do { // github shorthand
+            Current.fileManager.fileExists = { _ in false }
+            let args = ["finestructure/gala"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("1.2.3")),
+            ])
+        }
+        do { // other url
+            Current.fileManager.fileExists = { _ in false }
+            let args = ["https://gitlab.com/finestructure/foo"]
+            let res = try Arena.parse(args)
+            XCTAssertEqual(res.dependencies, [
+                Dependency(url: URL(string: "https://gitlab.com/finestructure/foo")!, requirement: .from("0.0.0")),
+            ])
+        }
+    }
 }
 
 

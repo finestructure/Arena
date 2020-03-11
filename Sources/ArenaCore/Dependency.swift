@@ -104,7 +104,7 @@ extension Dependency: ExpressibleByArgument {
                  (true, true, _):    // existing path       - keep as is
                 self = dep
             case (false, _, false):  // url without version - look up version
-                let req = Repository(url: dep.url)
+                let req = GithubRepository(url: dep.url)
                     .flatMap { Current.githubClient.latestRelease($0)?.version }
                     .map { .from($0) }
                     ?? Dependency.defaultRequirement

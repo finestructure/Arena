@@ -12,7 +12,7 @@ import Parser
 
 
 struct GithubClient {
-    var latestRelease: (Repository) -> Release?
+    var latestRelease: (GithubRepository) -> Release?
 }
 
 
@@ -38,12 +38,15 @@ struct Release: Decodable {
 }
 
 
-struct Repository: CustomStringConvertible {
+struct GithubRepository: CustomStringConvertible {
     let owner: String
     let repository: String
     var description: String { owner + "/" + repository}
 
     init?(url: URL) {
+        guard url.host == "github.com" else {
+            return nil
+        }
         let path = url.path
         guard path.hasPrefix("/") else { return nil }
         let parts = path.dropFirst().split(separator: "/")
@@ -61,7 +64,7 @@ func latestReleaseURL(repository: String) -> URL? {
 }
 
 
-func latestReleaseRequest(for repository: Repository) -> Release? {
+func latestReleaseRequest(for repository: GithubRepository) -> Release? {
     guard let url = latestReleaseURL(repository: repository.description) else {
         return nil
     }
