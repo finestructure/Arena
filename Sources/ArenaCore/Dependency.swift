@@ -84,7 +84,7 @@ extension Dependency: CustomStringConvertible {
 extension Dependency {
     func latestRequirement() -> Requirement {
         guard let repo = Repository(url: url) else { return Self.defaultRequirement }
-        guard let version = latestReleaseRequest(for: repo)?.tagName.version
+        guard let version = Current.githubClient.latestRelease(repo)?.tagName.version
             else { return Self.defaultRequirement }
         return .from(version)
     }

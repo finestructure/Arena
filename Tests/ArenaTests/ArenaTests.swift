@@ -34,11 +34,11 @@ final class ArenaTests: XCTestCase {
     func test_args_github_shorthand() throws {
         do { // path doesn't exist
             Current.fileManager.fileExists = { _ in false }
+            Current.githubClient.latestRelease = { _ in Release(tagName: "1.2.3") }
             let args = ["finestructure/gala"]
             let res = try Arena.parse(args)
-            #warning("FIXME: use Environment to stub out network")
             XCTAssertEqual(res.dependencies, [
-                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("0.2.1")),
+                Dependency(url: URL(string: "https://github.com/finestructure/gala")!, requirement: .from("1.2.3")),
             ])
         }
         do { // path exists

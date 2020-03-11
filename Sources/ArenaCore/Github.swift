@@ -9,6 +9,18 @@
 import Foundation
 
 
+struct GithubClient {
+    var latestRelease: (Repository) -> Release?
+}
+
+
+extension GithubClient {
+    static let live = Self(
+        latestRelease: latestReleaseRequest
+    )
+}
+
+
 struct Release: Decodable {
     let tagName: String
 
