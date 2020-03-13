@@ -12,6 +12,7 @@ import ShellOut
 
 
 public enum ArenaError: LocalizedError {
+    case invalidPath(String)
     case missingDependency
     case pathExists(String)
     case noLibrariesFound
@@ -19,6 +20,8 @@ public enum ArenaError: LocalizedError {
 
     public var errorDescription: String? {
         switch self {
+            case .invalidPath(let path):
+                return "'\(path)' is not a valid path"
             case .missingDependency:
                 return "provide at least one dependency"
             case .pathExists(let path):
@@ -75,6 +78,33 @@ public struct Arena: ParsableCommand {
     var dependencies: [Dependency]
 
     public init() {}
+}
+
+
+extension Arena {
+    public init(projectName: String,
+                libNames: [String],
+                platform: Platform,
+                force: Bool,
+                outputPath: String,
+                skipOpen: Bool,
+                book: Bool,
+                dependencies: [Dependency]) throws {
+
+        guard let path = Path(outputPath) else {
+            throw ArenaError.invalidPath(outputPath)
+        }
+
+        self.projectName = projectName
+        self.libNames = libNames
+        self.platform = platform
+        self.force = force
+        self.outputPath = path
+        self.showVersion = false
+        self.skipOpen = skipOpen
+        self.book = book
+        self.dependencies = dependencies
+    }
 }
 
 
