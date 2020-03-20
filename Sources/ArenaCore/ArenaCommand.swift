@@ -138,8 +138,8 @@ public enum Progress {
         case listLibraries
         case buildingDependencies
         case showingPlaygroundBookPath
-        case showingProjectPath
         case showingOpenAdvisory
+        case completed
     }
     public static func update(stage: Stage, description: String) { print(description) }
 }
@@ -278,7 +278,7 @@ extension Arena {
                      "📙 Created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 
-        progress(.showingProjectPath, "✅ Created project in folder '\(projectPath.relative(to: Path.cwd))'")
+        progress(.completed, "✅ Created project in folder '\(projectPath.relative(to: Path.cwd))'")
         if skipOpen {
             progress(.showingOpenAdvisory, """
                 Run
