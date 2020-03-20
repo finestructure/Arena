@@ -127,10 +127,32 @@ extension Arena {
 }
 
 
+public typealias ProgressUpdate = (Progress.Stage, String) -> ()
+
+
+public enum Progress {
+    public enum Stage {
+        case started
+        case listPackages
+        case resolvePackages
+        case listLibraries
+        case buildingDependencies
+        case showingPlaygroundBookPath
+        case showingProjectPath
+        case showingOpenAdvisory
+    }
+    public static func update(stage: Stage, description: String) { print(description) }
+}
+
+
 extension Arena {
     public func run() throws {
+        try run(progress: Progress.update)
+    }
+
+    public func run(progress: ProgressUpdate) throws {
         if showVersion {
-            print(ArenaVersion)
+            progress(.started, ArenaVersion)
             return
         }
 
@@ -146,7 +168,7 @@ extension Arena {
         }
 
         dependencies.forEach {
-            print("➡️   Package: \($0)")
+            progress(.listPackages, "➡️  Package: \($0)")
         }
 
         // create package
@@ -165,7 +187,7 @@ extension Arena {
         }
 
         do {
-            print("🔧  Resolving package dependencies ...")
+            progress(.resolvePackages, "🔧 Resolving package dependencies ...")
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
         }
 
@@ -176,7 +198,7 @@ extension Arena {
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
                 .flatMap { try getLibraryInfo(for: $0) }
             if libs.isEmpty { throw ArenaError.noLibrariesFound }
-            print("📔  Libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
+            progress(.listLibraries, "📔 Libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
         }
 
         // update Package.swift targets
@@ -222,7 +244,7 @@ extension Arena {
 
         // run xcodebuild
         do {
-            print("🔨  Building package dependencies ...")
+            progress(.buildingDependencies, "🔨 Building package dependencies ...")
             try shellOut(to: ShellOutCommand(string: "xcodebuild"), at: projectPath)
         }
 
@@ -252,14 +274,18 @@ extension Arena {
                 .compactMap(Module.init)
             if modules.isEmpty { throw ArenaError.noSourcesFound }
             try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)
-            print("📙  Created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
+            progress(.showingPlaygroundBookPath,
+                     "📙 Created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
         }
 
-        print("✅  Created project in folder '\(projectPath.relative(to: Path.cwd))'")
+        progress(.showingProjectPath, "✅ Created project in folder '\(projectPath.relative(to: Path.cwd))'")
         if skipOpen {
-            print("Run")
-            print("  open \(xcworkspacePath.relative(to: Path.cwd))")
-            print("to open the project in Xcode")
+            progress(.showingOpenAdvisory, """
+                Run
+                  open \(xcworkspacePath.relative(to: Path.cwd))
+                to open the project in Xcode
+                """
+            )
         } else {
             try shellOut(to: .openFile(at: xcworkspacePath))
         }
