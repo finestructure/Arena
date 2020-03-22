@@ -206,9 +206,9 @@ extension Arena {
             let packagePath = projectPath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
             let productsClause = libs.map {
-                """
-                .product(name: "\($0.libraryName)", package: "\($0.packageName)")
-                """
+                $0.libraryName == $0.packageName
+                ? #".product(name: "\#($0.libraryName)")"#
+                : #".product(name: "\#($0.libraryName)", package: "\#($0.packageName)")"#
             }.joined(separator: ",\n")
             let updatedTgts =  """
                 package.targets = [
