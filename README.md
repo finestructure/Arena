@@ -39,11 +39,11 @@ OPTIONS:
 
 ```
 arena https://github.com/finestructure/Gala
-➡️  Package: https://github.com/finestructure/Gala @ from(0.2.1)
-🔧  Resolving package dependencies ...
-📔  Libraries found: Gala
-🔨  Building package dependencies ...
-✅  Created project in folder 'Arena-Playground'
+➡️ Package: https://github.com/finestructure/Gala @ from(0.2.1)
+🔧 Resolving package dependencies ...
+📔 Libraries found: Gala
+🔨 Building package dependencies ...
+✅ Created project in folder 'Arena-Playground'
 ```
 
 ### Using Github shorthand syntax
@@ -52,11 +52,11 @@ You can skip the protocol and domain when refereing Github projects:
 
 ```
 arena finestructure/Gala
-➡️  Package: https://github.com/finestructure/Gala @ from(0.2.1)
-🔧  Resolving package dependencies ...
-📔  Libraries found: Gala
-🔨  Building package dependencies ...
-✅  Created project in folder 'Arena-Playground'
+➡️ Package: https://github.com/finestructure/Gala @ from(0.2.1)
+🔧 Resolving package dependencies ...
+📔 Libraries found: Gala
+🔨 Building package dependencies ...
+✅ Created project in folder 'Arena-Playground'
 ```
 
 
@@ -64,23 +64,23 @@ arena finestructure/Gala
 
 ```
 arena ~/Projects/Parser
-➡️  Package: file:///Users/sas/Projects/Parser @ path
-🔧  Resolving package dependencies ...
-📔  Libraries found: Parser
-🔨  Building package dependencies ...
-✅  Created project in folder 'Arena-Playground'
+➡️ Package: file:///Users/sas/Projects/Parser @ path
+🔧 Resolving package dependencies ...
+📔 Libraries found: Parser
+🔨 Building package dependencies ...
+✅ Created project in folder 'Arena-Playground'
 ```
 
 ### Import both
 
 ```
 arena ~/Projects/Parser finestructure/Gala
-➡️  Package: file:///Users/sas/Projects/Parser @ path
-➡️  Package: https://github.com/finestructure/Gala @ from(0.2.1)
-🔧  Resolving package dependencies ...
-📔  Libraries found: Parser, Gala
-🔨  Building package dependencies ...
-✅  Created project in folder 'Arena-Playground'
+➡️ Package: file:///Users/sas/Projects/Parser @ path
+➡️ Package: https://github.com/finestructure/Gala @ from(0.2.1)
+🔧 Resolving package dependencies ...
+📔 Libraries found: Parser, Gala
+🔨 Building package dependencies ...
+✅ Created project in folder 'Arena-Playground'
 ```
 
 ## Specifying versions
