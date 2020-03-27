@@ -9,6 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set Xcode version
+      run: sudo xcode-select --switch /Applications/Xcode_11.4.app
+    - name: Log Xcode version
+      run: /usr/bin/xcodebuild -version
     - name: Build
       run: swift build -v
     - name: Run tests
