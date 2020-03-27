@@ -197,7 +197,7 @@ extension Arena {
             packages = try dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
                 .map { try getPackageInfo(for: $0) }
-            let libs = packages.flatMap(\.libraries)
+            let libs = packages.flatMap { $0.libraries }
             if libs.isEmpty { throw ArenaError.noLibrariesFound }
             progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
         }
@@ -254,7 +254,7 @@ extension Arena {
         // add playground
         do {
             try playgroundPath.mkdir()
-            let libsToImport = !libNames.isEmpty ? libNames : packages.flatMap(\.libraries)
+            let libsToImport = !libNames.isEmpty ? libNames : packages.flatMap { $0.libraries }
             let importClauses =
                 """
                 // ℹ️ If running the playground fails with an error "no such module ..."
