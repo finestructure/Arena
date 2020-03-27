@@ -266,27 +266,35 @@ final class ArenaTests: XCTestCase {
     func test_dependency_package_clause() throws {
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .branch("develop"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .branch("develop"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .branch("develop"))"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .exact("1.2.3"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .from("1.2.3"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", from: "1.2.3")"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", from: "1.2.3")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .range("1.2.3"..<"2.3.4"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", "1.2.3"..<"2.3.4")"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", "1.2.3"..<"2.3.4")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .revision("foo"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
         }
         do {
             let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
-            XCTAssertEqual(dep.packageClause, #".package(path: "/foo/bar")"#)
+            XCTAssertEqual(dep.packageClause(), #".package(path: "/foo/bar")"#)
+        }
+        do {
+            let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .revision("foo"))
+            XCTAssertEqual(dep.packageClause(name: "bar"), #".package(name: "bar", url: "https://github.com/foo/bar", .revision("foo"))"#)
+        }
+        do {
+            let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
+            XCTAssertEqual(dep.packageClause(name: "bar"), #".package(name: "bar", path: "/foo/bar")"#)
         }
     }
 

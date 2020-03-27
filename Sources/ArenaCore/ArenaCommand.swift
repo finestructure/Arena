@@ -178,12 +178,18 @@ extension Arena {
         }
 
         // update Package.swift dependencies
+        // we need to keep the original description around, because we're going to re-write
+        // the manifest a second time, after we've resolved the packages. This is because we
+        // the manifest to resolve the packages and we need package resolution to be able to
+        // get PackageInfo, which we'll need to write out the proper dependency incl `name:`
+        // See https://github.com/finestructure/Arena/issues/33
+        // and https://github.com/finestructure/Arena/issues/38
+        let packagePath = projectPath/"Package.swift"
+        let originalPackageDescription = try String(contentsOf: packagePath)
         do {
-            let packagePath = projectPath/"Package.swift"
-            let packageDescription = try String(contentsOf: packagePath)
-            let depsClause = dependencies.map { "    " + $0.packageClause }.joined(separator: ",\n")
+            let depsClause = dependencies.map { "    " + $0.packageClause() }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
-            try [packageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
+            try [originalPackageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
         }
 
         do {
@@ -191,23 +197,35 @@ extension Arena {
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
         }
 
-        let packages: [PackageInfo]
+        let packageInfo: [(Dependency, PackageInfo)]
         do {
             // find libraries
-            packages = try dependencies
-                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
-                .map { try getPackageInfo(for: $0) }
-            let libs = packages.flatMap { $0.libraries }
+            packageInfo = Array(
+                zip(dependencies,
+                    dependencies.compactMap {
+                        $0.path ?? $0.checkoutDir(projectDir: projectPath)
+                    }.compactMap { try? getPackageInfo(for: $0) } )
+            )
+            let libs = packageInfo.flatMap { $0.1.libraries }
             if libs.isEmpty { throw ArenaError.noLibrariesFound }
             progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
+        }
+
+        // update Package.swift dependencies again, adding in package `name:`
+        do {
+            let depsClause = packageInfo.map { (dep, pkg) in
+                "    " + dep.packageClause(name: pkg.name)
+            }.joined(separator: ",\n")
+            let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
+            try [originalPackageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
         }
 
         // update Package.swift targets
         do {
             let packagePath = projectPath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let productsClause = packages
-                .flatMap { pkg in pkg.libraries.map { (package: pkg.name, library: $0) } }
+            let productsClause = packageInfo
+                .flatMap { pkg in pkg.1.libraries.map { (package: pkg.1.name, library: $0) } }
                 .map {
                 """
                 .product(name: "\($0.library)", package: "\($0.package)")
@@ -254,7 +272,7 @@ extension Arena {
         // add playground
         do {
             try playgroundPath.mkdir()
-            let libsToImport = !libNames.isEmpty ? libNames : packages.flatMap { $0.libraries }
+            let libsToImport = !libNames.isEmpty ? libNames : packageInfo.flatMap { $0.1.libraries }
             let importClauses =
                 """
                 // ℹ️ If running the playground fails with an error "no such module ..."

@@ -53,22 +53,27 @@ public struct Dependency: Equatable, Hashable, Codable {
         requirement == .path ? nil : projectDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
     }
 
-    var packageClause: String {
+    func packageClause(name: String? = nil) -> String {
+        #if swift(>=5.2)
+        let n = name.map { #"name: "\#($0)", "# } ?? ""
+        #else
+        let n = ""
+        #endif
         switch requirement {
             case .branch(let b):
-                return #".package(url: "\#(url.absoluteString)", .branch("\#(b)"))"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", .branch("\#(b)"))"#
             case .exact(let v):
-                return #".package(url: "\#(url.absoluteString)", .exact("\#(v)"))"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", .exact("\#(v)"))"#
             case .from(let v):
-                return #".package(url: "\#(url.absoluteString)", from: "\#(v)")"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", from: "\#(v)")"#
             case .path:
-                return #".package(path: "\#(url.path)")"#
+                return #".package(\#(n)path: "\#(url.path)")"#
             case .range(let r):
-                return #".package(url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
             case .revision(let r):
-                return #".package(url: "\#(url.absoluteString)", .revision("\#(r)"))"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", .revision("\#(r)"))"#
             case .noVersion:
-                return #".package(url: "\#(url.absoluteString)", from: "0.0.0")"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", from: "0.0.0")"#
         }
     }
 }
