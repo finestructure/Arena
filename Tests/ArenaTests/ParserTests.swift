@@ -121,6 +121,18 @@ class ParserTests: XCTestCase {
             Match(result: Dependency(url: URL(string: "file://\(Path.cwd/"../foo/bar")")!, requirement: .path), rest: ""))
     }
 
+    func test_parse_dependency_git_protocol() throws {
+        // git protocol
+        XCTAssertEqual(Parser.dependency.run("git@github.com:foo/bar.git"),
+                       Match(result: Dependency(url: URL(string: "ssh://git@github.com/foo/bar.git")!,
+                                                requirement: .noVersion),
+                             rest: ""))
+        XCTAssertEqual(Parser.dependency.run("git@github.com:foo/bar"),
+                       Match(result: Dependency(url: URL(string: "ssh://git@github.com/foo/bar")!,
+                                                requirement: .noVersion),
+                             rest: ""))
+    }
+
     func test_parse_dependency_errors() throws {
         // unparsable trailing characters
         XCTAssertEqual(Parser.dependency.run("https://github.com/foo/bar@from:1.2.3trailingjunk"),
