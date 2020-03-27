@@ -1,4 +1,4 @@
-![Swift-5.1](https://github.com/finestructure/Arena/workflows/Swift/badge.svg)
+![Swift-5.2](https://github.com/finestructure/Arena/workflows/Swift/badge.svg)
 [![@_sa_s](https://img.shields.io/badge/Twitter-@_sa_s-3e8bb0.svg?style=flat)](https://twitter.com/_sa_s)
 
 # 🏟 Arena
