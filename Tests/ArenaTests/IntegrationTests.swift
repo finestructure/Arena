@@ -26,11 +26,11 @@ class IntegrationTests: XCTestCase {
         try arena.run()
         
         let expectation = """
-                ➡️   Package: https://github.com/finestructure/ArenaTest @ exact(0.0.3)
-                🔧  Resolving package dependencies ...
-                📔  Libraries found: ArenaTest
-                🔨  Building package dependencies ...
-                ✅  Created project in folder 'ArenaIntegrationTest'
+                ➡️  Package: https://github.com/finestructure/ArenaTest @ exact(0.0.3)
+                🔧 Resolving package dependencies ...
+                📔 Libraries found: ArenaTest
+                🔨 Building package dependencies ...
+                ✅ Created project in folder 'ArenaIntegrationTest'
                 Run
                   open ArenaIntegrationTest/ArenaIntegrationTest.xcworkspace
                 to open the project in Xcode
@@ -47,5 +47,30 @@ class IntegrationTests: XCTestCase {
     }
     #endif
     
+    #if swift(>=5.2)
+    func test_Gen() throws {
+        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+
+        let arena = try Arena.parse([
+            "https://github.com/pointfreeco/swift-gen@0.2.0",
+            "--name=ArenaIntegrationTest",
+            "--force",
+            "--skip-open"])
+
+        let exp = self.expectation(description: "exp")
+
+        let progress: ProgressUpdate = { stage, _ in
+            print("progress: \(stage)")
+            if stage == .completed {
+                exp.fulfill()
+            }
+        }
+
+        try arena.run(progress: progress)
+
+        wait(for: [exp], timeout: 10)
+    }
+    #endif
+
 }
 

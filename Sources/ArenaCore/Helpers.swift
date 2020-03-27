@@ -23,25 +23,27 @@ let swiftCompiler: AbsolutePath = {
 }()
 
 
-public struct LibraryInfo {
-    var libraryName: String
-    var packageName: String
+public struct PackageInfo {
+    var name: String
     var path: AbsolutePath
+    var libraries: [String]
 }
 
 
-public func getLibraryInfo(for package: Path) throws -> [LibraryInfo] {
+public func getPackageInfo(for package: Path) throws -> PackageInfo {
     let path = AbsolutePath(package.string)
-    let manifest = try ManifestLoader.loadManifest(packagePath: path, swiftCompiler: swiftCompiler)
-    return manifest.products.filter { p in
+    let manifest = try ManifestLoader.loadManifest(packagePath: path,
+                                                   swiftCompiler: swiftCompiler,
+                                                   packageKind: .remote)
+    let libs = manifest.products.filter { p in
         if case .library = p.type {
             return true
         } else {
             return false
         }
-    }.map {
-        LibraryInfo(libraryName: $0.name, packageName: manifest.name, path: path)
     }
+    .map { $0.name }
+    return PackageInfo(name: manifest.name, path: path, libraries: libs)
 }
 
 

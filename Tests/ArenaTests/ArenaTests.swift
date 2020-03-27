@@ -35,16 +35,18 @@ final class ArenaTests: XCTestCase {
         let p = checkoutsDirectory/"swift-package-manager"
         print(p)
         let package = AbsolutePath(p.string)
-        let manifest = try ManifestLoader.loadManifest(packagePath: package, swiftCompiler: swiftCompiler)
+        let manifest = try ManifestLoader.loadManifest(packagePath: package,
+                                                       swiftCompiler: swiftCompiler,
+                                                       packageKind: .remote)
         XCTAssertEqual(manifest.name, "SwiftPM")
-        XCTAssertEqual(manifest.products.map { $0.name }, ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
-        XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.automatic)])
+        XCTAssertEqual(manifest.products.map { $0.name }, ["SwiftPM", "SwiftPM-auto", "PackageDescription"])
+        XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.dynamic)])
     }
 
-    func test_getLibraryInfo() throws {
+    func test_getPackageInfo() throws {
         let package = checkoutsDirectory/"swift-package-manager"
-        XCTAssertEqual(try getLibraryInfo(for: package).map({ $0.libraryName }),
-                       ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
+        XCTAssertEqual(try getPackageInfo(for: package).libraries,
+                       ["SwiftPM", "SwiftPM-auto", "PackageDescription"])
     }
 
     func test_args_multiple_deps() throws {
@@ -266,27 +268,35 @@ final class ArenaTests: XCTestCase {
     func test_dependency_package_clause() throws {
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .branch("develop"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .branch("develop"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .branch("develop"))"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .exact("1.2.3"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .from("1.2.3"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", from: "1.2.3")"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", from: "1.2.3")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .range("1.2.3"..<"2.3.4"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", "1.2.3"..<"2.3.4")"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", "1.2.3"..<"2.3.4")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .revision("foo"))
-            XCTAssertEqual(dep.packageClause, #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
         }
         do {
             let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
-            XCTAssertEqual(dep.packageClause, #".package(path: "/foo/bar")"#)
+            XCTAssertEqual(dep.packageClause(), #".package(path: "/foo/bar")"#)
+        }
+        do {
+            let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .revision("foo"))
+            XCTAssertEqual(dep.packageClause(name: "bar"), #".package(name: "bar", url: "https://github.com/foo/bar", .revision("foo"))"#)
+        }
+        do {
+            let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
+            XCTAssertEqual(dep.packageClause(name: "bar"), #".package(name: "bar", path: "/foo/bar")"#)
         }
     }
 
