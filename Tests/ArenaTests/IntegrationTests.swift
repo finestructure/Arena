@@ -72,5 +72,30 @@ class IntegrationTests: XCTestCase {
     }
     #endif
 
+    #if swift(>=5.2)
+    func test_git_protocol() throws {
+        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+
+        let arena = try Arena.parse([
+            "git@github.com:finestructure/ArenaTest@0.0.3",
+            "--name=ArenaIntegrationTest",
+            "--force",
+            "--skip-open"])
+
+        let exp = self.expectation(description: "exp")
+
+        let progress: ProgressUpdate = { stage, _ in
+            print("progress: \(stage)")
+            if stage == .completed {
+                exp.fulfill()
+            }
+        }
+
+        try arena.run(progress: progress)
+
+        wait(for: [exp], timeout: 10)
+    }
+    #endif
+
 }
 
