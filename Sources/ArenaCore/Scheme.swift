@@ -12,6 +12,7 @@ import Path
 enum Scheme: String, CaseIterable {
     case https = "https://"
     case http = "http://"
+    case git = "git@"
     case file = "file://"
     case nonstandardizedFile = "file:"
     case empty = ""
@@ -20,6 +21,13 @@ enum Scheme: String, CaseIterable {
         switch self {
             case .https, .http, .file:
                 return URL(string: rawValue + path)
+            case .git:
+                return URL(string:
+                    "ssh://"
+                        + rawValue
+                        + path
+                            .split(separator: ":", maxSplits: 1)
+                            .joined(separator: "/"))
             case .nonstandardizedFile:
                 return URL(string: Scheme.file.rawValue + path)
             case .empty:

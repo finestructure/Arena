@@ -71,7 +71,7 @@ extension Parser where A == RefSpec {
 
 
 extension Parser where A == Scheme {
-    static var aScheme: Parser<Scheme> {
+    static var scheme: Parser<Scheme> {
         oneOf(Scheme.allCases.map { string($0.rawValue).map { Scheme(rawValue: $0)! } } )
     }
 }
@@ -80,7 +80,7 @@ extension Parser where A == Scheme {
 extension Parser where A == Foundation.URL {
     static var url: Parser<Foundation.URL> {
         zip(
-            Parser<Scheme>.aScheme,
+            Parser<Scheme>.scheme,
             prefix(upTo: "@").map(String.init)
         ).flatMap { (scheme, rest) in
             if let url = scheme.url(path: rest) {
