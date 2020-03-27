@@ -2,11 +2,14 @@
 
 swift build
 
-for cmd in "arena https://github.com/pointfreeco/swift-gen.git"
+for dep in "finestructure/Gala" \
+           "finestructure/Parser" \
+           "alamofire/alamofire" \
+           "pointfreeco/swift-gen" 
 do
     echo "-------------------------"
-    echo $cmd
-    swift run ${cmd} -f --skip-open
+    echo Test: $dep
+    swift run arena ${dep} -f --skip-open
     echo
 done
 echo "-------------------------"

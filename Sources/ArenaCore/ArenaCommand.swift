@@ -191,23 +191,26 @@ extension Arena {
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
         }
 
-        let libs: [LibraryInfo]
+        let packages: [PackageInfo]
         do {
             // find libraries
-            libs = try dependencies
+            packages = try dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
-                .flatMap { try getLibraryInfo(for: $0) }
+                .map { try getPackageInfo(for: $0) }
+            let libs = packages.flatMap(\.libraries)
             if libs.isEmpty { throw ArenaError.noLibrariesFound }
-            progress(.listLibraries, "📔 Libraries found: \(libs.map({ $0.libraryName }).joined(separator: ", "))")
+            progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
         }
 
         // update Package.swift targets
         do {
             let packagePath = projectPath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let productsClause = libs.map {
+            let productsClause = packages
+                .flatMap { pkg in pkg.libraries.map { (package: pkg.name, library: $0) } }
+                .map {
                 """
-                .product(name: "\($0.libraryName)", package: "\($0.packageName)")
+                .product(name: "\($0.library)", package: "\($0.package)")
                 """
             }.joined(separator: ",\n")
             let updatedTgts =  """
@@ -251,7 +254,7 @@ extension Arena {
         // add playground
         do {
             try playgroundPath.mkdir()
-            let libsToImport = !libNames.isEmpty ? libNames : libs.map({ $0.libraryName })
+            let libsToImport = !libNames.isEmpty ? libNames : packages.flatMap(\.libraries)
             let importClauses =
                 """
                 // ℹ️ If running the playground fails with an error "no such module ..."

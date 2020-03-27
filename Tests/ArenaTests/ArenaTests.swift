@@ -41,9 +41,9 @@ final class ArenaTests: XCTestCase {
         XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.automatic)])
     }
 
-    func test_getLibraryInfo() throws {
+    func test_getPackageInfo() throws {
         let package = checkoutsDirectory/"swift-package-manager"
-        XCTAssertEqual(try getLibraryInfo(for: package).map({ $0.libraryName }),
+        XCTAssertEqual(try getPackageInfo(for: package).libraries,
                        ["SwiftPM", "SwiftPM-auto", "SPMUtility"])
     }
 
