@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1"),
-        .package(url: "https://github.com/apple/swift-package-manager", from: "0.5.0"),
+        .package(url: "https://github.com/apple/swift-package-manager", .revision("swift-5.2-RELEASE")),
         .package(url: "https://github.com/finestructure/Parser", from: "0.0.0"),
         .package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0"),
         .package(url: "https://github.com/mxcl/Path.swift.git", from: "1.0.0"),

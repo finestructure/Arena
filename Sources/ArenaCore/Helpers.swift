@@ -32,7 +32,9 @@ public struct PackageInfo {
 
 public func getPackageInfo(for package: Path) throws -> PackageInfo {
     let path = AbsolutePath(package.string)
-    let manifest = try ManifestLoader.loadManifest(packagePath: path, swiftCompiler: swiftCompiler)
+    let manifest = try ManifestLoader.loadManifest(packagePath: path,
+                                                   swiftCompiler: swiftCompiler,
+                                                   packageKind: .remote)
     let libs = manifest.products.filter { p in
         if case .library = p.type {
             return true
