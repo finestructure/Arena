@@ -13,9 +13,9 @@ class IntegrationTests: XCTestCase {
 
     func test_ArenaTest() throws {
         let dependencies = [
-            "finestructure/ArenaTest",
-            "finestructure/Parser",
-            "finestructure/gala",
+            "https://github.com/finestructure/ArenaTest",
+            "https://github.com/finestructure/Parser",
+            "https://github.com/finestructure/Gala",
         ]
 
         try dependencies.forEach { dep in
