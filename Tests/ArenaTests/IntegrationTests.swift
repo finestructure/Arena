@@ -11,7 +11,6 @@ import XCTest
 
 class IntegrationTests: XCTestCase {
     
-    #if swift(>=5.2)
     func test_ArenaTest() throws {
         try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
@@ -45,11 +44,9 @@ class IntegrationTests: XCTestCase {
         
         output.closeConsolePipe()
     }
-    #endif
-    
-    #if swift(>=5.2)
+
     func test_Gen() throws {
-        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+//        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
         let arena = try Arena.parse([
             "https://github.com/pointfreeco/swift-gen@0.2.0",
@@ -70,11 +67,9 @@ class IntegrationTests: XCTestCase {
 
         wait(for: [exp], timeout: 10)
     }
-    #endif
 
-    #if swift(>=5.2)
     func test_git_protocol() throws {
-        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+//        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
         let arena = try Arena.parse([
             "git@github.com:finestructure/ArenaTest@0.0.3",
@@ -95,7 +90,6 @@ class IntegrationTests: XCTestCase {
 
         wait(for: [exp], timeout: 10)
     }
-    #endif
 
 }
 
