@@ -69,7 +69,7 @@ class IntegrationTests: XCTestCase {
     }
 
     func test_git_protocol() throws {
-//        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
         let arena = try Arena.parse([
             "git@github.com:finestructure/ArenaTest@0.0.3",
