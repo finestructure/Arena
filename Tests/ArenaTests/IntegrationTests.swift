@@ -14,11 +14,12 @@ class IntegrationTests: XCTestCase {
         Current = .live
     }
 
-    func test_ArenaTest() throws {
+    func test_spm_packages() throws {
         let dependencies = [
             "https://github.com/finestructure/ArenaTest",
             "https://github.com/finestructure/Parser",
             "https://github.com/finestructure/Gala",
+            "https://github.com/pointfreeco/swift-gen",
         ]
 
         try dependencies.forEach { dep in
