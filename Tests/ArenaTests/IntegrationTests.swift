@@ -13,8 +13,8 @@ class IntegrationTests: XCTestCase {
 
     func test_ArenaTest() throws {
         let dependencies = [
-            "https://github.com/finestructure/ArenaTest@0.0.3",
-            "finestructure/parser",
+            "finestructure/ArenaTest",
+            "finestructure/Parser",
             "finestructure/gala",
         ]
 
