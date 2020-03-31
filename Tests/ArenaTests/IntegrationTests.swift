@@ -10,6 +10,9 @@ import XCTest
 
 
 class IntegrationTests: XCTestCase {
+    override func setUp() {
+        Current = .live
+    }
 
     func test_ArenaTest() throws {
         let dependencies = [
