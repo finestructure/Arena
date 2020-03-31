@@ -12,7 +12,7 @@ import XCTest
 class IntegrationTests: XCTestCase {
     
     func test_ArenaTest_luna() throws {
-        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+//        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
         let output = OutputListener()
         output.openConsolePipe()
