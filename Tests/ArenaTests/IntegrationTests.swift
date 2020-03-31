@@ -41,6 +41,7 @@ class IntegrationTests: XCTestCase {
                 }
             }
 
+            print("🧪 Testing dependency \(dep)")
             try arena.run(progress: progress)
 
             wait(for: [exp], timeout: 10)
