@@ -22,7 +22,7 @@ class IntegrationTests: XCTestCase {
             // "https://github.com/pointfreeco/swift-gen",  // https://github.com/finestructure/Arena/issues/43
             "https://github.com/apple/swift-argument-parser",
             "https://github.com/davedelong/time",
-            "https://github.com/alamofire/alamofire",
+            "https://github.com/alamofire/alamofire@from:5.0.0",
         ]
 
         try dependencies.forEach { dep in
