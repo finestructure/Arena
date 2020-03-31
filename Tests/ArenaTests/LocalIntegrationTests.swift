@@ -48,6 +48,7 @@ class LocalIntegrationTests: XCTestCase {
     }
 
     // FIXME: fails on CI but shouldn't
+    // https://github.com/finestructure/Arena/issues/43
     func test_Gen() throws {
         let arena = try Arena.parse([
             "https://github.com/pointfreeco/swift-gen@0.2.0",

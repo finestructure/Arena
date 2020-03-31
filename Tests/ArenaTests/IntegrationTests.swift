@@ -19,7 +19,7 @@ class IntegrationTests: XCTestCase {
             "https://github.com/finestructure/ArenaTest",
             "https://github.com/finestructure/Parser",
             "https://github.com/finestructure/Gala",
-            "https://github.com/pointfreeco/swift-gen",
+            // "https://github.com/pointfreeco/swift-gen",  // https://github.com/finestructure/Arena/issues/43
             "https://github.com/apple/swift-argument-parser",
             "https://github.com/davedelong/time",
             "https://github.com/alamofire/alamofire",

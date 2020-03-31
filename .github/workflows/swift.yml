@@ -3,7 +3,7 @@ name: Swift
 on: [push]
 
 jobs:
-  build:
+  test:
 
     runs-on: macOS-10.15
 
