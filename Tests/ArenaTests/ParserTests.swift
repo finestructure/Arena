@@ -13,6 +13,9 @@ import XCTest
 
 
 class ParserTests: XCTestCase {
+    override func setUp() {
+        Current = .mock
+    }
 
     func test_parse_version() throws {
         XCTAssertEqual(Parser.version.run("1.2.3"), Match(result: Version(1, 2, 3), rest: ""))

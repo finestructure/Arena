@@ -40,29 +40,32 @@ public struct Arena: ParsableCommand {
         abstract: "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
     )
 
-    @Option(name: [.customLong("name"), .customShort("n")],
-            default: "Arena-Playground",
-            help: "Name of directory and Xcode project")
-    var projectName: String
+    @Flag(name: .long, help: "Create a Swift Playgrounds compatible Playground Book bundle (experimental).")
+    var book: Bool
+    
+    @Flag(name: .shortAndLong,
+          help: "Overwrite existing file/directory")
+    var force: Bool
 
     @Option(name: [.customLong("libs"), .customShort("l")],
             parsing: .upToNextOption,
             help: "Names of libraries to import (inferred if not provided)")
     var libNames: [String]
 
+    @Option(name: [.customLong("outputdir"), .customShort("o")],
+            default: try? Path.cwd.realpath(),
+            help: "Directory where project folder should be saved")
+    var outputPath: Path
+
     @Option(name: .shortAndLong,
             default: .macos,
             help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform
 
-    @Flag(name: .shortAndLong,
-          help: "Overwrite existing file/directory")
-    var force: Bool
-
-    @Option(name: [.customLong("outputdir"), .customShort("o")],
-            default: try? Path.cwd.realpath(),
-            help: "Directory where project folder should be saved")
-    var outputPath: Path
+    @Option(name: [.customLong("name"), .customShort("n")],
+            default: "Arena-Playground",
+            help: "Name of directory and Xcode project")
+    var projectName: String
 
     @Flag(name: [.customLong("version"), .customShort("v")],
           help: "Show version")
@@ -70,9 +73,6 @@ public struct Arena: ParsableCommand {
 
     @Flag(name: .long, help: "Do not open project in Xcode on completion")
     var skipOpen: Bool
-
-    @Flag(name: .long, help: "Create a Swift Playgrounds compatible Playground Book bundle (experimental).")
-    var book: Bool
 
     @Argument(help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
