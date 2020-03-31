@@ -11,7 +11,7 @@ import XCTest
 
 class IntegrationTests: XCTestCase {
     
-    func test_ArenaTest() throws {
+    func test_ArenaTest_luna() throws {
         try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
         let output = OutputListener()
@@ -45,8 +45,31 @@ class IntegrationTests: XCTestCase {
         output.closeConsolePipe()
     }
 
-    func test_Gen() throws {
+    func test_ArenaTest() throws {
 //        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+
+        let arena = try Arena.parse([
+            "https://github.com/finestructure/ArenaTest@0.0.3",
+            "--name=ArenaIntegrationTest",
+            "--force",
+            "--skip-open"])
+
+        let exp = self.expectation(description: "exp")
+
+        let progress: ProgressUpdate = { stage, _ in
+            print("progress: \(stage)")
+            if stage == .completed {
+                exp.fulfill()
+            }
+        }
+
+        try arena.run(progress: progress)
+
+        wait(for: [exp], timeout: 10)
+    }
+
+    func test_Gen() throws {
+        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
 
         let arena = try Arena.parse([
             "https://github.com/pointfreeco/swift-gen@0.2.0",
