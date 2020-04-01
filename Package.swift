@@ -6,7 +6,7 @@ let package = Package(
     name: "Arena",
     products: [
         .executable(name: "arena", targets: ["ArenaCLI"]),
-        .library(name: "ArenaCore", targets: ["ArenaCore"])
+        .library(name: "ArenaCore", type: .dynamic, targets: ["ArenaCore"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1"),
