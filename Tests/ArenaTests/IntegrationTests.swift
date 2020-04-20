@@ -19,14 +19,14 @@ class IntegrationTests: XCTestCase {
             // test some packages that we want to make sure work (e.g. because they're
             // used in docs and refs) or because they've had issues in the past
             // (regression testing)
-            "https://github.com/finestructure/ArenaTest",
-            "https://github.com/finestructure/Parser",
-            "https://github.com/finestructure/Gala",
-            "https://github.com/pointfreeco/swift-gen",
-            "https://github.com/apple/swift-argument-parser",
-            "https://github.com/davedelong/time",
-            "https://github.com/alamofire/alamofire@from:5.0.0",
-            "https://github.com/Peter-Schorn/Swift_Utilities"
+//            "https://github.com/finestructure/ArenaTest",
+//            "https://github.com/finestructure/Parser",
+//            "https://github.com/finestructure/Gala",
+//            "https://github.com/pointfreeco/swift-gen",
+//            "https://github.com/apple/swift-argument-parser",
+//            "https://github.com/davedelong/time",
+//            "https://github.com/alamofire/alamofire@from:5.0.0",
+            "Peter-Schorn/Swift_Utilities"
         ]
 
         try dependencies.forEach { dep in

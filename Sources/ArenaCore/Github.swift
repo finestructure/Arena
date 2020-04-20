@@ -116,17 +116,24 @@ func tagsRequest(for repository: GithubRepository) -> [Tag] {
 
 
 func latestVersionRequest(for repository: GithubRepository) -> Version? {
+    print("🐛 in \(#function)")
     if
         let release = Current.githubClient.latestRelease(repository),
         let version = release.version {
+        print("🐛 returning version: \(release) \(version)")
         return version
     }
-    let tagVersions = Current.githubClient.tags(repository)
+    let tags = Current.githubClient.tags(repository)
+    print("🐛 tags: \(dump(tags))")
+    let versions = tags
         .map(\.name)
         .compactMap(Version.init(string:))
         .sorted(by: >)
-    if let latest = tagVersions.first {
+    print("🐛 versions: \(dump(versions))")
+    if let latest = versions.first {
+        print("🐛 returning latest: \(latest)")
         return latest
     }
+    print("🐛 returning nil - no versions found")
     return nil
 }
