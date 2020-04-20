@@ -25,7 +25,7 @@ class IntegrationTests: XCTestCase {
 //            "https://github.com/pointfreeco/swift-gen",
 //            "https://github.com/apple/swift-argument-parser",
 //            "https://github.com/davedelong/time",
-//            "https://github.com/alamofire/alamofire@from:5.0.0",
+            "alamofire/alamofire",
             "Peter-Schorn/Swift_Utilities"
         ]
 
