@@ -9,7 +9,8 @@ for dep in "finestructure/Gala" \
            "alamofire/alamofire" \
            "pointfreeco/swift-gen" \
            "~/Projects/Parser" \
-           "git@github.com:finestructure/parser"
+           "git@github.com:finestructure/parser" \
+           "Peter-Schorn/Swift_Utilities"
 do
     echo "-------------------------"
     echo Test: $dep

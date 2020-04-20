@@ -1,0 +1,23 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Log Xcode version
+        run: /usr/bin/xcodebuild -version
+      - name: Run tests
+        run: make test
+
+  build-release:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Log Xcode version
+        run: /usr/bin/xcodebuild -version
+      - name: Build release config
+        run: make build-release
+    

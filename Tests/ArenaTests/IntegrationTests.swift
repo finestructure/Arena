@@ -16,13 +16,17 @@ class IntegrationTests: XCTestCase {
 
     func test_spm_packages() throws {
         let dependencies = [
-            "https://github.com/finestructure/ArenaTest",
-            "https://github.com/finestructure/Parser",
-            "https://github.com/finestructure/Gala",
-            "https://github.com/pointfreeco/swift-gen",  // https://github.com/finestructure/Arena/issues/43
-            "https://github.com/apple/swift-argument-parser",
-            "https://github.com/davedelong/time",
-            "https://github.com/alamofire/alamofire@from:5.0.0",
+            // test some packages that we want to make sure work (e.g. because they're
+            // used in docs and refs) or because they've had issues in the past
+            // (regression testing)
+            "finestructure/ArenaTest",
+            "finestructure/Parser",
+            "finestructure/Gala",
+            "pointfreeco/swift-gen",
+            "apple/swift-argument-parser",
+            "davedelong/time",
+            "alamofire/alamofire",
+            "Peter-Schorn/Swift_Utilities"
         ]
 
         try dependencies.forEach { dep in
