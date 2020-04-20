@@ -116,7 +116,8 @@ func tagsRequest(for repository: GithubRepository) -> [Tag] {
 
 
 func latestVersionRequest(for repository: GithubRepository) -> Version? {
-    print("🐛 in \(#function)")
+    print("🐛 =================================")
+    print("🐛 in \(#function) \(repository)")
     if
         let release = Current.githubClient.latestRelease(repository),
         let version = release.version {
