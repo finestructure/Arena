@@ -19,12 +19,12 @@ class IntegrationTests: XCTestCase {
             // test some packages that we want to make sure work (e.g. because they're
             // used in docs and refs) or because they've had issues in the past
             // (regression testing)
-//            "https://github.com/finestructure/ArenaTest",
-//            "https://github.com/finestructure/Parser",
-//            "https://github.com/finestructure/Gala",
-//            "https://github.com/pointfreeco/swift-gen",
-//            "https://github.com/apple/swift-argument-parser",
-//            "https://github.com/davedelong/time",
+            "finestructure/ArenaTest",
+            "finestructure/Parser",
+            "finestructure/Gala",
+            "pointfreeco/swift-gen",
+            "apple/swift-argument-parser",
+            "davedelong/time",
             "alamofire/alamofire",
             "Peter-Schorn/Swift_Utilities"
         ]
