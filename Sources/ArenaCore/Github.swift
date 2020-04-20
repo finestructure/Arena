@@ -17,13 +17,15 @@ let requestTimeout = 5
 struct GithubClient {
     var latestRelease: (GithubRepository) -> Release?
     var tags: (GithubRepository) -> [Tag]
+    var latestVersion: (GithubRepository) -> Version?
 }
 
 
 extension GithubClient {
     static let live = Self(
         latestRelease: latestReleaseRequest,
-        tags: tagsRequest
+        tags: tagsRequest,
+        latestVersion: latestVersionRequest
     )
 }
 
@@ -110,4 +112,21 @@ func tagsRequest(for repository: GithubRepository) -> [Tag] {
     task.resume()
     let _ = sema.wait(timeout: DispatchTime.now() + .seconds(requestTimeout))
     return result
+}
+
+
+func latestVersionRequest(for repository: GithubRepository) -> Version? {
+    if
+        let release = Current.githubClient.latestRelease(repository),
+        let version = release.version {
+        return version
+    }
+    let tagVersions = Current.githubClient.tags(repository)
+        .map(\.name)
+        .compactMap(Version.init(string:))
+        .sorted(by: >)
+    if let latest = tagVersions.first {
+        return latest
+    }
+    return nil
 }

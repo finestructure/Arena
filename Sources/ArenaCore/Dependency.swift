@@ -110,7 +110,7 @@ extension Dependency: ExpressibleByArgument {
                 self = dep
             case (false, _, false):  // url without version - look up version
                 let req = GithubRepository(url: dep.url)
-                    .flatMap { Current.githubClient.latestRelease($0)?.version }
+                    .flatMap { Current.githubClient.latestVersion($0) }
                     .map { .from($0) }
                     ?? Dependency.defaultRequirement
                 self = Dependency(url: dep.url, requirement: req)
