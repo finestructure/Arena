@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -euo pipefail
+
 swift build
 
 for cmd in "arena --version"\

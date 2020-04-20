@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -euo pipefail
+
 swift build
 
 for dep in "finestructure/Gala" \
