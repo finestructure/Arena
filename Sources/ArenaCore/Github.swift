@@ -11,6 +11,9 @@ import PackageModel
 import Parser
 
 
+let requestTimeout = 5
+
+
 struct GithubClient {
     var latestRelease: (GithubRepository) -> Release?
     var tags: (GithubRepository) -> [Tag]
@@ -89,7 +92,7 @@ func latestReleaseRequest(for repository: GithubRepository) -> Release? {
         sema.signal()
     }
     task.resume()
-    let _ = sema.wait(timeout: DispatchTime.now() + .seconds(2))
+    let _ = sema.wait(timeout: DispatchTime.now() + .seconds(requestTimeout))
     return result
 }
 
@@ -105,6 +108,6 @@ func tagsRequest(for repository: GithubRepository) -> [Tag] {
         sema.signal()
     }
     task.resume()
-    let _ = sema.wait(timeout: DispatchTime.now() + .seconds(2))
+    let _ = sema.wait(timeout: DispatchTime.now() + .seconds(requestTimeout))
     return result
 }
