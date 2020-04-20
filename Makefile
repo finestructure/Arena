@@ -12,11 +12,13 @@ force-clean:
 build: version
 	swift build
 
+build-release:
+	swift build -c release --disable-sandbox
+
 test:
 	swift test
 
-release: version
-	swift build -c release --disable-sandbox
+release: version build-release
 
 install: release
 	install .build/release/arena /usr/local/bin/
