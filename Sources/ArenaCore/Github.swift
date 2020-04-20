@@ -13,12 +13,14 @@ import Parser
 
 struct GithubClient {
     var latestRelease: (GithubRepository) -> Release?
+    var tags: (GithubRepository) -> [Tag]
 }
 
 
 extension GithubClient {
     static let live = Self(
-        latestRelease: latestReleaseRequest
+        latestRelease: latestReleaseRequest,
+        tags: tagsRequest
     )
 }
 
@@ -35,6 +37,11 @@ struct Release: Decodable {
     var version: Version? {
         Parser.version.run(tagName).result
     }
+}
+
+
+struct Tag: Decodable {
+    let name: String
 }
 
 
@@ -58,22 +65,43 @@ struct GithubRepository: CustomStringConvertible {
 }
 
 
-func latestReleaseURL(repository: String) -> URL? {
-    guard !repository.isEmpty else { return nil }
-    return URL(string: "https://api.github.com/repos/\(repository)/releases/latest")
+extension GithubRepository {
+    var latestReleaseURL: URL? {
+        guard !owner.isEmpty, !repository.isEmpty else { return nil }
+        return URL(string: "https://api.github.com/repos/\(description)/releases/latest")
+    }
+
+    var tagsURL: URL? {
+        guard !owner.isEmpty, !repository.isEmpty else { return nil }
+        return URL(string: "https://api.github.com/repos/\(description)/tags")
+    }
 }
 
 
 func latestReleaseRequest(for repository: GithubRepository) -> Release? {
-    guard let url = latestReleaseURL(repository: repository.description) else {
-        return nil
-    }
+    guard let url = repository.latestReleaseURL else { return nil }
 
     let sema = DispatchSemaphore(value: 0)
     var result: Release? = nil
     let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
         guard let data = data else { return }
         result = try? JSONDecoder().decode(Release.self, from: data)
+        sema.signal()
+    }
+    task.resume()
+    let _ = sema.wait(timeout: DispatchTime.now() + .seconds(2))
+    return result
+}
+
+
+func tagsRequest(for repository: GithubRepository) -> [Tag] {
+    guard let url = repository.tagsURL else { return [] }
+
+    let sema = DispatchSemaphore(value: 0)
+    var result = [Tag]()
+    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        guard let data = data else { return }
+        result = (try? JSONDecoder().decode([Tag].self, from: data)) ?? []
         sema.signal()
     }
     task.resume()

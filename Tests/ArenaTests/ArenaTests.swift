@@ -14,7 +14,8 @@ extension ArenaCore.FileManager {
 
 extension GithubClient {
     static let mock = Self(
-        latestRelease: { _ in Release(tagName: "1.2.3") }
+        latestRelease: { _ in Release(tagName: "1.2.3") },
+        tags: { _ in [Tag(name: "1.2.3")] }
     )
 }
 
@@ -200,6 +201,19 @@ final class ArenaTests: XCTestCase {
                 Dependency(url: URL(string: "https://gitlab.com/finestructure/foo")!, requirement: .from("0.0.0")),
             ])
         }
+    }
+
+    func test_latestVersion() throws {
+        // Tests finding the latest version when there are no releases, only tags
+        // https://github.com/finestructure/Arena/issues/48
+        Current.githubClient.latestRelease = { _ in nil }
+        Current.githubClient.tags = { _ in [Tag(name: "1.2.3")] }
+
+        let args = ["https://github.com/foo/bar"]
+        let res = try Arena.parse(args)
+        XCTAssertEqual(res.dependencies, [
+            Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .from("1.2.3")),
+        ])
     }
 }
 
