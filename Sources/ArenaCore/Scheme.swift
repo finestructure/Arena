@@ -32,7 +32,7 @@ enum Scheme: String, CaseIterable {
                 return URL(string: Scheme.file.rawValue + path)
             case .empty:
                 let p = Path(path) ?? Path.cwd/path
-                return URL(string: "file://" + p.string)
+                return p.url
         }
     }
 }

@@ -141,6 +141,16 @@ final class ArenaTests: XCTestCase {
         XCTAssertEqual(res.libNames, ["foo", "bar"])
     }
 
+    func test_args_whitespace() throws {
+        let res = try Arena.parse(["-o", "foo bar"])
+        XCTAssertEqual(res.outputPath, Path.cwd/"foo bar")
+    }
+
+    func test_args_cwd() throws {
+        let res = try Arena.parse(["-o", "."])
+        XCTAssertEqual(res.outputPath.string, Path.cwd.string)
+    }
+
     func test_dependency_package_clause() throws {
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .branch("develop"))
