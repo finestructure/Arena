@@ -13,7 +13,7 @@ import ShellOut
 
 @discardableResult
 public func shellOut(to command: ShellOutCommand, at path: Path) throws -> String {
-    try shellOut(to: command, at: "\(path)", outputHandle: nil, errorHandle: nil)
+    try shellOut(to: command, at: path.string, outputHandle: nil, errorHandle: nil)
 }
 
 
