@@ -124,6 +124,12 @@ class ParserTests: XCTestCase {
             Match(result: Dependency(url: URL(string: "file://\(Path.cwd/"../foo/bar")")!, requirement: .path), rest: ""))
     }
 
+    func test_parse_dependency_whitespace() throws {
+        XCTAssertEqual(
+            Parser.dependency.run("/foo bar/baz"),
+            Match(result: Dependency(url: URL(string: "file:///foo%20bar/baz")!, requirement: .path), rest: ""))
+    }
+
     func test_parse_dependency_git_protocol() throws {
         // git protocol
         XCTAssertEqual(Parser.dependency.run("git@github.com:foo/bar.git"),
