@@ -173,7 +173,7 @@ extension Arena {
 
         // create package
         do {
-            try projectPath.mkdir()
+            try projectPath.mkdir(.p)
             try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath)
         }
 

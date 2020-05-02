@@ -19,7 +19,7 @@ public func shellOut(to command: ShellOutCommand, at path: Path) throws -> Strin
 
 extension ShellOutCommand {
     public static func openFile(at path: Path) -> ShellOutCommand {
-        return ShellOutCommand(string: "open \(path)")
+        return ShellOutCommand(string: "open \(path.url)")
     }
 }
 
@@ -37,6 +37,6 @@ extension Optional: CustomStringConvertible where Wrapped == String {
 
 extension Path: ExpressibleByArgument {
     public init?(argument: String) {
-        self.init(argument)
+        self = Path(argument) ?? Path.cwd/argument
     }
 }
