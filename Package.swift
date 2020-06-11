@@ -4,6 +4,9 @@ import PackageDescription
 
 let package = Package(
     name: "Arena",
+    platforms: [
+        .macOS(.v10_15)
+    ],
     products: [
         .executable(name: "arena", targets: ["ArenaCLI"]),
         .library(name: "ArenaCore", type: .dynamic, targets: ["ArenaCore"])
