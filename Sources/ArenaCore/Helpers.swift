@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import PackageLoading
+//import PackageLoading
 import Path
-import Workspace
+//import Workspace
 
 
 // see: https://github.com/apple/swift-package-manager/blob/master/Examples/package-info/Sources/package-info/main.swift
