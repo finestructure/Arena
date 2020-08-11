@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := build
 
-VERSION := $(shell git describe --always --tags --dirty)
-VERSION_FILE := Sources/ArenaCore/Version.swift
+VERSION = $(shell git describe --always --tags --dirty)
+VERSION_FILE = Sources/ArenaCore/Version.swift
+XCODE = /Applications/Xcode_11.6.app
 
 clean:
 	swift package clean
@@ -10,13 +11,13 @@ force-clean:
 	rm -rf .build
 
 build: version
-	swift build
+	env DEVELOPER_DIR=$(XCODE) xcrun swift build
 
 build-release:
-	swift build -c release --disable-sandbox
+	env DEVELOPER_DIR=$(XCODE) xcrun swift build -c release --disable-sandbox
 
 test:
-	swift test
+	env DEVELOPER_DIR=$(XCODE) xcrun swift test
 
 release: version build-release
 

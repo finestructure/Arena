@@ -263,12 +263,6 @@ extension Arena {
                 """.write(to: xcworkspacePath/"contents.xcworkspacedata")
         }
 
-        // run xcodebuild
-        do {
-            progress(.buildingDependencies, "🔨 Building package dependencies ...")
-            try shellOut(to: ShellOutCommand(string: "xcodebuild"), at: projectPath)
-        }
-
         // add playground
         do {
             try playgroundPath.mkdir()
