@@ -6,44 +6,33 @@
 //
 
 import Foundation
-//import PackageLoading
 import Path
-//import Workspace
-
-
-// see: https://github.com/apple/swift-package-manager/blob/master/Examples/package-info/Sources/package-info/main.swift
-let swiftCompiler: AbsolutePath = {
-    let string: String
-    #if os(macOS)
-    string = try! Process.checkNonZeroExit(args: "xcrun", "--sdk", "macosx", "-f", "swiftc").spm_chomp()
-    #else
-    string = try! Process.checkNonZeroExit(args: "which", "swiftc").spm_chomp()
-    #endif
-    return AbsolutePath(string)
-}()
 
 
 public struct PackageInfo {
     var name: String
-    var path: AbsolutePath
+    var path: Path
     var libraries: [String]
 }
 
 
 public func getPackageInfo(for package: Path) throws -> PackageInfo {
-    let path = AbsolutePath(package.string)
-    let manifest = try ManifestLoader.loadManifest(packagePath: path,
-                                                   swiftCompiler: swiftCompiler,
-                                                   packageKind: .remote)
-    let libs = manifest.products.filter { p in
-        if case .library = p.type {
-            return true
-        } else {
-            return false
-        }
-    }
-    .map { $0.name }
-    return PackageInfo(name: manifest.name, path: path, libraries: libs)
+//    let path = AbsolutePath(package.string)
+//    let manifest = try ManifestLoader.loadManifest(packagePath: path,
+//                                                   swiftCompiler: swiftCompiler,
+//                                                   packageKind: .remote)
+//    let libs = manifest.products.filter { p in
+//        if case .library = p.type {
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
+//    .map { $0.name }
+    let name = "" // FIXME: was manifest.name
+    let path = package  // FIXME: was AbsolutePath(package.string)
+    let libs = [String]()  // FIXME
+    return PackageInfo(name: name, path: path, libraries: libs)
 }
 
 

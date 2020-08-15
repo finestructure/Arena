@@ -6,13 +6,14 @@
 //
 
 //import PackageModel
+import SemanticVersion
 
 
 enum RefSpec: Equatable {
     case branch(String)
-    case exact(Version)
-    case from(Version)
+    case exact(SemanticVersion)
+    case from(SemanticVersion)
     case noVersion
-    case range(Range<Version>)
+    case range(Range<SemanticVersion>)
     case revision(String)
 }

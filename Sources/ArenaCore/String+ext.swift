@@ -7,6 +7,7 @@
 
 //import PackageModel
 import Parser
+import SemanticVersion
 
 
 extension String {
@@ -14,7 +15,7 @@ extension String {
         Parser.dependency.run(self).result
     }
 
-    public var version: Version? {
+    public var version: SemanticVersion? {
         Parser.version.run(self).result
     }
 }

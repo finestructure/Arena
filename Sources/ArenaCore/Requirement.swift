@@ -6,19 +6,20 @@
 //
 
 //import PackageModel
+import SemanticVersion
 
 
 public enum Requirement: Equatable, Hashable {
-    case exact(Version)
-    case range(Range<Version>)
+    case exact(SemanticVersion)
+    case range(Range<SemanticVersion>)
     case revision(String)
     case branch(String)
     case path
-    case from(Version)
+    case from(SemanticVersion)
     case noVersion
 
-    public static func upToNextMajor(from version: Version) -> Requirement {
-        return .range(version..<Version(version.major + 1, 0, 0))
+    public static func upToNextMajor(from version: SemanticVersion) -> Requirement {
+        return .range(version..<SemanticVersion(version.major + 1, 0, 0))
     }
 }
 
@@ -27,12 +28,12 @@ extension Requirement: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        if let v = try? container.decode(Version.self, forKey: .exact) {
+        if let v = try? container.decode(SemanticVersion.self, forKey: .exact) {
             self = .exact(v)
             return
         }
 
-        if let v = try? container.decode(Range<Version>.self, forKey: .range) {
+        if let v = try? container.decode(Range<SemanticVersion>.self, forKey: .range) {
             self = .range(v)
             return
         }
@@ -52,12 +53,12 @@ extension Requirement: Codable {
             return
         }
 
-        if let v = try? container.decode(Version.self, forKey: .from) {
+        if let v = try? container.decode(SemanticVersion.self, forKey: .from) {
             self = .from(v)
             return
         }
 
-        if let _ = try? container.decode(Version.self, forKey: .noVersion) {
+        if let _ = try? container.decode(SemanticVersion.self, forKey: .noVersion) {
             self = .noVersion
             return
         }
