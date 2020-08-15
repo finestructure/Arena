@@ -11,7 +11,7 @@ import XCTest
 
 class LocalIntegrationTests: XCTestCase {
     override func setUpWithError() throws {
-        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
+//        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
         Current = .live
     }
 
@@ -30,7 +30,6 @@ class LocalIntegrationTests: XCTestCase {
                 ➡️  Package: https://github.com/finestructure/ArenaTest @ exact(0.0.3)
                 🔧 Resolving package dependencies ...
                 📔 Libraries found: ArenaTest
-                🔨 Building package dependencies ...
                 ✅ Created project in folder 'ArenaIntegrationTest'
                 Run
                   open ArenaIntegrationTest/ArenaIntegrationTest.xcworkspace

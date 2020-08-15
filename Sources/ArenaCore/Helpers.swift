@@ -11,28 +11,27 @@ import Path
 
 public struct PackageInfo {
     var name: String
-    var path: Path
     var libraries: [String]
 }
 
 
-public func getPackageInfo(for package: Path) throws -> PackageInfo {
-//    let path = AbsolutePath(package.string)
-//    let manifest = try ManifestLoader.loadManifest(packagePath: path,
-//                                                   swiftCompiler: swiftCompiler,
-//                                                   packageKind: .remote)
-//    let libs = manifest.products.filter { p in
-//        if case .library = p.type {
-//            return true
-//        } else {
-//            return false
-//        }
-//    }
-//    .map { $0.name }
-    let name = "" // FIXME: was manifest.name
-    let path = package  // FIXME: was AbsolutePath(package.string)
-    let libs = [String]()  // FIXME
-    return PackageInfo(name: name, path: path, libraries: libs)
+func dumpPackage(at path: Path) throws -> Manifest {
+    let json = try shellOut(to: .init(string: "swift package dump-package"), at: path)
+    return try JSONDecoder().decode(Manifest.self, from: Data(json.utf8))
+}
+
+
+public func getPackageInfo(in directory: Path) throws -> PackageInfo {
+    let manifest = try dumpPackage(at: directory)
+    let libs = manifest.products.filter { p in
+        if case .library = p.type {
+            return true
+        } else {
+            return false
+        }
+    }
+    .map { $0.name }
+    return PackageInfo(name: manifest.name, libraries: libs)
 }
 
 
@@ -53,3 +52,5 @@ func zip<A, B>(_ a: A?, _ b: B?) -> (A, B)? {
         return nil
     }
 }
+
+
