@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import PackageModel
 import Parser
 import Path
+import SemanticVersion
 
 
 // https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
@@ -19,10 +19,10 @@ let AllowedEndBranchCharacters = AllowedBranchCharacters.subtracting(CharacterSe
 let AllowedRevisionCharacters = CharacterSet.whitespacesAndNewlines.inverted
 
 
-extension Parser where A == Version {
-    static var version: Parser<Version> {
+extension Parser where A == SemanticVersion {
+    static var version: Parser<SemanticVersion> {
         zip(int, literal("."), int, literal("."), int).map { major, _, minor, _, patch in
-            Version(major, minor, patch)
+            SemanticVersion(major, minor, patch)
         }
     }
 }
@@ -52,7 +52,7 @@ extension Parser where A == RefSpec {
         ]).map { _, minVersion, rangeOp, maxVersion in
             rangeOp == "..<"
                 ? .range(minVersion..<maxVersion)
-                : .range(minVersion..<Version(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
+                : .range(minVersion..<SemanticVersion(maxVersion.major, maxVersion.minor, maxVersion.patch + 1))
         }
     }
 

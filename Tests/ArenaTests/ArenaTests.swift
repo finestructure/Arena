@@ -1,7 +1,7 @@
 @testable import ArenaCore
 import Path
 import Parser
-import Workspace
+import SemanticVersion
 import XCTest
 
 
@@ -16,7 +16,7 @@ extension GithubClient {
     static let mock = Self(
         latestRelease: { _ in Release(tagName: "1.2.3") },
         tags: { _ in [Tag(name: "1.2.3")] },
-        latestVersion: { _ in "1.2.3" }
+        latestVersion: { _ in SemanticVersion("1.2.3") }
     )
 }
 
@@ -33,22 +33,9 @@ final class ArenaTests: XCTestCase {
         Current = .mock
     }
 
-    func test_loadManifest() throws {
-        let p = checkoutsDirectory/"swift-package-manager"
-        print(p)
-        let package = AbsolutePath(p.string)
-        let manifest = try ManifestLoader.loadManifest(packagePath: package,
-                                                       swiftCompiler: swiftCompiler,
-                                                       packageKind: .remote)
-        XCTAssertEqual(manifest.name, "SwiftPM")
-        XCTAssertEqual(manifest.products.map { $0.name }, ["SwiftPM", "SwiftPM-auto", "PackageDescription"])
-        XCTAssertEqual(manifest.products.map { $0.type }, [.library(.dynamic), .library(.automatic), .library(.dynamic)])
-    }
-
     func test_getPackageInfo() throws {
-        let package = checkoutsDirectory/"swift-package-manager"
-        XCTAssertEqual(try getPackageInfo(for: package).libraries,
-                       ["SwiftPM", "SwiftPM-auto", "PackageDescription"])
+        let dir = checkoutsDirectory/"Parser"
+        XCTAssertEqual(try getPackageInfo(in: dir).libraries, ["Parser"])
     }
 
     func test_args_multiple_deps() throws {

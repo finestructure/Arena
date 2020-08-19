@@ -7,7 +7,7 @@
 
 import ArgumentParser
 import Foundation
-import PackageModel
+//import PackageModel
 import Path
 import Parser
 
@@ -16,7 +16,7 @@ public struct Dependency: Equatable, Hashable, Codable {
     public var url: URL
     public var requirement: Requirement
 
-    static let defaultRequirement: Requirement = .from("0.0.0")
+    static let defaultRequirement: Requirement = .from(.init(0, 0, 0))
 
     public init(url: URL, requirement: Requirement) {
         precondition(url.scheme != nil, "scheme must not be nil (i.e. one of https, http, file)")

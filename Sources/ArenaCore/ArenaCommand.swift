@@ -204,7 +204,7 @@ extension Arena {
                 zip(dependencies,
                     try dependencies.compactMap {
                         $0.path ?? $0.checkoutDir(projectDir: projectPath)
-                    }.compactMap { try getPackageInfo(for: $0) } )
+                    }.compactMap { try getPackageInfo(in: $0) } )
             )
             let libs = packageInfo.flatMap { $0.1.libraries }
             if libs.isEmpty { throw ArenaError.noLibrariesFound }

@@ -7,8 +7,8 @@
 
 
 import Foundation
-import PackageModel
 import Parser
+import SemanticVersion
 
 
 let requestTimeout = 5
@@ -17,7 +17,7 @@ let requestTimeout = 5
 struct GithubClient {
     var latestRelease: (GithubRepository) -> Release?
     var tags: (GithubRepository) -> [Tag]
-    var latestVersion: (GithubRepository) -> Version?
+    var latestVersion: (GithubRepository) -> SemanticVersion?
 }
 
 
@@ -39,7 +39,7 @@ struct Release: Decodable {
         case tagName = "tag_name"
     }
 
-    var version: Version? {
+    var version: SemanticVersion? {
         Parser.version.run(tagName).result
     }
 }
@@ -115,7 +115,7 @@ func tagsRequest(for repository: GithubRepository) -> [Tag] {
 }
 
 
-func latestVersionRequest(for repository: GithubRepository) -> Version? {
+func latestVersionRequest(for repository: GithubRepository) -> SemanticVersion? {
     if
         let release = Current.githubClient.latestRelease(repository),
         let version = release.version {
@@ -123,7 +123,7 @@ func latestVersionRequest(for repository: GithubRepository) -> Version? {
     }
     let versions = Current.githubClient.tags(repository)
         .map(\.name)
-        .compactMap(Version.init(string:))
+        .compactMap(SemanticVersion.init)
         .sorted(by: >)
     if let latest = versions.first {
         return latest

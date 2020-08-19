@@ -8,7 +8,7 @@
 @testable import ArenaCore
 import Path
 import Parser
-import Workspace
+import SemanticVersion
 import XCTest
 
 
@@ -18,8 +18,8 @@ class ParserTests: XCTestCase {
     }
 
     func test_parse_version() throws {
-        XCTAssertEqual(Parser.version.run("1.2.3"), Match(result: Version(1, 2, 3), rest: ""))
-        XCTAssertEqual(Parser.version.run("1.2.3="), Match(result: Version(1, 2, 3), rest: "="))
+        XCTAssertEqual(Parser.version.run("1.2.3"), Match(result: SemanticVersion(1, 2, 3), rest: ""))
+        XCTAssertEqual(Parser.version.run("1.2.3="), Match(result: SemanticVersion(1, 2, 3), rest: "="))
     }
 
     func test_parse_requirement() throws {

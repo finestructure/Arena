@@ -6,35 +6,23 @@
 //
 
 import Foundation
-import PackageLoading
 import Path
-import Workspace
-
-
-// see: https://github.com/apple/swift-package-manager/blob/master/Examples/package-info/Sources/package-info/main.swift
-let swiftCompiler: AbsolutePath = {
-    let string: String
-    #if os(macOS)
-    string = try! Process.checkNonZeroExit(args: "xcrun", "--sdk", "macosx", "-f", "swiftc").spm_chomp()
-    #else
-    string = try! Process.checkNonZeroExit(args: "which", "swiftc").spm_chomp()
-    #endif
-    return AbsolutePath(string)
-}()
 
 
 public struct PackageInfo {
     var name: String
-    var path: AbsolutePath
     var libraries: [String]
 }
 
 
-public func getPackageInfo(for package: Path) throws -> PackageInfo {
-    let path = AbsolutePath(package.string)
-    let manifest = try ManifestLoader.loadManifest(packagePath: path,
-                                                   swiftCompiler: swiftCompiler,
-                                                   packageKind: .remote)
+func dumpPackage(at path: Path) throws -> Manifest {
+    let json = try shellOut(to: .init(string: "swift package dump-package"), at: path)
+    return try JSONDecoder().decode(Manifest.self, from: Data(json.utf8))
+}
+
+
+public func getPackageInfo(in directory: Path) throws -> PackageInfo {
+    let manifest = try dumpPackage(at: directory)
     let libs = manifest.products.filter { p in
         if case .library = p.type {
             return true
@@ -43,7 +31,7 @@ public func getPackageInfo(for package: Path) throws -> PackageInfo {
         }
     }
     .map { $0.name }
-    return PackageInfo(name: manifest.name, path: path, libraries: libs)
+    return PackageInfo(name: manifest.name, libraries: libs)
 }
 
 
@@ -64,3 +52,5 @@ func zip<A, B>(_ a: A?, _ b: B?) -> (A, B)? {
         return nil
     }
 }
+
+
