@@ -11,11 +11,12 @@ import XCTest
 
 class LocalIntegrationTests: XCTestCase {
     override func setUpWithError() throws {
-//        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "fails on CI, only run locally")
         Current = .live
     }
 
     func test_ouput() throws {
+        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "skip on CI due to '../../tmp' path prefix in output, only run locally")
+
         let output = OutputListener()
         output.openConsolePipe()
 
