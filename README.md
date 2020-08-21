@@ -1,4 +1,6 @@
-![Swift-5.2](https://github.com/finestructure/Arena/workflows/Swift/badge.svg)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffinestructure%2FArena%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/finestructure/Arena)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffinestructure%2FArena%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/finestructure/Arena)
+
 [![@_sa_s](https://img.shields.io/badge/Twitter-@_sa_s-3e8bb0.svg?style=flat)](https://twitter.com/_sa_s)
 
 # 🏟 Arena
