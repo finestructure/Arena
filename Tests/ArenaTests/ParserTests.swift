@@ -62,6 +62,11 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(branchName.run("foo/"), Match(result: nil, rest: "foo/"))
     }
 
+    func test_parse_branchName_v5() throws {
+        // Test for issue https://github.com/finestructure/Arena/issues/62
+        XCTAssertEqual(branchName.run("v5-develop"), Match(result: "v5-develop", rest: ""))
+    }
+
     func test_parse_branch() {
         XCTAssertEqual(Parser.branch.run("@branch:develop"), Match(result: .branch("develop"), rest: ""))
     }
