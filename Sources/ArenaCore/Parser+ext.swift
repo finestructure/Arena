@@ -12,7 +12,7 @@ import SemanticVersion
 
 
 // https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
-let AllowedBranchCharacters = CharacterSet.letters.union(CharacterSet(charactersIn: ".-@/"))
+let AllowedBranchCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: ".-@/"))
 let AllowedStartBranchCharacters = AllowedBranchCharacters.subtracting(CharacterSet(charactersIn: "/"))
 let AllowedEndBranchCharacters = AllowedBranchCharacters.subtracting(CharacterSet(charactersIn: "/."))
 
