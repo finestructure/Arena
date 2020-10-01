@@ -113,10 +113,6 @@ extension Arena {
 
     var projectPath: Path { outputPath/projectName }
 
-    var xcodeprojPath: Path {
-        projectPath/"\(projectName).xcodeproj"
-    }
-
     var xcworkspacePath: Path {
         projectPath/"\(projectName).xcworkspace"
     }
@@ -252,9 +248,6 @@ extension Arena {
                 version = "1.0">
                 <FileRef
                 location = "group:MyPlayground.playground">
-                </FileRef>
-                <FileRef
-                location = "container:\(xcodeprojPath.basename())">
                 </FileRef>
                 </Workspace>
                 """.write(to: xcworkspacePath/"contents.xcworkspacedata")
