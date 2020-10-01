@@ -243,9 +243,6 @@ extension Arena {
             try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
         }
 
-        // generate xcodeproj
-        try shellOut(to: .generateSwiftPackageXcodeProject(), at: projectPath)
-
         // create workspace
         do {
             try xcworkspacePath.mkdir()
