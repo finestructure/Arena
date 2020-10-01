@@ -273,7 +273,7 @@ extension Arena {
             try importClauses.write(to: playgroundPath/"Contents.swift")
             try """
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                <playground version='5.0' target-platform='\(platform)'>
+                <playground version='5.0' target-platform='\(platform)' buildActiveScheme='true'>
                 <timeline fileName='timeline.xctimeline'/>
                 </playground>
                 """.write(to: playgroundPath/"contents.xcplayground")
