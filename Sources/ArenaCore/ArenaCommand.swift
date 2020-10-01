@@ -109,6 +109,8 @@ extension Arena {
 
 
 extension Arena {
+    var dependencyPackagePath: Path { projectPath/"Dependencies" }
+
     var targetName: String { projectName }
 
     var projectPath: Path { outputPath/projectName }
@@ -169,8 +171,8 @@ extension Arena {
 
         // create package
         do {
-            try projectPath.mkdir(.p)
-            try shellOut(to: .createSwiftPackage(withType: .library), at: projectPath)
+            try dependencyPackagePath.mkdir(.p)
+            try shellOut(to: .createSwiftPackage(withType: .library), at: dependencyPackagePath)
         }
 
         // update Package.swift dependencies
@@ -180,7 +182,7 @@ extension Arena {
         // get PackageInfo, which we'll need to write out the proper dependency incl `name:`
         // See https://github.com/finestructure/Arena/issues/33
         // and https://github.com/finestructure/Arena/issues/38
-        let packagePath = projectPath/"Package.swift"
+        let packagePath = dependencyPackagePath/"Package.swift"
         let originalPackageDescription = try String(contentsOf: packagePath)
         do {
             let depsClause = dependencies.map { "    " + $0.packageClause() }.joined(separator: ",\n")
@@ -190,7 +192,7 @@ extension Arena {
 
         do {
             progress(.resolvePackages, "🔧 Resolving package dependencies ...")
-            try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: projectPath)
+            try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: dependencyPackagePath)
         }
 
         let packageInfo: [(Dependency, PackageInfo)]
@@ -199,7 +201,7 @@ extension Arena {
             packageInfo = Array(
                 zip(dependencies,
                     try dependencies.compactMap {
-                        $0.path ?? $0.checkoutDir(projectDir: projectPath)
+                        $0.path ?? $0.checkoutDir(projectDir: dependencyPackagePath)
                     }.compactMap { try getPackageInfo(in: $0) } )
             )
             let libs = packageInfo.flatMap { $0.1.libraries }
@@ -218,7 +220,7 @@ extension Arena {
 
         // update Package.swift targets
         do {
-            let packagePath = projectPath/"Package.swift"
+            let packagePath = dependencyPackagePath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
             let productsClause = packageInfo
                 .flatMap { pkg in pkg.1.libraries.map { (package: pkg.1.name, library: $0) } }
