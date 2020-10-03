@@ -2,7 +2,7 @@
 
 VERSION = $(shell git describe --always --tags --dirty)
 VERSION_FILE = Sources/ArenaCore/Version.swift
-XCODE = /Applications/Xcode_11.6.app
+XCODE = /Applications/Xcode_12.0.app
 
 clean:
 	swift package clean
