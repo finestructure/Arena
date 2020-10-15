@@ -51,7 +51,7 @@ arena https://github.com/finestructure/Gala
 
 ### Using Github shorthand syntax
 
-You can skip the protocol and domain when refereing Github projects:
+You can skip the protocol and domain when referring to Github projects:
 
 ```
 arena finestructure/Gala
