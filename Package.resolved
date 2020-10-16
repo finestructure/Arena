@@ -42,8 +42,17 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "9f04d1ff1afbccd02279338a2c91e5f27c45e93a",
-          "version": "0.0.5"
+          "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
+          "version": "0.3.1"
+        }
+      },
+      {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing.git",
+        "state": {
+          "branch": null,
+          "revision": "c466812aa2e22898f27557e2e780d3aad7a27203",
+          "version": "1.8.2"
         }
       }
     ]
