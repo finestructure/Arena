@@ -209,7 +209,8 @@ extension Arena {
             progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
         }
 
-        // update Package.swift dependencies again, adding in package `name:`
+        // update Package.swift dependencies again, adding in package `name:` and
+        // the `platforms` stanza (if required)
         do {
             let depsClause = packageInfo.map { (dep, pkg) in
                 "    " + dep.packageClause(name: pkg.name)
