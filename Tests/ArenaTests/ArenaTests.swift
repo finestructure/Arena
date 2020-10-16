@@ -228,9 +228,4 @@ final class ArenaTests: XCTestCase {
         }
     }
 
-    func test_platforms_stanza() throws {
-        XCTAssertEqual(try getPackageInfo(in: fixturesDirectory/"Gala").platforms,
-                       [.macos("10.15"), .ios("13.0"), .tvos("13.0"), .watchos("6.0")])
-    }
-
 }
