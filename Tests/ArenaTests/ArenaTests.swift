@@ -123,18 +123,18 @@ final class ArenaTests: XCTestCase {
 
 
     func test_args_multiple_libs() throws {
-        let args = ["-l", "foo", "bar"]
+        let args = ["owner/repo", "-l", "foo", "bar"]
         let res = try Arena.parse(args)
         XCTAssertEqual(res.libNames, ["foo", "bar"])
     }
 
     func test_args_whitespace() throws {
-        let res = try Arena.parse(["-o", "foo bar"])
+        let res = try Arena.parse(["owner/repo", "-o", "foo bar"])
         XCTAssertEqual(res.outputPath, Path.cwd/"foo bar")
     }
 
     func test_args_cwd() throws {
-        let res = try Arena.parse(["-o", "."])
+        let res = try Arena.parse(["owner/repo", "-o", "."])
         XCTAssertEqual(res.outputPath.string, Path.cwd.string)
     }
 

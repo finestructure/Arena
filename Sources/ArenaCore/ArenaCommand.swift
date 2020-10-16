@@ -41,38 +41,35 @@ public struct Arena: ParsableCommand {
     )
 
     @Flag(name: .long, help: "Create a Swift Playgrounds compatible Playground Book bundle (experimental).")
-    var book: Bool
+    var book: Bool = false
     
     @Flag(name: .shortAndLong,
           help: "Overwrite existing file/directory")
-    var force: Bool
+    var force: Bool = false
 
     @Option(name: [.customLong("libs"), .customShort("l")],
             parsing: .upToNextOption,
             help: "Names of libraries to import (inferred if not provided)")
-    var libNames: [String]
+    var libNames: [String] = []
 
     @Option(name: [.customLong("outputdir"), .customShort("o")],
-            default: try? Path.cwd.realpath(),
             help: "Directory where project folder should be saved")
-    var outputPath: Path
+    var outputPath: Path = try! Path.cwd.realpath()
 
     @Option(name: .shortAndLong,
-            default: .macos,
             help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
-    var platform: Platform
+    var platform: Platform = .macos
 
     @Option(name: [.customLong("name"), .customShort("n")],
-            default: "Arena-Playground",
             help: "Name of directory and Xcode project")
-    var projectName: String
+    var projectName: String = "Arena-Playground"
 
     @Flag(name: [.customLong("version"), .customShort("v")],
           help: "Show version")
-    var showVersion: Bool
+    var showVersion: Bool = false
 
     @Flag(name: .long, help: "Do not open project in Xcode on completion")
-    var skipOpen: Bool
+    var skipOpen: Bool = false
 
     @Argument(help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
