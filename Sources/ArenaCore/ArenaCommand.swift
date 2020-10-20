@@ -220,23 +220,33 @@ extension Arena {
         do {
             let packagePath = dependencyPackagePath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let productsClause = packageInfo
-                .flatMap { pkg in pkg.1.libraries.map { (package: pkg.1.name, library: $0) } }
-                .map {
-                """
-                .product(name: "\($0.library)", package: "\($0.package)")
-                """
-            }.joined(separator: ",\n")
             let updatedTgts =  """
                 package.targets = [
                     .target(name: "\(depdencyPackageName)",
                         dependencies: [
-                            \(productsClause)
+                            \(PackageGenerator.productsClause(packageInfo))
                         ]
                     )
                 ]
                 """
             try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
+        }
+
+        // update Package.swift platforms
+        do {
+            let packagePath = dependencyPackagePath/"Package.swift"
+            let packageDescription = try String(contentsOf: packagePath)
+            let platforms = packageInfo.compactMap {
+                $0.1.platforms
+                    .map(PackageGenerator.Platforms.init(platforms:))
+            }
+            let platformsClause = """
+                package.platforms = [
+                    \(PackageGenerator.platformsClause(platforms, indentation: "    "))
+                ]
+                """
+            try [packageDescription, platformsClause]
+                .joined(separator: "\n").write(to: packagePath)
         }
 
         // create workspace

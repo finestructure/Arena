@@ -27,6 +27,13 @@ extension PackageGenerator {
             self.watchOS = watchOS
         }
 
+        init(platforms: [Manifest.Platform]) {
+            iOS = platforms.first(where: { $0.platformName == .ios })
+            macOS = platforms.first(where: { $0.platformName == .macos })
+            tvOS = platforms.first(where: { $0.platformName == .tvos })
+            watchOS = platforms.first(where: { $0.platformName == .watchos })
+        }
+
         var all: [Manifest.Platform] {
             [self.iOS, self.macOS, self.tvOS, self.watchOS].compactMap { $0 }
         }
@@ -45,19 +52,19 @@ extension PackageGenerator {
         }
     }
 
-    static func platformsClause(_ platforms: Platforms) -> String {
-        //platforms: [
+    static func platformsClause(_ platforms: [Platforms], indentation: String) -> String {
+        platformsClause(mergePlatforms(platforms), indentation: indentation)
+    }
+
+    static func platformsClause(_ platforms: Platforms, indentation: String) -> String {
         //    .ios("13.0"),
         //    .macos("10.15"),
         //    .tvos("13.0"),
         //    .watchos("6.0")
-        //],
-        """
-        platforms: [
-            \(platforms.all.map { #".\#($0.platformName)("\#($0.version)")"# }
-                .joined(separator: ",\n    "))
-        ]
-        """
+        platforms
+            .all
+            .map { #".\#($0.platformName)("\#($0.version)")"# }
+            .joined(separator: ",\n\(indentation)")
     }
 }
 
