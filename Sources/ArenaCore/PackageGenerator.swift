@@ -63,8 +63,25 @@ extension PackageGenerator {
         //    .watchos("6.0")
         platforms
             .all
-            .map { #".\#($0.platformName)("\#($0.version)")"# }
+            .map { #".\#($0.platformClauseName)("\#($0.version)")"# }
             .joined(separator: ",\n\(indentation)")
+    }
+}
+
+
+private extension Manifest.Platform {
+    /// Return the name with "OS" capitalized, the way it is required in a Package.swift manifest file
+    var platformClauseName: String {
+        switch self.platformName {
+            case .ios:
+                return "iOS"
+            case .macos:
+                return "macOS"
+            case .tvos:
+                return "tvOS"
+            case .watchos:
+                return "watchOS"
+        }
     }
 }
 
