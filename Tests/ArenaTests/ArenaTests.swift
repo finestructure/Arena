@@ -38,6 +38,11 @@ final class ArenaTests: XCTestCase {
         XCTAssertEqual(try getPackageInfo(in: dir).libraries, ["Parser"])
     }
 
+    func test_getPackageInfo_platforms() throws {
+        XCTAssertEqual(try getPackageInfo(in: fixturesDirectory/"Gala").platforms,
+                       [.macos("10.15"), .ios("13.0"), .tvos("13.0"), .watchos("6.0")])
+    }
+
     func test_args_multiple_deps() throws {
         let args = ["https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
         let res = try Arena.parse(args)
