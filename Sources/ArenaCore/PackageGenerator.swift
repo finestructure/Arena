@@ -52,19 +52,25 @@ extension PackageGenerator {
         }
     }
 
-    static func platformsClause(_ platforms: [Platforms], indentation: String) -> String {
-        platformsClause(mergePlatforms(platforms), indentation: indentation)
+    static func platformsClause(_ platforms: [Platforms]) -> String {
+        platformsClause(mergePlatforms(platforms))
     }
 
-    static func platformsClause(_ platforms: Platforms, indentation: String) -> String {
+    static func platformsClause(_ platforms: Platforms) -> String {
+        guard !platforms.all.isEmpty else { return "" }
         //    .ios("13.0"),
         //    .macos("10.15"),
         //    .tvos("13.0"),
         //    .watchos("6.0")
-        platforms
+        let platformsList = platforms
             .all
             .map { #".\#($0.platformClauseName)("\#($0.version)")"# }
-            .joined(separator: ",\n\(indentation)")
+            .joined(separator: ",\n    ")
+        return """
+            package.platforms = [
+                \(platformsList)
+            ]
+            """
     }
 }
 

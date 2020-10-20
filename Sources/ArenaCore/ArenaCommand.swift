@@ -240,12 +240,8 @@ extension Arena {
                 $0.1.platforms
                     .map(PackageGenerator.Platforms.init(platforms:))
             }
-            let platformsClause = """
-                package.platforms = [
-                    \(PackageGenerator.platformsClause(platforms, indentation: "    "))
-                ]
-                """
-            try [packageDescription, platformsClause]
+            try [packageDescription,
+                 PackageGenerator.platformsClause(platforms)]
                 .joined(separator: "\n").write(to: packagePath)
         }
 

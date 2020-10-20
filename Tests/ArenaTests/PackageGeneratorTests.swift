@@ -37,7 +37,7 @@ class PackageGeneratorTests: XCTestCase {
                                                    macOS: .macos("10.15"),
                                                    tvOS: .tvos("13.0"),
                                                    watchOS: .watchos("6.0"))
-        assertSnapshot(matching: PackageGenerator.platformsClause(platforms, indentation: ""),
+        assertSnapshot(matching: PackageGenerator.platformsClause(platforms),
                        as: .lines,
                        record: false)
     }
