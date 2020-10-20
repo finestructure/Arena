@@ -7,7 +7,7 @@ let package = Package(
     name: "Gala",
     platforms: [
         .macOS(.v10_15),
-        .iOS(.v13),
+        .iOS("13.0"),
         .tvOS(.v13),
         .watchOS(.v6)
     ],
