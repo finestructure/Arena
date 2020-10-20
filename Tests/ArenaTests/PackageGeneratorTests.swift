@@ -15,12 +15,19 @@ class PackageGeneratorTests: XCTestCase {
                         refSpec: .branch("main")),
              .init(name: "Gala", platforms: nil, libraries: ["Gala"])),
         ]
-        assertSnapshot(matching: PackageGenerator.productsClause(info), as: .lines, record: false)
+        assertSnapshot(matching: PackageGenerator.productsClause(info),
+                       as: .lines,
+                       record: false)
     }
 
     func test_platforms_stanza() throws {
-        XCTAssertEqual(try getPackageInfo(in: fixturesDirectory/"Gala").platforms,
-                       [.macos("10.15"), .ios("13.0"), .tvos("13.0"), .watchos("6.0")])
+        let platforms = PackageGenerator.Platforms(iOS: .ios("13.0"),
+                                                   macOS: .macos("10.15"),
+                                                   tvOS: .tvos("13.0"),
+                                                   watchOS: .watchos("6.0"))
+        assertSnapshot(matching: PackageGenerator.platformsClause(platforms),
+                       as: .lines,
+                       record: false)
     }
 
 }
