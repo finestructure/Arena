@@ -20,6 +20,18 @@ class PackageGeneratorTests: XCTestCase {
                        record: false)
     }
 
+    func test_mergePlatforms() throws {
+        let p1 = PackageGenerator.Platforms(iOS: .ios("13.0"),
+                                            macOS: .macos("10.15"))
+        let p2 = PackageGenerator.Platforms(iOS: .ios("10.0"),
+                                            tvOS: .tvos("14.0"))
+        XCTAssertEqual(PackageGenerator.mergePlatforms([p1, p2]),
+                       .init(iOS: .ios("13.0"),
+                             macOS: .macos("10.15"),
+                             tvOS: .tvos("14.0"),
+                             watchOS: nil))
+    }
+
     func test_platforms_stanza() throws {
         let platforms = PackageGenerator.Platforms(iOS: .ios("13.0"),
                                                    macOS: .macos("10.15"),

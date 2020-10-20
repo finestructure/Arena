@@ -11,7 +11,7 @@ enum PackageGenerator {
 }
 
 extension PackageGenerator {
-    struct Platforms {
+    struct Platforms: Equatable {
         var iOS: Manifest.Platform?
         var macOS: Manifest.Platform?
         var tvOS: Manifest.Platform?
@@ -29,6 +29,19 @@ extension PackageGenerator {
 
         var all: [Manifest.Platform] {
             [self.iOS, self.macOS, self.tvOS, self.watchOS].compactMap { $0 }
+        }
+
+        func merged(with other: Platforms) -> Platforms {
+            .init(iOS: max(iOS, other.iOS),
+                  macOS: max(macOS, other.macOS),
+                  tvOS: max(tvOS, other.tvOS),
+                  watchOS: max(watchOS, other.watchOS))
+        }
+    }
+
+    static func mergePlatforms(_ platforms: [Platforms]) -> Platforms {
+        platforms.reduce(platforms.first!) { result, next in
+            result.merged(with: next)
         }
     }
 
@@ -49,3 +62,55 @@ extension PackageGenerator {
 }
 
 
+struct PlatformVersion {
+    var major: Int
+    var minor: Int
+
+    init?(string: String) {
+        let parts = string.split(separator: ".")
+            .map(String.init)
+            .compactMap(Int.init)
+        guard parts.count == 2 else { return nil }
+        major = parts[0]
+        minor = parts[1]
+    }
+}
+
+
+extension PlatformVersion: Comparable {
+    static func < (lhs: PlatformVersion, rhs: PlatformVersion) -> Bool {
+        if lhs.major != rhs.major { return lhs.major < rhs.major }
+        return lhs.minor < rhs.minor
+    }
+}
+
+
+func max(_ a: Manifest.Platform, _ b: Manifest.Platform) -> Manifest.Platform {
+    precondition(a.platformName == b.platformName)
+    let va = PlatformVersion(string: a.version)
+    let vb = PlatformVersion(string: b.version)
+    switch (va, vb) {
+        case (.none, .none):
+            fatalError("both platform versions are invalid: \(a.version), \(b.version)")
+        case (.some, .none):
+            return a
+        case (.none, .some):
+            return b
+        case let (.some(va), .some(vb)):
+           return va > vb ? a : b
+    }
+}
+
+
+func max(_ a: Manifest.Platform?, _ b: Manifest.Platform?) -> Manifest.Platform? {
+    switch (a, b) {
+        case let (.some(a), .some(b)):
+            return max(a, b)
+        case let (.some(a), .none):
+            return a
+        case let (.none, .some(b)):
+            return b
+        case (.none, .none):
+            return nil
+    }
+}
