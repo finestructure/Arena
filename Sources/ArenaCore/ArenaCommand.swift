@@ -72,7 +72,7 @@ public struct Arena: ParsableCommand {
     var skipOpen: Bool = false
 
     @Argument(help: "Dependency url(s) and (optionally) version specification")
-    var dependencies: [Dependency]
+    var dependencies: [Dependency] = []
 
     public init() {}
 }
