@@ -150,8 +150,10 @@ Arena – Spanish for "sand" – is where you battle-test your SPM packages and 
 
 ## Compatibility
 
-`arena` was built and tested on macOS 10.15 Catalina using Swift 5.2.
+Starting with version 1.0, `arena` requires Xcode 12. Xcode 12 brings a number of improvements that make playgrounds work much better than previous versions of Xcode. Also, `arena` now creates a simpler project structer that can be manually edited to add more dependencies.
+
+If you want to use `arena` with Xcode 11, please use the latest 0.x release.
 
 Playground books created by `arena` should run on macOS as well as iOS. Please bear in mind that the Swift packages you import when creating playground books will need to be iOS compatible.
 
-Note that while creating playgrounds requires macOS 10.15 and Swift 5.2, the resulting playgrounds should be supported on a wider range of operating system and compiler versions. This will mainly depend on the packages you are importing.
+Note that while creating playgrounds requires macOS 10.15+ and Swift 5.3, the resulting playgrounds should be supported on a wider range of operating system and compiler versions. This will mainly depend on the packages you are importing.
