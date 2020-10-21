@@ -38,6 +38,11 @@ final class ArenaTests: XCTestCase {
         XCTAssertEqual(try getPackageInfo(in: dir).libraries, ["Parser"])
     }
 
+    func test_getPackageInfo_platforms() throws {
+        XCTAssertEqual(try getPackageInfo(in: fixturesDirectory/"Gala").platforms,
+                       [.macos("10.15"), .ios("13.0"), .tvos("13.0"), .watchos("6.0")])
+    }
+
     func test_args_multiple_deps() throws {
         let args = ["https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
         let res = try Arena.parse(args)
@@ -123,18 +128,18 @@ final class ArenaTests: XCTestCase {
 
 
     func test_args_multiple_libs() throws {
-        let args = ["-l", "foo", "bar"]
+        let args = ["owner/repo", "-l", "foo", "bar"]
         let res = try Arena.parse(args)
         XCTAssertEqual(res.libNames, ["foo", "bar"])
     }
 
     func test_args_whitespace() throws {
-        let res = try Arena.parse(["-o", "foo bar"])
+        let res = try Arena.parse(["owner/repo", "-o", "foo bar"])
         XCTAssertEqual(res.outputPath, Path.cwd/"foo bar")
     }
 
     func test_args_cwd() throws {
-        let res = try Arena.parse(["-o", "."])
+        let res = try Arena.parse(["owner/repo", "-o", "."])
         XCTAssertEqual(res.outputPath.string, Path.cwd.string)
     }
 
@@ -227,44 +232,5 @@ final class ArenaTests: XCTestCase {
             ])
         }
     }
+
 }
-
-
-extension XCTestCase {
-    /// Returns path to the built products directory.
-    var productsDirectory: Foundation.URL {
-      #if os(macOS)
-        for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
-            return bundle.bundleURL.deletingLastPathComponent()
-        }
-        fatalError("couldn't find the products directory")
-      #else
-        return Bundle.main.bundleURL
-      #endif
-    }
-
-    var projectDirectory: Foundation.URL {
-        productsDirectory
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-    }
-
-    var checkoutsDirectory: Path {
-        // if run via "swift test":
-        // projectDirectory/.build/checkouts
-        // if run via Xcode
-        // projectDirectory(*)/SourcePackages/checkouts
-        // where projectDirectory resolves to a path under DerivedData
-        let path = Path(url: projectDirectory)!
-        for testPath in ["/.build/checkouts", "/SourcePackages/checkouts"] {
-            let p = path/testPath
-            if p.exists {
-                return p
-            }
-        }
-        fatalError("checkouts directory not found!")
-    }
-}
-
-

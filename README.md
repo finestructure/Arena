@@ -7,7 +7,7 @@
 
 Arena is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
 
-![Arena demo](https://f000.backblazeb2.com/file/finestructure-public-images/posts/Arena-demo.gif)
+![Arena demo](https://f000.backblazeb2.com/file/finestructure-public-images/posts/Arena-demo-1.0.0.gif)
 
 Arena can also create a Playground in "Playground Book" format, which is the file format supported by ["Swift Playgrounds"](https://apps.apple.com/app/swift-playgrounds/id1496833156). These playgrounds can then be synced and opened on the iOS version of "Swift Playgrounds" as well.
 
@@ -150,8 +150,10 @@ Arena – Spanish for "sand" – is where you battle-test your SPM packages and 
 
 ## Compatibility
 
-`arena` was built and tested on macOS 10.15 Catalina using Swift 5.2.
+Starting with version 1.0, `arena` requires Xcode 12. Xcode 12 brings a number of improvements that make playgrounds work much better than previous versions of Xcode. Also, `arena` now creates a simpler project structer that can be manually edited to add more dependencies.
+
+If you want to use `arena` with Xcode 11, please use the latest 0.x release.
 
 Playground books created by `arena` should run on macOS as well as iOS. Please bear in mind that the Swift packages you import when creating playground books will need to be iOS compatible.
 
-Note that while creating playgrounds requires macOS 10.15 and Swift 5.2, the resulting playgrounds should be supported on a wider range of operating system and compiler versions. This will mainly depend on the packages you are importing.
+Note that while creating playgrounds requires macOS 10.15+ and Swift 5.3, the resulting playgrounds should be supported on a wider range of operating system and compiler versions. This will mainly depend on the packages you are importing.
