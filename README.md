@@ -7,7 +7,7 @@
 
 Arena is a macOS command line tool to create an Xcode project with a Swift Playground that's readily set up to use a Swift Package Manager library. You can reference both Github and local repositories. The latter is especially useful to spin up a Playground while working on a library.
 
-![Arena demo](https://f000.backblazeb2.com/file/finestructure-public-images/posts/Arena-demo.gif)
+![Arena demo](https://f000.backblazeb2.com/file/finestructure-public-images/posts/Arena-demo-1.0.0.gif)
 
 Arena can also create a Playground in "Playground Book" format, which is the file format supported by ["Swift Playgrounds"](https://apps.apple.com/app/swift-playgrounds/id1496833156). These playgrounds can then be synced and opened on the iOS version of "Swift Playgrounds" as well.
 
