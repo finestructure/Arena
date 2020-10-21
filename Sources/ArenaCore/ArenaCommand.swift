@@ -256,7 +256,7 @@ extension Arena {
                 location = "group:MyPlayground.playground">
                 </FileRef>
                 <FileRef
-                location = "group:Dependencies">
+                location = "group:\(depdencyPackageName)">
                 </FileRef>
                 </Workspace>
                 """.write(to: xcworkspacePath/"contents.xcworkspacedata")
