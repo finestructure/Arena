@@ -59,3 +59,11 @@ extension Manifest.Product.`Type`: Decodable {
                                   debugDescription: "none of the required keys found"))
     }
 }
+
+
+extension Manifest.Platform {
+    static func macos(_ version: String) -> Self { .init(platformName: .macos, version: version) }
+    static func ios(_ version: String) -> Self { .init(platformName: .ios, version: version) }
+    static func tvos(_ version: String) -> Self { .init(platformName: .tvos, version: version) }
+    static func watchos(_ version: String) -> Self { .init(platformName: .watchos, version: version) }
+}

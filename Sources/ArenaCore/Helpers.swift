@@ -11,6 +11,7 @@ import Path
 
 public struct PackageInfo {
     var name: String
+    var platforms: [Manifest.Platform]?
     var libraries: [String]
 }
 
@@ -31,7 +32,7 @@ public func getPackageInfo(in directory: Path) throws -> PackageInfo {
         }
     }
     .map { $0.name }
-    return PackageInfo(name: manifest.name, libraries: libs)
+    return PackageInfo(name: manifest.name, platforms: manifest.platforms, libraries: libs)
 }
 
 

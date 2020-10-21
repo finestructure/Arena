@@ -41,38 +41,35 @@ public struct Arena: ParsableCommand {
     )
 
     @Flag(name: .long, help: "Create a Swift Playgrounds compatible Playground Book bundle (experimental).")
-    var book: Bool
+    var book: Bool = false
     
     @Flag(name: .shortAndLong,
           help: "Overwrite existing file/directory")
-    var force: Bool
+    var force: Bool = false
 
     @Option(name: [.customLong("libs"), .customShort("l")],
             parsing: .upToNextOption,
             help: "Names of libraries to import (inferred if not provided)")
-    var libNames: [String]
+    var libNames: [String] = []
 
     @Option(name: [.customLong("outputdir"), .customShort("o")],
-            default: try? Path.cwd.realpath(),
             help: "Directory where project folder should be saved")
-    var outputPath: Path
+    var outputPath: Path = try! Path.cwd.realpath()
 
     @Option(name: .shortAndLong,
-            default: .macos,
             help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
-    var platform: Platform
+    var platform: Platform = .macos
 
     @Option(name: [.customLong("name"), .customShort("n")],
-            default: "Arena-Playground",
             help: "Name of directory and Xcode project")
-    var projectName: String
+    var projectName: String = "Arena-Playground"
 
     @Flag(name: [.customLong("version"), .customShort("v")],
           help: "Show version")
-    var showVersion: Bool
+    var showVersion: Bool = false
 
     @Flag(name: .long, help: "Do not open project in Xcode on completion")
-    var skipOpen: Bool
+    var skipOpen: Bool = false
 
     @Argument(help: "Dependency url(s) and (optionally) version specification")
     var dependencies: [Dependency]
@@ -209,7 +206,8 @@ extension Arena {
             progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
         }
 
-        // update Package.swift dependencies again, adding in package `name:`
+        // update Package.swift dependencies again, adding in package `name:` and
+        // the `platforms` stanza (if required)
         do {
             let depsClause = packageInfo.map { (dep, pkg) in
                 "    " + dep.packageClause(name: pkg.name)
@@ -222,23 +220,29 @@ extension Arena {
         do {
             let packagePath = dependencyPackagePath/"Package.swift"
             let packageDescription = try String(contentsOf: packagePath)
-            let productsClause = packageInfo
-                .flatMap { pkg in pkg.1.libraries.map { (package: pkg.1.name, library: $0) } }
-                .map {
-                """
-                .product(name: "\($0.library)", package: "\($0.package)")
-                """
-            }.joined(separator: ",\n")
             let updatedTgts =  """
                 package.targets = [
                     .target(name: "\(depdencyPackageName)",
                         dependencies: [
-                            \(productsClause)
+                            \(PackageGenerator.productsClause(packageInfo))
                         ]
                     )
                 ]
                 """
             try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
+        }
+
+        // update Package.swift platforms
+        do {
+            let packagePath = dependencyPackagePath/"Package.swift"
+            let packageDescription = try String(contentsOf: packagePath)
+            let platforms = packageInfo.compactMap {
+                $0.1.platforms
+                    .map(PackageGenerator.Platforms.init(platforms:))
+            }
+            try [packageDescription,
+                 PackageGenerator.platformsClause(platforms)]
+                .joined(separator: "\n").write(to: packagePath)
         }
 
         // create workspace
