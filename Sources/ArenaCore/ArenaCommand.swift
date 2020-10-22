@@ -198,7 +198,7 @@ extension Arena {
             packageInfo = Array(
                 zip(dependencies,
                     try dependencies.compactMap {
-                        $0.path ?? $0.checkoutDir(projectDir: dependencyPackagePath)
+                        $0.path ?? $0.checkoutDir(packageDir: dependencyPackagePath)
                     }.compactMap { try getPackageInfo(in: $0) } )
             )
             let libs = packageInfo.flatMap { $0.1.libraries }
@@ -285,7 +285,7 @@ extension Arena {
 
         if book {
             let modules = dependencies
-                .compactMap { $0.path ?? $0.checkoutDir(projectDir: projectPath) }
+                .compactMap { $0.path ?? $0.checkoutDir(packageDir: dependencyPackagePath) }
                 .compactMap(Module.init)
             if modules.isEmpty { throw ArenaError.noSourcesFound }
             try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)

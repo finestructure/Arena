@@ -49,8 +49,8 @@ public struct Dependency: Equatable, Hashable, Codable {
         requirement == .path ? Path(url: url) : nil
     }
 
-    func checkoutDir(projectDir: Path) -> Path? {
-        requirement == .path ? nil : projectDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
+    func checkoutDir(packageDir: Path) -> Path? {
+        requirement == .path ? nil : packageDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
     }
 
     func packageClause(name: String? = nil) -> String {
