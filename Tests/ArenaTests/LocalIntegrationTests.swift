@@ -6,6 +6,7 @@
 //
 
 @testable import ArenaCore
+import SnapshotTesting
 import XCTest
 
 
@@ -14,37 +15,28 @@ class LocalIntegrationTests: XCTestCase {
         Current = .live
     }
 
-    func test_ouput() throws {
-        try XCTSkipUnless(ProcessInfo().hostName == "luna.local", "skip on CI due to '../../tmp' path prefix in output, only run locally")
-
-        let output = OutputListener()
-        output.openConsolePipe()
-
+    func test_output() throws {
         let arena = try Arena.parse([
             "https://github.com/finestructure/ArenaTest@0.0.3",
             "--name=ArenaIntegrationTest",
             "--force",
             "--skip-open"])
-        try arena.run()
 
-        let expectation = """
-                ➡️  Package: https://github.com/finestructure/ArenaTest @ exact(0.0.3)
-                🔧 Resolving package dependencies ...
-                📔 Libraries found: ArenaTest
-                ✅ Created project in folder 'ArenaIntegrationTest'
-                Run
-                  open ArenaIntegrationTest/ArenaIntegrationTest.xcworkspace
-                to open the project in Xcode
+        let exp = self.expectation(description: "exp")
 
-                """
-        let predicate = NSPredicate { _,_  in
-            output.contents == expectation
+        var output = ""
+        let progress: ProgressUpdate = { stage, msg in
+            output += msg + "\n"
+            if stage == .completed {
+                exp.fulfill()
+            }
         }
-        let exp = XCTNSPredicateExpectation(predicate: predicate, object: nil)
-        wait(for: [exp], timeout: 10)
-        XCTAssertEqual(output.contents, expectation)
 
-        output.closeConsolePipe()
+        try arena.run(progress: progress)
+
+        wait(for: [exp], timeout: 10)
+
+        assertSnapshot(matching: output, as: .lines, record: false)
     }
 
     // FIXME: fails on CI but shouldn't
