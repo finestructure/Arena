@@ -5,6 +5,8 @@ import ShellOut
 
 
 public struct Arena: ParsableCommand {
+    static let playgroundName = "Arena-Playground"
+
     public static var configuration = CommandConfiguration(
         abstract: "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
     )
@@ -23,15 +25,11 @@ public struct Arena: ParsableCommand {
 
     @Option(name: [.customLong("outputdir"), .customShort("o")],
             help: "Directory where project folder should be saved")
-    var outputPath: Path = try! Path.cwd.realpath()
+    var outputPath: Path = Path.cwd/playgroundName
 
     @Option(name: .shortAndLong,
             help: "Platform for Playground (one of 'macos', 'ios', 'tvos')")
     var platform: Platform = .macos
-
-    @Option(name: [.customLong("name"), .customShort("n")],
-            help: "Name of directory and Xcode project")
-    var projectName: String = "Arena-Playground"
 
     @Flag(name: [.customLong("version"), .customShort("v")],
           help: "Show version")
@@ -61,7 +59,6 @@ extension Arena {
             throw AppError.invalidPath(outputPath)
         }
 
-        self.projectName = projectName
         self.libNames = libNames
         self.platform = platform
         self.force = force
@@ -75,18 +72,16 @@ extension Arena {
 
 
 extension Arena {
-    var dependencyPackagePath: Path { projectPath/depdencyPackageName }
+    var dependencyPackagePath: Path { outputPath/depdencyPackageName }
 
     var depdencyPackageName: String { "Dependencies" }
 
-    var projectPath: Path { outputPath/projectName }
-
     var xcworkspacePath: Path {
-        projectPath/"Arena.xcworkspace"
+        outputPath/"Arena.xcworkspace"
     }
 
     var playgroundPath: Path {
-        projectPath/"MyPlayground.playground"
+        outputPath/"MyPlayground.playground"
     }
 }
 
@@ -106,11 +101,11 @@ extension Arena {
             throw AppError.missingDependency
         }
 
-        if force && projectPath.exists {
-            try projectPath.delete()
+        if force && outputPath.exists {
+            try outputPath.delete()
         }
-        guard !projectPath.exists else {
-            throw AppError.pathExists(projectPath.basename())
+        guard !outputPath.exists else {
+            throw AppError.pathExists(outputPath.basename())
         }
 
         dependencies.forEach {
@@ -239,12 +234,12 @@ extension Arena {
                 .compactMap { $0.path ?? $0.checkoutDir(packageDir: dependencyPackagePath) }
                 .compactMap(Module.init)
             if modules.isEmpty { throw AppError.noSourcesFound }
-            try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)
+            try PlaygroundBook.make(named: Self.playgroundName, in: outputPath, with: modules)
             progress(.showingPlaygroundBookPath,
-                     "📙 Created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
+                     "📙 Created Playground Book in folder '\(outputPath.relative(to: Path.cwd))'")
         }
 
-        progress(.completed, "✅ Created project in folder '\(projectPath.relative(to: Path.cwd))'")
+        progress(.completed, "✅ Created project in folder '\(outputPath.relative(to: Path.cwd))'")
         if skipOpen {
             progress(.showingOpenAdvisory, """
                 Run
