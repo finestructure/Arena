@@ -21,7 +21,12 @@ let AllowedRevisionCharacters = CharacterSet.whitespacesAndNewlines.inverted
 
 extension Parser where A == SemanticVersion {
     static var version: Parser<SemanticVersion> {
-        zip(int, literal("."), int, literal("."), int).map { major, _, minor, _, patch in
+        zip(Parser<Int>.int,
+            Parser<Void>.literal("."),
+            Parser<Int>.int,
+            Parser<Void>.literal("."),
+            Parser<Int>.int)
+            .map { major, _, minor, _, patch in
             SemanticVersion(major, minor, patch)
         }
     }
@@ -30,15 +35,15 @@ extension Parser where A == SemanticVersion {
 
 extension Parser where A == RefSpec {
     static var branch: Parser<RefSpec> {
-        zip(literal("@branch:"), branchName).map { .branch(String($0.1)) }
+        zip(Parser<Void>.literal("@branch:"), branchName).map { .branch(String($0.1)) }
     }
 
     static var exact: Parser<RefSpec> {
-        zip(literal("@"), .version).map { .exact($0.1) }
+        zip(Parser<Void>.literal("@"), .version).map { .exact($0.1) }
     }
 
     static var from: Parser<RefSpec> {
-        zip(literal("@from:"), .version).map { .from($0.1) }
+        zip(Parser<Void>.literal("@from:"), .version).map { .from($0.1) }
     }
 
     static var noVersion: Parser<RefSpec> {
@@ -47,8 +52,8 @@ extension Parser where A == RefSpec {
 
     static var range: Parser<RefSpec> {
         oneOf([
-            zip(literal("@"), .version, string("..<"), .version),
-            zip(literal("@"), .version, string("..."), .version)
+            zip(Parser<Void>.literal("@"), .version, Parser<String>.string("..<"), .version),
+            zip(Parser<Void>.literal("@"), .version, Parser<String>.string("..."), .version)
         ]).map { _, minVersion, rangeOp, maxVersion in
             rangeOp == "..<"
                 ? .range(minVersion..<maxVersion)
@@ -57,7 +62,7 @@ extension Parser where A == RefSpec {
     }
 
     static var revision: Parser<RefSpec> {
-        zip(literal("@revision:"), prefix(charactersIn: AllowedRevisionCharacters))
+        zip(Parser<Void>.literal("@revision:"), Parser<Substring>.prefix(charactersIn: AllowedRevisionCharacters))
             .map { .revision(String($0.1)) }
     }
 
@@ -72,7 +77,10 @@ extension Parser where A == RefSpec {
 
 extension Parser where A == Scheme {
     static var scheme: Parser<Scheme> {
-        oneOf(Scheme.allCases.map { string($0.rawValue).map { Scheme(rawValue: $0)! } } )
+        oneOf(Scheme.allCases.map {
+                Parser<String>.string($0.rawValue)
+                    .map { Scheme(rawValue: $0)! }
+        })
     }
 }
 
@@ -81,7 +89,7 @@ extension Parser where A == Foundation.URL {
     static var url: Parser<Foundation.URL> {
         zip(
             Parser<Scheme>.scheme,
-            prefix(upTo: "@").map(String.init)
+            Parser<Substring>.prefix(upTo: "@").map(String.init)
         ).flatMap { (scheme, rest) in
             if let url = scheme.url(path: rest) {
                 return always(url)
