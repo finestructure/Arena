@@ -6,6 +6,7 @@
 //
 
 @testable import ArenaCore
+import SnapshotTesting
 import XCTest
 
 
@@ -14,7 +15,31 @@ class IntegrationTests: XCTestCase {
         Current = .live
     }
 
-    func test_spm_packages() throws {
+    func test_output() throws {
+        let arena = try Arena.parse([
+            "https://github.com/finestructure/ArenaTest@0.0.3",
+            "--name=ArenaIntegrationTest",
+            "--force",
+            "--skip-open"])
+
+        let exp = self.expectation(description: "exp")
+
+        var output = ""
+        let progress: ProgressUpdate = { stage, msg in
+            output += msg + "\n"
+            if stage == .completed {
+                exp.fulfill()
+            }
+        }
+
+        try arena.run(progress: progress)
+
+        wait(for: [exp], timeout: 10)
+
+        assertSnapshot(matching: output, as: .lines, record: false)
+    }
+
+    func test_packages() throws {
         let dependencies = [
             // test some packages that we want to make sure work (e.g. because they're
             // used in docs and refs) or because they've had issues in the past
@@ -50,6 +75,27 @@ class IntegrationTests: XCTestCase {
 
             wait(for: [exp], timeout: 10)
         }
+    }
+
+    func test_git_protocol() throws {
+        let arena = try Arena.parse([
+            "git@github.com:finestructure/ArenaTest@0.0.3",
+            "--name=ArenaIntegrationTest",
+            "--force",
+            "--skip-open"])
+
+        let exp = self.expectation(description: "exp")
+
+        let progress: ProgressUpdate = { stage, _ in
+            print("progress: \(stage)")
+            if stage == .completed {
+                exp.fulfill()
+            }
+        }
+
+        try arena.run(progress: progress)
+
+        wait(for: [exp], timeout: 10)
     }
 
 }
