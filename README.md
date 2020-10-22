@@ -15,24 +15,27 @@ Here is an overview of the `arena` command line interface:
 
 ```
 arena --help
-OVERVIEW: Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use.
+OVERVIEW: Creates an Xcode project with a Playground and one or more SPM libraries imported and
+ready for use.
 
-USAGE: arena [--name <name>] [--libs <libs> ...] [--platform <platform>] [--force] [--outputdir <outputdir>] [--version] [--skip-open] [--book] [<dependencies> ...]
+USAGE: arena [--book] [--force] [--libs <libs> ...] [--outputdir <outputdir>] [--platform <platform>] [--version] [--skip-open] [<dependencies> ...]
 
 ARGUMENTS:
   <dependencies>          Dependency url(s) and (optionally) version specification
 
 OPTIONS:
-  -n, --name <name>       Name of directory and Xcode project (default: SPM-Playground)
-  -l, --libs <libs>       Names of libraries to import (inferred if not provided)
-  -p, --platform <platform>
-                          Platform for Playground (one of 'macos', 'ios', 'tvos') (default: macos)
+  --book                  Create a Swift Playgrounds compatible Playground Book bundle
+                          (experimental).
   -f, --force             Overwrite existing file/directory
+  -l, --libs <libs>       Names of libraries to import (inferred if not provided)
   -o, --outputdir <outputdir>
-                          Directory where project folder should be saved (default: /Users/sas/Projects/Arena)
+                          Directory where project folder should be saved (default:
+                          /Users/sas/Projects/Arena/Arena-Playground)
+  -p, --platform <platform>
+                          Platform for Playground (one of 'macos', 'ios', 'tvos') (default:
+                          macos)
   -v, --version           Show version
   --skip-open             Do not open project in Xcode on completion
-  --book                  Create a Swift Playgrounds compatible Playground Book bundle (experimental).
   -h, --help              Show help information.
 ```
 

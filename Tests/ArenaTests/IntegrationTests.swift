@@ -18,7 +18,8 @@ class IntegrationTests: XCTestCase {
     func test_output() throws {
         let arena = try Arena.parse([
             "https://github.com/finestructure/ArenaTest@0.0.3",
-            "--name=ArenaIntegrationTest",
+            "-o",
+            "ArenaIntegrationTest",
             "--force",
             "--skip-open"])
 
@@ -57,7 +58,6 @@ class IntegrationTests: XCTestCase {
         try dependencies.forEach { dep in
             let arena = try Arena.parse([
                 dep,
-                "--name=ArenaIntegrationTest",
                 "--force",
                 "--skip-open"])
 
@@ -80,7 +80,6 @@ class IntegrationTests: XCTestCase {
     func test_git_protocol() throws {
         let arena = try Arena.parse([
             "git@github.com:finestructure/ArenaTest@0.0.3",
-            "--name=ArenaIntegrationTest",
             "--force",
             "--skip-open"])
 
