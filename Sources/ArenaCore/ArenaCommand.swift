@@ -1,10 +1,3 @@
-//
-//  ArenaCommand.swift
-//  
-//
-//  Created by Sven A. Schmidt on 23/12/2019.
-//
-
 import ArgumentParser
 import Foundation
 import Path
@@ -98,30 +91,12 @@ extension Arena {
 }
 
 
-public typealias ProgressUpdate = (Progress.Stage, String) -> ()
-
-
-public enum Progress {
-    public enum Stage {
-        case started
-        case listPackages
-        case resolvePackages
-        case listLibraries
-        case buildingDependencies
-        case showingPlaygroundBookPath
-        case showingOpenAdvisory
-        case completed
-    }
-    public static func update(stage: Stage, description: String) { print(description) }
-}
-
-
 extension Arena {
     public func run() throws {
         try run(progress: Progress.update)
     }
 
-    public func run(progress: ProgressUpdate) throws {
+    public func run(progress: (Progress.Stage, String) -> ()) throws {
         if showVersion {
             progress(.started, ArenaVersion)
             return

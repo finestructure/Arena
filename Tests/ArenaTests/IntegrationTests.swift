@@ -25,7 +25,7 @@ class IntegrationTests: XCTestCase {
         let exp = self.expectation(description: "exp")
 
         var output = ""
-        let progress: ProgressUpdate = { stage, msg in
+        let progress = { (stage: ArenaCore.Progress.Stage, msg: String) in
             output += msg + "\n"
             if stage == .completed {
                 exp.fulfill()
@@ -63,7 +63,7 @@ class IntegrationTests: XCTestCase {
 
             let exp = self.expectation(description: "exp")
 
-            let progress: ProgressUpdate = { stage, _ in
+            let progress = { (stage: ArenaCore.Progress.Stage, msg: String) in
                 print("progress: \(stage)")
                 if stage == .completed {
                     exp.fulfill()
@@ -86,7 +86,7 @@ class IntegrationTests: XCTestCase {
 
         let exp = self.expectation(description: "exp")
 
-        let progress: ProgressUpdate = { stage, _ in
+        let progress = { (stage: ArenaCore.Progress.Stage, msg: String) in
             print("progress: \(stage)")
             if stage == .completed {
                 exp.fulfill()
