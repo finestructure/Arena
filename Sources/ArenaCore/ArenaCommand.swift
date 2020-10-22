@@ -11,30 +11,6 @@ import Path
 import ShellOut
 
 
-public enum ArenaError: LocalizedError {
-    case invalidPath(String)
-    case missingDependency
-    case pathExists(String)
-    case noLibrariesFound
-    case noSourcesFound
-
-    public var errorDescription: String? {
-        switch self {
-            case .invalidPath(let path):
-                return "'\(path)' is not a valid path"
-            case .missingDependency:
-                return "provide at least one dependency"
-            case .pathExists(let path):
-                return "'\(path)' already exists, use '-f' to overwrite"
-            case .noLibrariesFound:
-                return "no libraries found, make sure the referenced dependencies define library products"
-            case .noSourcesFound:
-                return "no source files found, make sure the referenced dependencies contain swift files in their 'Sources' folders"
-        }
-    }
-}
-
-
 public struct Arena: ParsableCommand {
     public static var configuration = CommandConfiguration(
         abstract: "Creates an Xcode project with a Playground and one or more SPM libraries imported and ready for use."
@@ -89,7 +65,7 @@ extension Arena {
                 dependencies: [Dependency]) throws {
 
         guard let path = Path(outputPath) else {
-            throw ArenaError.invalidPath(outputPath)
+            throw AppError.invalidPath(outputPath)
         }
 
         self.projectName = projectName
@@ -152,14 +128,14 @@ extension Arena {
         }
 
         guard !dependencies.isEmpty else {
-            throw ArenaError.missingDependency
+            throw AppError.missingDependency
         }
 
         if force && projectPath.exists {
             try projectPath.delete()
         }
         guard !projectPath.exists else {
-            throw ArenaError.pathExists(projectPath.basename())
+            throw AppError.pathExists(projectPath.basename())
         }
 
         dependencies.forEach {
@@ -202,7 +178,7 @@ extension Arena {
                     }.compactMap { try getPackageInfo(in: $0) } )
             )
             let libs = packageInfo.flatMap { $0.1.libraries }
-            if libs.isEmpty { throw ArenaError.noLibrariesFound }
+            if libs.isEmpty { throw AppError.noLibrariesFound }
             progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
         }
 
@@ -287,7 +263,7 @@ extension Arena {
             let modules = dependencies
                 .compactMap { $0.path ?? $0.checkoutDir(packageDir: dependencyPackagePath) }
                 .compactMap(Module.init)
-            if modules.isEmpty { throw ArenaError.noSourcesFound }
+            if modules.isEmpty { throw AppError.noSourcesFound }
             try PlaygroundBook.make(named: projectName, in: projectPath, with: modules)
             progress(.showingPlaygroundBookPath,
                      "📙 Created Playground Book in folder '\(projectPath.relative(to: Path.cwd))'")
