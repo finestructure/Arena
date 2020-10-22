@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/finestructure/Parser",
         "state": {
           "branch": null,
-          "revision": "fa5d7caa39da4eb839136e02344c2697344b112d",
-          "version": "0.1.2"
+          "revision": "08c718279b757dd40d8ce05c3d15ec1a76eab53e",
+          "version": "0.2.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/mxcl/Path.swift.git",
         "state": {
           "branch": null,
-          "revision": "6e1eeb158ae0e71da3af23ef869aa0dc1adf7355",
-          "version": "1.0.1"
+          "revision": "142d4bc1118602f3679c777d2e0da89c227cd918",
+          "version": "1.2.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/SwiftPackageIndex/SemanticVersion",
         "state": {
           "branch": null,
-          "revision": "f751d9d68d8ec4917c951f92eb4ce0646475868c",
-          "version": "0.2.0"
+          "revision": "97f2bd0551cde27717c5ab7b88e23d392e96452b",
+          "version": "0.3.1"
         }
       },
       {
