@@ -145,7 +145,7 @@ This will copy the binary `arena` to `/usr/local/bin`.
 
 ## Why Arena?
 
-Arena – Spanish for "sand" – is where you battle-test your SPM packages and sand is, well, abundant in playgrounds, isn't it? 🙂
+Arena – Spanish for "sand" – is abundant in playgrounds. And also, sometimes you've got to take your source code to the arena for a fight 😅
 
 ## Compatibility
 
