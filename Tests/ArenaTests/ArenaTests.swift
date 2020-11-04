@@ -43,6 +43,14 @@ final class ArenaTests: XCTestCase {
                        [.macos("10.15"), .ios("13.0"), .tvos("13.0"), .watchos("6.0")])
     }
 
+    func test_getPackageInfo_matching_library() throws {
+        // See https://github.com/finestructure/Arena/issues/75 for details.
+        XCTAssertEqual(try getPackageInfo(in: fixturesDirectory/"RxSwift"),
+                       .init(name: "RxSwift", platforms: [], libraries: ["RxSwift"]))
+        XCTAssertEqual(try getPackageInfo(in: fixturesDirectory/"Vapor"),
+                       .init(name: "vapor", platforms: [.macos("10.15")], libraries: ["Vapor"]))
+    }
+
     func test_args_multiple_deps() throws {
         let args = ["https://github.com/mxcl/Path.swift.git@1.2.3", "https://github.com/hartbit/Yaap.git@from:1.0.0"]
         let res = try Arena.parse(args)

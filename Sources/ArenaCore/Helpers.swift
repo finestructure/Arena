@@ -9,7 +9,7 @@ import Foundation
 import Path
 
 
-public struct PackageInfo {
+public struct PackageInfo: Equatable {
     var name: String
     var platforms: [Manifest.Platform]?
     var libraries: [String]
@@ -24,7 +24,7 @@ func dumpPackage(at path: Path) throws -> Manifest {
 
 public func getPackageInfo(in directory: Path) throws -> PackageInfo {
     let manifest = try dumpPackage(at: directory)
-    let libs = manifest.products.filter { p in
+    let allLibraries = manifest.products.filter { p in
         if case .library = p.type {
             return true
         } else {
@@ -32,7 +32,12 @@ public func getPackageInfo(in directory: Path) throws -> PackageInfo {
         }
     }
     .map { $0.name }
-    return PackageInfo(name: manifest.name, platforms: manifest.platforms, libraries: libs)
+    // If we have an exact match of a library with its package name, only include that library,
+    // otherwise include them all.
+    // See https://github.com/finestructure/Arena/issues/75 for details.
+    let matching = allLibraries.filter { $0.lowercased() == manifest.name.lowercased() }
+    let libraries = matching.count == 1 ? matching : allLibraries
+    return PackageInfo(name: manifest.name, platforms: manifest.platforms, libraries: libraries)
 }
 
 
