@@ -115,6 +115,14 @@ In case you want to fetch a particular revision, range of revisions, or branch, 
 
 Make sure to properly quote the URL if you are using the `..<` range operator. Otherwise your shell will interpret the `<` character as input redirection.
 
+## Adding another dependency
+
+Arena does not currently support adding further depenencies to an existing playground. However, since its dependencies are managed via the `Dependencies` package, so can simply add further entries to its `Package.swift` file - just like you would when extending any other package manifest.
+
+Here's what this looks like:
+
+![Adding a dependency](misc/Arena-add-dependency.gif)
+
 ## How to install Arena
 
 ### Homebrew
