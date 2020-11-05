@@ -211,22 +211,11 @@ extension Arena {
         // add playground
         do {
             try playgroundPath.mkdir()
-            let libsToImport = !libNames.isEmpty ? libNames : packageInfo.flatMap { $0.1.libraries }
-            let importClauses =
-                """
-                // Playground generated with 🏟 Arena (https://github.com/finestructure/arena)
-                // ℹ️ If running the playground fails with an error "no such module ..."
-                //    go to Product -> Build to re-trigger building the SPM package.
-                // ℹ️ Please restart Xcode if autocomplete is not working.
-                """ + "\n\n" +
-                libsToImport.map { "import \($0)" }.joined(separator: "\n") + "\n"
-            try importClauses.write(to: playgroundPath/"Contents.swift")
-            try """
-                <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                <playground version='5.0' target-platform='\(platform)' buildActiveScheme='true'>
-                <timeline fileName='timeline.xctimeline'/>
-                </playground>
-                """.write(to: playgroundPath/"contents.xcplayground")
+            let libraries = !libNames.isEmpty ? libNames : packageInfo.flatMap { $0.1.libraries }
+            try PackageGenerator.importLibrariesClause(libraries: libraries)
+                .write(to: playgroundPath/"Contents.swift")
+            try PackageGenerator.contentsXCPlayground(platform: platform)
+                .write(to: playgroundPath/"contents.xcplayground")
         }
 
         if book {
