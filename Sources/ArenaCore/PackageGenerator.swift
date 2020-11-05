@@ -1,3 +1,6 @@
+import Path
+
+
 enum PackageGenerator {
     static func productsClause(_ info: [(Dependency, PackageInfo)]) -> String {
         info
@@ -90,6 +93,14 @@ extension PackageGenerator {
         <timeline fileName='timeline.xctimeline'/>
         </playground>
         """
+    }
+
+    static func sampleCode(path: Path) -> String? {
+        let samplePath = path/".arena-sample.swift"
+        if samplePath.exists {
+            return try? String(contentsOf: samplePath)
+        }
+        return nil
     }
 }
 

@@ -143,9 +143,8 @@ extension Arena {
             // find libraries
             packageInfo = Array(
                 zip(dependencies,
-                    try dependencies.compactMap {
-                        $0.path ?? $0.checkoutDir(packageDir: dependencyPackagePath)
-                    }.compactMap { try getPackageInfo(in: $0) } )
+                    try dependencies.compactMap { $0.sourceDir(packageDir: dependencyPackagePath) }
+                        .compactMap { try getPackageInfo(in: $0) } )
             )
             let libs = packageInfo.flatMap { $0.1.libraries }
             if libs.isEmpty { throw AppError.noLibrariesFound }
@@ -211,16 +210,22 @@ extension Arena {
         // add playground
         do {
             try playgroundPath.mkdir()
-            let libraries = !libNames.isEmpty ? libNames : packageInfo.flatMap { $0.1.libraries }
-            try PackageGenerator.importLibrariesClause(libraries: libraries)
-                .write(to: playgroundPath/"Contents.swift")
+            if dependencies.count == 1,
+               let sourceDir = dependencies.first?.sourceDir(packageDir: dependencyPackagePath),
+               let sampleCode = PackageGenerator.sampleCode(path: sourceDir) {
+                try sampleCode.write(to: playgroundPath/"Contents.swift")
+            } else {
+                let libraries = !libNames.isEmpty ? libNames : packageInfo.flatMap { $0.1.libraries }
+                try PackageGenerator.importLibrariesClause(libraries: libraries)
+                    .write(to: playgroundPath/"Contents.swift")
+            }
             try PackageGenerator.contentsXCPlayground(platform: platform)
                 .write(to: playgroundPath/"contents.xcplayground")
         }
 
         if book {
             let modules = dependencies
-                .compactMap { $0.path ?? $0.checkoutDir(packageDir: dependencyPackagePath) }
+                .compactMap { $0.sourceDir(packageDir: dependencyPackagePath) }
                 .compactMap(Module.init)
             if modules.isEmpty { throw AppError.noSourcesFound }
             try PlaygroundBook.make(named: Self.playgroundName, in: outputPath, with: modules)
