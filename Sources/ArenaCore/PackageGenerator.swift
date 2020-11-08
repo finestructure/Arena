@@ -1,3 +1,6 @@
+import Path
+
+
 enum PackageGenerator {
     static func productsClause(_ info: [(Dependency, PackageInfo)]) -> String {
         info
@@ -71,6 +74,33 @@ extension PackageGenerator {
                 \(platformsList)
             ]
             """
+    }
+
+    static func importLibrariesClause(libraries: [String]) -> String {
+        """
+        // Playground generated with 🏟 Arena (https://github.com/finestructure/arena)
+        // ℹ️ If running the playground fails with an error "no such module ..."
+        //    go to Product -> Build to re-trigger building the SPM package.
+        // ℹ️ Please restart Xcode if autocomplete is not working.
+        """ + "\n\n" +
+        libraries.map { "import \($0)" }.joined(separator: "\n") + "\n"
+    }
+
+    static func contentsXCPlayground(platform: Platform) -> String {
+        """
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <playground version='5.0' target-platform='\(platform)' buildActiveScheme='true'>
+        <timeline fileName='timeline.xctimeline'/>
+        </playground>
+        """
+    }
+
+    static func sampleCode(path: Path) -> String? {
+        let samplePath = path/".arena-sample.swift"
+        if samplePath.exists {
+            return try? String(contentsOf: samplePath)
+        }
+        return nil
     }
 }
 

@@ -53,6 +53,13 @@ public struct Dependency: Equatable, Hashable, Codable {
         requirement == .path ? nil : packageDir/".build/checkouts"/url.lastPathComponent(dropExtension: "git")
     }
 
+    /// Returns path to the package source code. Local directory if the dependency is a `path` requirement, otherwise the checkout directory of the given package directory.
+    /// - Parameter packageDir: fallback package directory
+    /// - Returns: source directory
+    func sourceDir(packageDir: Path) -> Path? {
+        path ?? checkoutDir(packageDir: packageDir)
+    }
+
     func packageClause(name: String? = nil) -> String {
         #if swift(>=5.2)
         let n = name.map { #"name: "\#($0)", "# } ?? ""

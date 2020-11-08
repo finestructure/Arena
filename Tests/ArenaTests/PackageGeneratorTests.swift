@@ -42,4 +42,16 @@ class PackageGeneratorTests: XCTestCase {
                        record: false)
     }
 
+    func test_importLibrariesClause() throws {
+        assertSnapshot(matching: PackageGenerator.importLibrariesClause(libraries: ["A", "B"]),
+                       as: .lines,
+                       record: false)
+    }
+
+    func test_contentsXCPlayground() throws {
+        assertSnapshot(matching: PackageGenerator.contentsXCPlayground(platform: .macos),
+                       as: .lines,
+                       record: false)
+    }
+
 }
