@@ -48,34 +48,55 @@ private extension PlaygroundBook {
         </plist>
         """
 
-    static let contentsManifest = """
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>Chapters</key>
-            <array>
-                <string>Chapter1.playgroundchapter</string>
-            </array>
-            <key>ContentIdentifier</key>
-            <string>com.apple.playgrounds.blank</string>
-            <key>ContentVersion</key>
-            <string>1.0</string>
-            <key>DeploymentTarget</key>
-            <string>ios-current</string>
-            <key>DevelopmentRegion</key>
-            <string>en</string>
-            <key>SwiftVersion</key>
-            <string>5.1</string>
-            <key>Version</key>
-            <string>7.0</string>
-            <key>UserAutoImportedAuxiliaryModules</key>
-            <array/>
-            <key>UserModuleMode</key>
-            <string>Full</string>
-        </dict>
-        </plist>
-        """
+    enum Manifest {
+        enum ManifestVersion: String {
+            case v7_0 = "7.0"
+            case v8_0 = "8.0"
+        }
+
+        enum Platform: String {
+            case iosCurrent = "ios-current"
+        }
+
+        enum SwiftVersion: String {
+            case v5_1 = "5.1"
+            case v5_2 = "5.2"
+            case v5_3 = "5.3"
+        }
+
+        static func content(manifestVersion: ManifestVersion,
+                     platform: Platform,
+                     swiftVersion: SwiftVersion) -> String {
+            """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                <dict>
+                    <key>Chapters</key>
+                    <array>
+                        <string>Chapter1.playgroundchapter</string>
+                    </array>
+                    <key>ContentIdentifier</key>
+                    <string>com.apple.playgrounds.blank</string>
+                    <key>ContentVersion</key>
+                    <string>1.0</string>
+                    <key>DeploymentTarget</key>
+                    <string>\(platform.rawValue)</string>
+                    <key>DevelopmentRegion</key>
+                    <string>en</string>
+                    <key>SwiftVersion</key>
+                    <string>\(swiftVersion.rawValue)</string>
+                    <key>Version</key>
+                    <string>\(manifestVersion.rawValue)</string>
+                    <key>UserAutoImportedAuxiliaryModules</key>
+                    <array/>
+                    <key>UserModuleMode</key>
+                    <string>Full</string>
+                </dict>
+                </plist>
+                """
+        }
+    }
 
     static func myPlaygroundPageManifest(named name: String) -> String {
         """
@@ -102,7 +123,10 @@ private extension PlaygroundBook {
 
     static func mkContents(parent: Path, modules: [Module]) throws {
         let contents = try parent.join("Contents").mkdir()
-        try contentsManifest.write(to: contents/"Manifest.plist")
+        let manifest = Manifest.content(manifestVersion: .v8_0,
+                                        platform: .iosCurrent,
+                                        swiftVersion: .v5_3)
+        try manifest.write(to: contents/"Manifest.plist")
         try mkChapters(in: contents)
         try mkUserModules(in: contents, modules: modules)
     }
