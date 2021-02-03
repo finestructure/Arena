@@ -117,7 +117,7 @@ Make sure to properly quote the URL if you are using the `..<` range operator. O
 
 ## Adding another dependency
 
-Arena does not currently support adding further depenencies to an existing playground. However, since its dependencies are managed via the `Dependencies` package, so can simply add further entries to its `Package.swift` file - just like you would when extending any other package manifest.
+Arena does not currently support adding further depenencies to an existing playground. However, since its dependencies are managed via the `Dependencies` package, you can simply add further entries to its `Package.swift` file - just like you would when extending any other package manifest.
 
 Here's what this looks like:
 
