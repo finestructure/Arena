@@ -46,7 +46,7 @@ OPTIONS:
 ```
 arena https://github.com/finestructure/Gala
 ➡️ Package: https://github.com/finestructure/Gala @ from(0.2.1)
-🔧 Resolving package dependencies ...
+🔧 Resolving package dependencies… 
 📔 Libraries found: Gala
 ✅ Created project in folder 'Arena-Playground'
 ```
@@ -58,7 +58,7 @@ You can skip the protocol and domain when referring to Github projects:
 ```
 arena finestructure/Gala
 ➡️ Package: https://github.com/finestructure/Gala @ from(0.2.1)
-🔧 Resolving package dependencies ...
+🔧 Resolving package dependencies…
 📔 Libraries found: Gala
 ✅ Created project in folder 'Arena-Playground'
 ```
@@ -69,7 +69,7 @@ arena finestructure/Gala
 ```
 arena ~/Projects/Parser
 ➡️ Package: file:///Users/sas/Projects/Parser @ path
-🔧 Resolving package dependencies ...
+🔧 Resolving package dependencies…
 📔 Libraries found: Parser
 ✅ Created project in folder 'Arena-Playground'
 ```
@@ -80,7 +80,7 @@ arena ~/Projects/Parser
 arena ~/Projects/Parser finestructure/Gala
 ➡️ Package: file:///Users/sas/Projects/Parser @ path
 ➡️ Package: https://github.com/finestructure/Gala @ from(0.2.1)
-🔧 Resolving package dependencies ...
+🔧 Resolving package dependencies…
 📔 Libraries found: Parser, Gala
 ✅ Created project in folder 'Arena-Playground'
 ```

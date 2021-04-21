@@ -1,5 +1,5 @@
 ➡️  Package: https://github.com/finestructure/ArenaTest @ exact(0.0.3)
-🔧 Resolving package dependencies ...
+🔧 Resolving package dependencies…
 📔 Libraries found: ArenaTest
 ✅ Created project in folder 'ArenaIntegrationTest'
 Run
