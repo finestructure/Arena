@@ -134,7 +134,7 @@ extension Arena {
         }
 
         do {
-            progress(.resolvePackages, "🔧 Resolving package dependencies ...")
+            progress(.resolvePackages, "🔧 Resolving package dependencies…")
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: dependencyPackagePath)
         }
 
