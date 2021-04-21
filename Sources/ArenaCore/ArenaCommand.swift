@@ -216,7 +216,7 @@ extension Arena {
                 try sampleCode.write(to: playgroundPath/"Contents.swift")
             } else {
                 let libraries = !libNames.isEmpty ? libNames : packageInfo.flatMap { $0.1.libraries }
-                try PackageGenerator.importLibrariesClause(libraries: libraries)
+                try PackageGenerator.content(libraries: libraries)
                     .write(to: playgroundPath/"Contents.swift")
             }
             try PackageGenerator.contentsXCPlayground(platform: platform)

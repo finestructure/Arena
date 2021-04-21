@@ -76,7 +76,7 @@ extension PackageGenerator {
             """
     }
 
-    static func importLibrariesClause(libraries: [String]) -> String {
+    static func content(libraries: [String]) -> String {
         """
         // Playground generated with 🏟 Arena (https://github.com/finestructure/arena)
         // ℹ️ If running the playground fails with an error "No such module"

@@ -42,8 +42,8 @@ class PackageGeneratorTests: XCTestCase {
                        record: false)
     }
 
-    func test_importLibrariesClause() throws {
-        assertSnapshot(matching: PackageGenerator.importLibrariesClause(libraries: ["A", "B"]),
+    func test_content() throws {
+        assertSnapshot(matching: PackageGenerator.content(libraries: ["A", "B"]),
                        as: .lines,
                        record: false)
     }
