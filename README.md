@@ -151,6 +151,14 @@ make install
 
 This will copy the binary `arena` to `/usr/local/bin`.
 
+## Overriding the default playground code
+
+Be default, Arena adds `import` statements for the library targets it finds in a package.
+
+As a package author, you can override this behaviour by adding a file `.arena-sample.swift` to the top level of your repository. The contents of this file will be used as the playground source code.
+
+[Parser](https://github.com/finestructure/Parser) is a Swift package that comes with a [`.arena-sample.swift` file](https://github.com/finestructure/Parser/blob/main/.arena-sample.swift).
+
 ## Why Arena?
 
 Arena – Spanish for "sand" – is abundant in playgrounds. And also, sometimes you've got to take your source code to the arena for a fight 😅
