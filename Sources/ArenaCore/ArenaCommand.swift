@@ -76,13 +76,11 @@ extension Arena {
 
     var depdencyPackageName: String { "Dependencies" }
 
-    var xcworkspacePath: Path {
-        outputPath/"Arena.xcworkspace"
-    }
+    var xcworkspacePath: Path { outputPath/"Playground.xcworkspace" }
 
-    var playgroundPath: Path {
-        outputPath/"MyPlayground.playground"
-    }
+    var playgroundFilename: String { "Content.playground" }
+
+    var playgroundPath: Path { outputPath/playgroundFilename }
 }
 
 
@@ -198,7 +196,7 @@ extension Arena {
                 <Workspace
                 version = "1.0">
                 <FileRef
-                location = "group:MyPlayground.playground">
+                location = "group:\(playgroundFilename)">
                 </FileRef>
                 <FileRef
                 location = "group:\(depdencyPackageName)">
