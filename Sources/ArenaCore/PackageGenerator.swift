@@ -83,7 +83,10 @@ extension PackageGenerator {
         //    go to Product -> Build to re-trigger building the SPM package.
         // ℹ️ Please restart Xcode if autocomplete is not working.
         """ + "\n\n" +
-        libraries.map { "import \($0)" }.joined(separator: "\n") + "\n"
+        libraries
+            // filter out any "internal" libraries (typically named with a "_" prefix)
+            .filter { !$0.hasPrefix("_") }
+            .map { "import \($0)" }.joined(separator: "\n") + "\n"
     }
 
     static func contentsXCPlayground(platform: Platform) -> String {
