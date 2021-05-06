@@ -3,5 +3,5 @@
 📔 Libraries found: ArenaTest
 ✅ Created project in folder 'ArenaIntegrationTest'
 Run
-  open ArenaIntegrationTest/Arena.xcworkspace
+  open ArenaIntegrationTest/Playground.xcworkspace
 to open the project in Xcode
