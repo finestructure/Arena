@@ -48,6 +48,12 @@ class PackageGeneratorTests: XCTestCase {
                        record: false)
     }
 
+    func test_content_skipInternalLibs() throws {
+        assertSnapshot(matching: PackageGenerator.content(libraries: ["_A", "B"]),
+                       as: .lines,
+                       record: false)
+    }
+
     func test_contentsXCPlayground() throws {
         assertSnapshot(matching: PackageGenerator.contentsXCPlayground(platform: .macos),
                        as: .lines,
