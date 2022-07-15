@@ -36,6 +36,8 @@ let package = Package(
                 "ShellOut"]),
         .testTarget(
             name: "ArenaTests",
-            dependencies: ["ArenaCore", "SnapshotTesting"]),
+            dependencies: ["ArenaCore", "SnapshotTesting"],
+            exclude: ["__Snapshots__"]
+        ),
     ]
 )

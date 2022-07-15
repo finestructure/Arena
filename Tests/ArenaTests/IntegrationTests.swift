@@ -41,6 +41,9 @@ class IntegrationTests: XCTestCase {
     }
 
     func test_packages() throws {
+        let isRunningInCI = ProcessInfo.processInfo.environment.keys.contains("GITHUB_WORKFLOW")
+        try XCTSkipIf(isRunningInCI)
+
         let dependencies = [
             // test some packages that we want to make sure work (e.g. because they're
             // used in docs and refs) or because they've had issues in the past
@@ -78,6 +81,9 @@ class IntegrationTests: XCTestCase {
     }
 
     func test_git_protocol() throws {
+        let isRunningInCI = ProcessInfo.processInfo.environment.keys.contains("GITHUB_WORKFLOW")
+        try XCTSkipIf(isRunningInCI)
+
         let arena = try Arena.parse([
             "git@github.com:finestructure/ArenaTest@0.0.3",
             "--force",
