@@ -4,7 +4,8 @@ on: [push]
 
 jobs:
   test:
-    runs-on: macos-latest
+    # https://github.com/actions/virtual-environments
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
       - name: Log Xcode version
@@ -13,7 +14,8 @@ jobs:
         run: make test
 
   build-release:
-    runs-on: macos-latest
+    # https://github.com/actions/virtual-environments
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
       - name: Log Xcode version
