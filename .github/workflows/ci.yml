@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Log Xcode version
@@ -13,7 +13,7 @@ jobs:
         run: make test
 
   build-release:
-    runs-on: self-hosted
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Log Xcode version
