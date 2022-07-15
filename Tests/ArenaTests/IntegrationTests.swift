@@ -78,6 +78,9 @@ class IntegrationTests: XCTestCase {
     }
 
     func test_git_protocol() throws {
+        let isRunningInCI = ProcessInfo.processInfo.environment.keys.contains("GITHUB_WORKFLOW")
+        try XCTSkipIf(isRunningInCI)
+
         let arena = try Arena.parse([
             "git@github.com:finestructure/ArenaTest@0.0.3",
             "--force",
