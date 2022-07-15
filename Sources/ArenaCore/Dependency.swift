@@ -61,7 +61,7 @@ public struct Dependency: Equatable, Hashable, Codable {
     }
 
     func packageClause(name: String? = nil) -> String {
-        #if swift(>=5.2)
+        #if swift(>=5.2) && swift(<5.6)
         let n = name.map { #"name: "\#($0)", "# } ?? ""
         #else
         let n = ""
