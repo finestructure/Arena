@@ -1,0 +1,141 @@
+{
+  "cLanguageStandard" : null,
+  "cxxLanguageStandard" : null,
+  "dependencies" : [
+    {
+      "sourceControl" : [
+        {
+          "identity" : "yams",
+          "location" : {
+            "remote" : [
+              "https://github.com/jpsim/Yams.git"
+            ]
+          },
+          "productFilter" : null,
+          "requirement" : {
+            "range" : [
+              {
+                "lowerBound" : "4.0.0",
+                "upperBound" : "6.0.0"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "name" : "SPIManifest",
+  "packageKind" : {
+    "root" : [
+      "/Users/sas/Downloads/arena-test/Dependencies/.build/checkouts/SPIManifest"
+    ]
+  },
+  "pkgConfig" : null,
+  "platforms" : [
+    {
+      "options" : [
+
+      ],
+      "platformName" : "macos",
+      "version" : "10.15"
+    }
+  ],
+  "products" : [
+    {
+      "name" : "spi-manifest-validate",
+      "settings" : [
+
+      ],
+      "targets" : [
+        "Validator"
+      ],
+      "type" : {
+        "executable" : null
+      }
+    },
+    {
+      "name" : "SPIManifest",
+      "settings" : [
+
+      ],
+      "targets" : [
+        "SPIManifest"
+      ],
+      "type" : {
+        "library" : [
+          "automatic"
+        ]
+      }
+    }
+  ],
+  "providers" : null,
+  "swiftLanguageVersions" : null,
+  "targets" : [
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "SPIManifest",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "Validator",
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "executable"
+    },
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "Yams",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "SPIManifest",
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "regular"
+    },
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "SPIManifest",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "SPIManifestTests",
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "test"
+    }
+  ],
+  "toolsVersion" : {
+    "_version" : "5.5.0"
+  }
+}

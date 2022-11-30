@@ -91,7 +91,7 @@ In case you want to fetch a particular revision, range of revisions, or branch, 
 
 - `https://github.com/finestructure/Gala@0.1.0`
   
-  → `.package(url: "https://github.com/finestructure/Gala", .exact("0.1.0"))`
+  → `.package(url: "https://github.com/finestructure/Gala", exact: "0.1.0")`
 
 - `https://github.com/finestructure/Gala@from:0.1.0`
   
@@ -107,11 +107,11 @@ In case you want to fetch a particular revision, range of revisions, or branch, 
 
 - `https://github.com/finestructure/Gala@branch:master` 
 
-  → `.package(url: "https://github.com/finestructure/Gala", .branch("master"))`
+  → `.package(url: "https://github.com/finestructure/Gala", branch: "master")`
 
 - `https://github.com/finestructure/Gala@revision:7235531e92e71176dc31e77d6ff2b128a2602110` 
 
-  → `.package(url: "https://github.com/finestructure/Gala", .revision("7235531e92e71176dc31e77d6ff2b128a2602110"))`
+  → `.package(url: "https://github.com/finestructure/Gala", revision: "7235531e92e71176dc31e77d6ff2b128a2602110")`
 
 Make sure to properly quote the URL if you are using the `..<` range operator. Otherwise your shell will interpret the `<` character as input redirection.
 

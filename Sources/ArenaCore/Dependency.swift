@@ -68,9 +68,9 @@ public struct Dependency: Equatable, Hashable, Codable {
         #endif
         switch requirement {
             case .branch(let b):
-                return #".package(\#(n)url: "\#(url.absoluteString)", .branch("\#(b)"))"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", branch: "\#(b)")"#
             case .exact(let v):
-                return #".package(\#(n)url: "\#(url.absoluteString)", .exact("\#(v)"))"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", exact: "\#(v)")"#
             case .from(let v):
                 return #".package(\#(n)url: "\#(url.absoluteString)", from: "\#(v)")"#
             case .path:
@@ -78,7 +78,7 @@ public struct Dependency: Equatable, Hashable, Codable {
             case .range(let r):
                 return #".package(\#(n)url: "\#(url.absoluteString)", "\#(r.lowerBound)"..<"\#(r.upperBound)")"#
             case .revision(let r):
-                return #".package(\#(n)url: "\#(url.absoluteString)", .revision("\#(r)"))"#
+                return #".package(\#(n)url: "\#(url.absoluteString)", revision: "\#(r)")"#
             case .noVersion:
                 return #".package(\#(n)url: "\#(url.absoluteString)", from: "0.0.0")"#
         }
