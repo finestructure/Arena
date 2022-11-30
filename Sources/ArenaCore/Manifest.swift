@@ -32,6 +32,7 @@ struct Manifest: Decodable, Equatable {
     struct Product: Decodable, Equatable {
         enum `Type`: String, CodingKey, CaseIterable {
             case executable
+            case plugin
             case library
         }
         var name: String
