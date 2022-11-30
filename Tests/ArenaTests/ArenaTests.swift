@@ -154,11 +154,11 @@ final class ArenaTests: XCTestCase {
     func test_dependency_package_clause() throws {
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .branch("develop"))
-            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .branch("develop"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", branch: "develop")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .exact("1.2.3"))
-            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .exact("1.2.3"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", exact: "1.2.3")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .from("1.2.3"))
@@ -170,7 +170,7 @@ final class ArenaTests: XCTestCase {
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .revision("foo"))
-            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
+            XCTAssertEqual(dep.packageClause(), #".package(url: "https://github.com/foo/bar", revision: "foo")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
@@ -178,7 +178,7 @@ final class ArenaTests: XCTestCase {
         }
         do {
             let dep = Dependency(url: URL(string: "https://github.com/foo/bar")!, requirement: .revision("foo"))
-            XCTAssertEqual(dep.packageClause(name: "bar"), #".package(url: "https://github.com/foo/bar", .revision("foo"))"#)
+            XCTAssertEqual(dep.packageClause(name: "bar"), #".package(url: "https://github.com/foo/bar", revision: "foo")"#)
         }
         do {
             let dep = Dependency(url: URL(string: "file:///foo/bar")!, requirement: .path)
