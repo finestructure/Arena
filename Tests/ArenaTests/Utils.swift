@@ -56,7 +56,7 @@ extension XCTestCase {
     }
 
 
-    func loadData(for fixture: String) throws -> Data {
+    func loadFixture(_ fixture: String) throws -> Data {
         let url = fixturesDirectory/fixture
         return try Data(contentsOf: url)
     }
