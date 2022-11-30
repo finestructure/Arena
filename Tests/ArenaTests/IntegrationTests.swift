@@ -64,7 +64,7 @@ class IntegrationTests: XCTestCase {
                 "--force",
                 "--skip-open"])
 
-            let exp = self.expectation(description: "exp")
+            let exp = self.expectation(description: dep)
 
             let progress = { (stage: ArenaCore.Progress.Stage, msg: String) in
                 print("progress: \(stage)")

@@ -1,0 +1,187 @@
+{
+  "cLanguageStandard" : null,
+  "cxxLanguageStandard" : null,
+  "dependencies" : [
+    {
+      "sourceControl" : [
+        {
+          "identity" : "yams",
+          "location" : {
+            "remote" : [
+              "https://github.com/jpsim/Yams.git"
+            ]
+          },
+          "productFilter" : null,
+          "requirement" : {
+            "range" : [
+              {
+                "lowerBound" : "4.0.0",
+                "upperBound" : "6.0.0"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "name" : "SPIManifest",
+  "packageKind" : {
+    "root" : [
+      "/Users/sas/Downloads/arena-test/Dependencies/.build/checkouts/SPIManifest"
+    ]
+  },
+  "pkgConfig" : null,
+  "platforms" : [
+    {
+      "options" : [
+
+      ],
+      "platformName" : "macos",
+      "version" : "10.15"
+    }
+  ],
+  "products" : [
+    {
+      "name" : "validate-spi-manifest",
+      "settings" : [
+
+      ],
+      "targets" : [
+        "validate-spi-manifest"
+      ],
+      "type" : {
+        "executable" : null
+      }
+    },
+    {
+      "name" : "SPIManifest",
+      "settings" : [
+
+      ],
+      "targets" : [
+        "SPIManifest"
+      ],
+      "type" : {
+        "library" : [
+          "automatic"
+        ]
+      }
+    },
+    {
+      "name" : "SPIManifestValidatorPlugin",
+      "settings" : [
+
+      ],
+      "targets" : [
+        "ValidatorPlugin"
+      ],
+      "type" : {
+        "plugin" : null
+      }
+    }
+  ],
+  "providers" : null,
+  "swiftLanguageVersions" : null,
+  "targets" : [
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "SPIManifest",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "validate-spi-manifest",
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "executable"
+    },
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "validate-spi-manifest",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "ValidatorPlugin",
+      "pluginCapability" : {
+        "command" : [
+          {
+            "custom" : {
+              "description" : "Validate a .spi.yml file",
+              "verb" : "validate-spi-manifest"
+            }
+          },
+          [
+
+          ]
+        ]
+      },
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "plugin"
+    },
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "Yams",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "SPIManifest",
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "regular"
+    },
+    {
+      "dependencies" : [
+        {
+          "byName" : [
+            "SPIManifest",
+            null
+          ]
+        }
+      ],
+      "exclude" : [
+
+      ],
+      "name" : "SPIManifestTests",
+      "resources" : [
+
+      ],
+      "settings" : [
+
+      ],
+      "type" : "test"
+    }
+  ],
+  "toolsVersion" : {
+    "_version" : "5.7.0"
+  }
+}
