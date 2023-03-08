@@ -22,6 +22,7 @@ struct Manifest: Decodable, Equatable {
     struct Platform: Decodable, Equatable {
         enum Name: String, Decodable, Equatable, CaseIterable {
             case macos
+            case maccatalyst
             case ios
             case tvos
             case watchos
@@ -64,6 +65,7 @@ extension Manifest.Product.`Type`: Decodable {
 
 extension Manifest.Platform {
     static func macos(_ version: String) -> Self { .init(platformName: .macos, version: version) }
+    static func macCatalyst(_ version: String) -> Self { .init(platformName: .maccatalyst, version: version) }
     static func ios(_ version: String) -> Self { .init(platformName: .ios, version: version) }
     static func tvos(_ version: String) -> Self { .init(platformName: .tvos, version: version) }
     static func watchos(_ version: String) -> Self { .init(platformName: .watchos, version: version) }
