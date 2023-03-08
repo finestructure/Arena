@@ -30,6 +30,7 @@ extension Environment {
 
 final class ArenaTests: XCTestCase {
     override func setUp() {
+        super.setUp()
         Current = .mock
     }
 

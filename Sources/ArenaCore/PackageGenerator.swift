@@ -17,15 +17,18 @@ extension PackageGenerator {
     struct Platforms: Equatable {
         var iOS: Manifest.Platform?
         var macOS: Manifest.Platform?
+        var macCatalyst: Manifest.Platform?
         var tvOS: Manifest.Platform?
         var watchOS: Manifest.Platform?
 
         init(iOS: Manifest.Platform? = nil,
              macOS: Manifest.Platform? = nil,
+             macCatalyst: Manifest.Platform? = nil,
              tvOS: Manifest.Platform? = nil,
              watchOS: Manifest.Platform? = nil) {
             self.iOS = iOS
             self.macOS = macOS
+            self.macCatalyst = macCatalyst
             self.tvOS = tvOS
             self.watchOS = watchOS
         }
@@ -33,17 +36,19 @@ extension PackageGenerator {
         init(platforms: [Manifest.Platform]) {
             iOS = platforms.first(where: { $0.platformName == .ios })
             macOS = platforms.first(where: { $0.platformName == .macos })
+            macCatalyst = platforms.first(where: { $0.platformName == .maccatalyst })
             tvOS = platforms.first(where: { $0.platformName == .tvos })
             watchOS = platforms.first(where: { $0.platformName == .watchos })
         }
 
         var all: [Manifest.Platform] {
-            [self.iOS, self.macOS, self.tvOS, self.watchOS].compactMap { $0 }
+            [self.iOS, self.macOS, self.macCatalyst, self.tvOS, self.watchOS].compactMap { $0 }
         }
 
         func merged(with other: Platforms) -> Platforms {
             .init(iOS: max(iOS, other.iOS),
                   macOS: max(macOS, other.macOS),
+                  macCatalyst: max(macCatalyst, other.macCatalyst),
                   tvOS: max(tvOS, other.tvOS),
                   watchOS: max(watchOS, other.watchOS))
         }
@@ -63,6 +68,7 @@ extension PackageGenerator {
         guard !platforms.all.isEmpty else { return "" }
         //    .ios("13.0"),
         //    .macos("10.15"),
+        //    .maccatalyst("10.15"),
         //    .tvos("13.0"),
         //    .watchos("6.0")
         let platformsList = platforms
@@ -116,6 +122,8 @@ private extension Manifest.Platform {
         switch self.platformName {
             case .ios:
                 return "iOS"
+            case .maccatalyst:
+                return "macCatalyst"
             case .macos:
                 return "macOS"
             case .tvos:
