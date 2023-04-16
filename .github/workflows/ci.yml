@@ -1,6 +1,9 @@
 name: CI
 
-on: [push]
+on:
+  push:
+  schedule:
+    - cron: '0 9 * * 1'  # everyMonday 9:00 UTC
 
 jobs:
   test:
