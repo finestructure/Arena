@@ -14,6 +14,9 @@ class PackageGeneratorTests: XCTestCase {
             (Dependency(url: URL(string: "https://github.com/finestructure/gala")!,
                         refSpec: .branch("main")),
              .init(name: "Gala", platforms: nil, libraries: ["Gala"])),
+            (Dependency(url: URL(string: "https://github.com/p-x9/AliasMacro")!,
+                        refSpec: .exact(.init(0, 2, 1))),
+             .init(name: "Alias", platforms: nil, libraries: ["Alias"])),
         ]
         assertSnapshot(matching: PackageGenerator.productsClause(info),
                        as: .lines,

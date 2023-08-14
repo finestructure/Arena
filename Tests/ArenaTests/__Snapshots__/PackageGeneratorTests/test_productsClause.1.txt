@@ -1,2 +1,3 @@
 .product(name: "Parser", package: "Parser"),
-.product(name: "Gala", package: "Gala")
+.product(name: "Gala", package: "Gala"),
+.product(name: "Alias", package: "AliasMacro")
