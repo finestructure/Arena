@@ -136,14 +136,15 @@ extension Arena {
             try shellOut(to: ShellOutCommand(string: "swift package resolve"), at: dependencyPackagePath)
         }
 
-        let packageInfo: [(Dependency, PackageInfo)]
+        var packageInfo = [(Dependency, PackageInfo, PackageIdentifier)]()
         do {
             // find libraries
-            packageInfo = Array(
-                zip(dependencies,
-                    try dependencies.compactMap { $0.sourceDir(packageDir: dependencyPackagePath) }
-                        .compactMap { try getPackageInfo(in: $0) } )
-            )
+            for dep in dependencies {
+                guard let sourceDir = dep.sourceDir(packageDir: dependencyPackagePath) else { continue }
+                packageInfo.append(
+                    (dep, try getPackageInfo(in: sourceDir), PackageIdentifier(url: dep.url.absoluteString))
+                )
+            }
             let libs = packageInfo.flatMap { $0.1.libraries }
             if libs.isEmpty { throw AppError.noLibrariesFound }
             progress(.listLibraries, "📔 Libraries found: \(libs.joined(separator: ", "))")
@@ -152,7 +153,7 @@ extension Arena {
         // update Package.swift dependencies again, adding in package `name:` and
         // the `platforms` stanza (if required)
         do {
-            let depsClause = packageInfo.map { (dep, pkg) in
+            let depsClause = packageInfo.map { (dep, pkg, _) in
                 "    " + dep.packageClause(name: pkg.name)
             }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
@@ -167,7 +168,7 @@ extension Arena {
                 package.targets = [
                     .target(name: "\(depdencyPackageName)",
                         dependencies: [
-                            \(PackageGenerator.productsClause(packageInfo))
+                            \(PackageGenerator.productsClause(packageInfo.map { ($1, $2) }))
                         ]
                     )
                 ]

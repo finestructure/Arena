@@ -1,15 +1,51 @@
 import Path
 
+struct PackageIdentifier {
+    var id: String
+
+    init(url: String) {
+        self.id = Self.computeDefaultName(fromLocation: url)
+    }
+
+    static func computeDefaultName(fromLocation url: String) -> String {
+        #if os(Windows)
+        let isSeparator: (Character) -> Bool = { $0 == "/" || $0 == "\\" }
+        #else
+        let isSeparator: (Character) -> Bool = { $0 == "/" }
+        #endif
+
+        // Get the last path component of the URL.
+        // Drop the last character in case it's a trailing slash.
+        var endIndex = url.endIndex
+        if let lastCharacter = url.last, isSeparator(lastCharacter) {
+            endIndex = url.index(before: endIndex)
+        }
+
+        let separatorIndex = url[..<endIndex].lastIndex(where: isSeparator)
+        let startIndex = separatorIndex.map { url.index(after: $0) } ?? url.startIndex
+        var lastComponent = url[startIndex ..< endIndex]
+
+        // Strip `.git` suffix if present.
+        if lastComponent.hasSuffix(".git") {
+            lastComponent = lastComponent.dropLast(4)
+        }
+
+        return String(lastComponent)
+    }
+
+}
 
 enum PackageGenerator {
-    static func productsClause(_ info: [(Dependency, PackageInfo)]) -> String {
-        info
-            .flatMap { pkg in pkg.1.libraries.map { (package: pkg.1.name, library: $0) } }
-            .map {
-            """
-            .product(name: "\($0.library)", package: "\($0.package)")
-            """
-        }.joined(separator: ",\n")
+    static func productsClause(_ info: [(PackageInfo, PackageIdentifier)]) -> String {
+        var clauses = [String]()
+        for (pkgInfo, pkgId) in info {
+            for lib in pkgInfo.libraries {
+                clauses.append("""
+                    .product(name: "\(lib)", package: "\(pkgId.id)")
+                    """)
+            }
+        }
+        return clauses.joined(separator: ",\n")
     }
 }
 
