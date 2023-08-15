@@ -1,61 +1,59 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Parser",
-        "repositoryURL": "https://github.com/finestructure/Parser",
-        "state": {
-          "branch": null,
-          "revision": "08c718279b757dd40d8ce05c3d15ec1a76eab53e",
-          "version": "0.2.0"
-        }
-      },
-      {
-        "package": "Path.swift",
-        "repositoryURL": "https://github.com/mxcl/Path.swift.git",
-        "state": {
-          "branch": null,
-          "revision": "142d4bc1118602f3679c777d2e0da89c227cd918",
-          "version": "1.2.0"
-        }
-      },
-      {
-        "package": "SemanticVersion",
-        "repositoryURL": "https://github.com/SwiftPackageIndex/SemanticVersion",
-        "state": {
-          "branch": null,
-          "revision": "97f2bd0551cde27717c5ab7b88e23d392e96452b",
-          "version": "0.3.1"
-        }
-      },
-      {
-        "package": "ShellOut",
-        "repositoryURL": "https://github.com/JohnSundell/ShellOut.git",
-        "state": {
-          "branch": null,
-          "revision": "e1577acf2b6e90086d01a6d5e2b8efdaae033568",
-          "version": "2.3.0"
-        }
-      },
-      {
-        "package": "swift-argument-parser",
-        "repositoryURL": "https://github.com/apple/swift-argument-parser",
-        "state": {
-          "branch": null,
-          "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
-          "version": "0.3.1"
-        }
-      },
-      {
-        "package": "SnapshotTesting",
-        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing.git",
-        "state": {
-          "branch": null,
-          "revision": "c466812aa2e22898f27557e2e780d3aad7a27203",
-          "version": "1.8.2"
-        }
+  "pins" : [
+    {
+      "identity" : "parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/finestructure/Parser",
+      "state" : {
+        "revision" : "e8951ca4920d060d8717a0e0f3693d5d0769cc3d",
+        "version" : "0.2.1"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "path.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mxcl/Path.swift.git",
+      "state" : {
+        "revision" : "9c6f807b0a76be0e27aecc908bc6f173400d839e",
+        "version" : "1.4.0"
+      }
+    },
+    {
+      "identity" : "semanticversion",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftPackageIndex/SemanticVersion",
+      "state" : {
+        "revision" : "a70840d5fca686ae3bd2fcf8aecc5ded0bd4f125",
+        "version" : "0.3.6"
+      }
+    },
+    {
+      "identity" : "shellout",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/JohnSundell/ShellOut.git",
+      "state" : {
+        "revision" : "e1577acf2b6e90086d01a6d5e2b8efdaae033568",
+        "version" : "2.3.0"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "6b2aa2748a7881eebb9f84fb10c01293e15b52ca",
+        "version" : "0.5.0"
+      }
+    },
+    {
+      "identity" : "swift-snapshot-testing",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-snapshot-testing.git",
+      "state" : {
+        "revision" : "dc46eeb3928a75390651fac6c1ef7f93ad59a73b",
+        "version" : "1.11.1"
+      }
+    }
+  ],
+  "version" : 2
 }
