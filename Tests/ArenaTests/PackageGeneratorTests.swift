@@ -7,17 +7,19 @@ import XCTest
 class PackageGeneratorTests: XCTestCase {
 
     func test_productsClause() throws {
-        let info: [(Dependency, PackageInfo)] = [
-            (Dependency(url: URL(string: "https://github.com/finestructure/parser")!,
-                        refSpec: .branch("main")),
-             .init(name: "Parser", platforms: nil, libraries: ["Parser"])),
-            (Dependency(url: URL(string: "https://github.com/finestructure/gala")!,
-                        refSpec: .branch("main")),
-             .init(name: "Gala", platforms: nil, libraries: ["Gala"])),
+        let info: [(PackageInfo, PackageIdentifier)] = [
+            (.init(name: "Parser", platforms: nil, libraries: ["Parser"]),
+             .init(url: "https://github.com/finestructure/Parser")),
+            (.init(name: "Gala", platforms: nil, libraries: ["Gala"]),
+             .init(url: "https://github.com/finestructure/gala")),
+            (.init(name: "Alias", platforms: nil, libraries: ["Alias"]),
+             .init(url: "https://github.com/p-x9/AliasMacro")),
         ]
-        assertSnapshot(matching: PackageGenerator.productsClause(info),
-                       as: .lines,
-                       record: false)
+        XCTAssertEqual(PackageGenerator.productsClause(info), """
+            .product(name: "Parser", package: "Parser"),
+            .product(name: "Gala", package: "gala"),
+            .product(name: "Alias", package: "AliasMacro")
+            """)
     }
 
     func test_mergePlatforms() throws {
