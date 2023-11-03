@@ -74,7 +74,7 @@ extension Arena {
 extension Arena {
     var dependencyPackagePath: Path { outputPath/depdencyPackageName }
 
-    var depdencyPackageName: String { "Dependencies" }
+    var depdencyPackageName: String { "PlaygroundDependencies" }
 
     var xcworkspacePath: Path { outputPath/"Playground.xcworkspace" }
 
