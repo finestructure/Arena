@@ -74,7 +74,7 @@ extension Arena {
 extension Arena {
     var dependencyPackagePath: Path { outputPath/depdencyPackageName }
 
-    var depdencyPackageName: String { "Dependencies" }
+    var depdencyPackageName: String { "PlaygroundDependencies" }
 
     var xcworkspacePath: Path { outputPath/"Playground.xcworkspace" }
 
@@ -116,19 +116,19 @@ extension Arena {
             try shellOut(to: .createSwiftPackage(withType: .library), at: dependencyPackagePath)
         }
 
-        // update Package.swift dependencies
-        // we need to keep the original description around, because we're going to re-write
-        // the manifest a second time, after we've resolved the packages. This is because we
+        // Update Package.swift dependencies
+        // We need to keep the original description around, because we're going to re-write
+        // the manifest a second time, after we've resolved the packages. This is because we need
         // the manifest to resolve the packages and we need package resolution to be able to
         // get PackageInfo, which we'll need to write out the proper dependency incl `name:`
         // See https://github.com/finestructure/Arena/issues/33
         // and https://github.com/finestructure/Arena/issues/38
-        let packagePath = dependencyPackagePath/"Package.swift"
-        let originalPackageDescription = try String(contentsOf: packagePath)
+        let manifestPath = dependencyPackagePath/"Package.swift"
+        let originalPackageDescription = try String(contentsOf: manifestPath)
         do {
             let depsClause = dependencies.map { "    " + $0.packageClause() }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
-            try [originalPackageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
+            try [originalPackageDescription, updatedDeps].joined(separator: "\n").write(to: manifestPath)
         }
 
         do {
@@ -157,13 +157,13 @@ extension Arena {
                 "    " + dep.packageClause(name: pkg.name)
             }.joined(separator: ",\n")
             let updatedDeps = "package.dependencies = [\n\(depsClause)\n]"
-            try [originalPackageDescription, updatedDeps].joined(separator: "\n").write(to: packagePath)
+            try [originalPackageDescription, updatedDeps].joined(separator: "\n").write(to: manifestPath)
         }
 
         // update Package.swift targets
         do {
-            let packagePath = dependencyPackagePath/"Package.swift"
-            let packageDescription = try String(contentsOf: packagePath)
+            let manifestPath = dependencyPackagePath/"Package.swift"
+            let packageDescription = try String(contentsOf: manifestPath)
             let updatedTgts =  """
                 package.targets = [
                     .target(name: "\(depdencyPackageName)",
@@ -173,20 +173,20 @@ extension Arena {
                     )
                 ]
                 """
-            try [packageDescription, updatedTgts].joined(separator: "\n").write(to: packagePath)
+            try [packageDescription, updatedTgts].joined(separator: "\n").write(to: manifestPath)
         }
 
         // update Package.swift platforms
         do {
-            let packagePath = dependencyPackagePath/"Package.swift"
-            let packageDescription = try String(contentsOf: packagePath)
+            let manifestPath = dependencyPackagePath/"Package.swift"
+            let packageDescription = try String(contentsOf: manifestPath)
             let platforms = packageInfo.compactMap {
                 $0.1.platforms
                     .map(PackageGenerator.Platforms.init(platforms:))
             }
             try [packageDescription,
                  PackageGenerator.platformsClause(platforms)]
-                .joined(separator: "\n").write(to: packagePath)
+                .joined(separator: "\n").write(to: manifestPath)
         }
 
         // create workspace
