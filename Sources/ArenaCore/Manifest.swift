@@ -25,6 +25,7 @@ struct Manifest: Decodable, Equatable {
             case maccatalyst
             case ios
             case tvos
+            case visionos
             case watchos
         }
         var platformName: Name
