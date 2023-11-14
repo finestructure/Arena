@@ -164,6 +164,8 @@ private extension Manifest.Platform {
                 return "macOS"
             case .tvos:
                 return "tvOS"
+            case .visionos:
+                return "visionOS"
             case .watchos:
                 return "watchOS"
         }
